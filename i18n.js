@@ -705,6 +705,10 @@ Start a review request|समीक्षा का अनुरोध शुर
 Add a leaf photo and describe what changed. A report helps your expert review the case.|पत्ती की फोटो जोड़ें और बदलाव बताएँ। रिपोर्ट विशेषज्ञ को मामला समझने में मदद करती है।|पानाचा फोटो जोडा व बदल सांगा. अहवाल तज्ज्ञांना प्रकरण समजण्यास मदत करतो.|Add a leaf photo and describe what changed. A report helps your expert review the case.
 Download detailed report|विस्तृत रिपोर्ट डाउनलोड करें|सविस्तर अहवाल डाउनलोड करा|Download detailed report
 Download spreadsheet|स्प्रेडशीट डाउनलोड करें|स्प्रेडशीट डाउनलोड करा|Download spreadsheet
+Generate PDF report|PDF रिपोर्ट तैयार करें|PDF अहवाल तयार करा|Generate PDF report
+Download PDF report|PDF रिपोर्ट डाउनलोड करें|PDF अहवाल डाउनलोड करा|Download PDF report
+Generating PDF report…|PDF रिपोर्ट तैयार हो रही है…|PDF अहवाल तयार होत आहे…|Generating PDF report...
+Print or save as PDF|प्रिंट या PDF में सहेजें|प्रिंट किंवा PDF मध्ये जतन करा|Print ya PDF me save karein
 Not recorded|दर्ज नहीं|नोंद नाही|Not recorded
 Crop photo|फसल की फोटो|पिकाचा फोटो|Crop photo
 `);

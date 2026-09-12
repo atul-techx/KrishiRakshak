@@ -554,46 +554,45 @@ aside nav .active {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: 14px !important;
-  flex-wrap: wrap !important;
+  gap: 12px !important;
   margin: 36px auto 28px !important;
-  padding: 14px 24px !important;
-  max-width: 580px !important;
+  padding: 10px 18px !important;
+  max-width: 440px !important;
   background: #fffaf2 !important;
   border: 1px solid #dfd2c1 !important;
-  border-radius: 16px !important;
+  border-radius: 99px !important;
   box-shadow: 0 4px 16px rgba(67, 48, 30, 0.05) !important;
 }
 
 .report-toolbar::before {
-  content: "📊 DATA EXPORTS:";
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  color: #8c6747;
-  margin-right: 2px;
+  display: none !important;
 }
 
+.pdf-report-btn,
 .report-toolbar .btn,
 .report-toolbar button {
-  background: #ffffff !important;
-  border: 1px solid #d4c2ab !important;
-  color: #493526 !important;
-  font-weight: 600 !important;
-  font-size: 13px !important;
-  padding: 9px 18px !important;
-  border-radius: 10px !important;
+  background: #5c412d !important;
+  color: #fffaf2 !important;
+  font-weight: 700 !important;
+  font-size: 14px !important;
+  padding: 12px 28px !important;
+  border-radius: 99px !important;
+  border: 0 !important;
   cursor: pointer !important;
-  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1) !important;
-  box-shadow: 0 2px 6px rgba(67, 48, 30, 0.04) !important;
+  box-shadow: 0 3px 12px rgba(92, 65, 45, 0.25) !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  text-decoration: none !important;
 }
 
+.pdf-report-btn:hover,
 .report-toolbar .btn:hover,
 .report-toolbar button:hover {
-  background: #f5ede1 !important;
-  border-color: #ba9f83 !important;
-  color: #3b281b !important;
-  transform: translateY(-1px);
+  background: #443022 !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 18px rgba(92, 65, 45, 0.35) !important;
 }
 
 @media(max-width: 900px) {
@@ -605,11 +604,15 @@ aside nav .active {
   }
   .report-toolbar {
     margin: 20px 14px !important;
-    padding: 12px 16px !important;
+    padding: 10px !important;
+    border-radius: 14px !important;
   }
-  .report-toolbar button {
+  .report-toolbar button,
+  .pdf-report-btn {
     width: 100% !important;
+    justify-content: center !important;
   }
 }
+
 
 
