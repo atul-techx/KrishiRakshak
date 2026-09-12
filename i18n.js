@@ -726,6 +726,11 @@ Soil type|मिट्टी का प्रकार|मातीचा प्
 Irrigation type|सिंचाई का प्रकार|सिंचनाचा प्रकार|Irrigation type
 Initial notes|प्रारंभिक विवरण|सुरुवातीची नोंद|Initial notes
 Link to an existing saved field|सहेजे गए खेत से जोड़ें|जतन केलेल्या शेताशी जोडा|Link to an existing saved field
+Healthy|स्वस्थ|निरोगी|Healthy
+Normal|सामान्य|सामान्य|Normal
+Issue detected|लक्षण पाए गए|लक्षणे आढळली|Issue mila
+API key required|एपीआई कुंजी आवश्यक|API की आवश्यक|API key chahiye
+Ready for leaf scan|पत्ती स्कैन के लिए तैयार|पानाच्या स्कॅनसाठी तयार|Leaf scan ke liye ready
 `);
 let pattern;
 function compile(){pattern=new RegExp(Object.keys(entries).sort((a,b)=>b.length-a.length).map(s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|'),'g');}
