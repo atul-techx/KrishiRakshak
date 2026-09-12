@@ -80,3 +80,9 @@ body{font-family:'DM Sans','Noto Sans Devanagari',system-ui,sans-serif}.shell h1
 @keyframes rakshakBounce{0%,80%,100%{transform:scale(0);opacity:0.3}40%{transform:scale(1);opacity:1}}
 
 :root{--green:#6b4f3a;--green-dark:#493526;--green-light:#eee0cb;--gold:#9b744b;--bg:#f6efe3;--card:#fffaf2;--text:#493526}body,.page{background:#f6efe3!important;color:#493526}aside{background:#59412f!important}aside nav .active{background:#e4cfb1!important;color:#493526!important}.brand span,.brand b,.logo span{color:inherit}.diagnosis-result,.diagnosis-result.warn,.diagnosis-result.ok,.quality-box,.ai-block,.pill,.priority,.empty{background:#eee0cb!important;border-color:#cdb99d!important;color:#493526!important}.btn-primary,.btn-accent,.btn-green,.btn-gold{background:#6b4f3a!important;color:#fffaf2!important}.status-dot{background:#8c6747!important}.report-toolbar{display:flex;gap:10px;flex-wrap:wrap;padding:24px;justify-content:center}.next-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:18px 0}.next-grid strong{display:block;font-size:30px;color:#6b4f3a}.next-grid span{font-size:13px}.expert-layout,.expert-grid,.case-queue{min-height:0!important}#caseDetail{min-height:250px}#caseDetail textarea{min-height:100px}#caseDetail input{padding:12px;background:#fffaf2;border:1px solid #d8c6af;border-radius:8px}#next-actions{margin-bottom:22px}@media(max-width:650px){.next-grid{grid-template-columns:1fr}.report-toolbar{padding:12px}.report-toolbar button{width:100%}}
+.scan-controls{display:flex!important;gap:10px!important;margin:16px 0 14px!important;align-items:center!important;flex-wrap:wrap!important}
+.scan-controls select{flex:1 1 180px!important;min-width:0!important;border-radius:11px!important;padding:12px 14px!important}
+.scan-controls .btn{white-space:nowrap!important;padding:12px 18px!important;flex:0 0 auto!important}
+#diagnoseBtn{margin-bottom:14px!important}
+#expertBtn{margin-bottom:16px!important}
+
