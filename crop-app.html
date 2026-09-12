@@ -74,7 +74,7 @@
         <span>🩺</span> <span data-i18n="expert">Expert</span>
       </button>
       <button class="nav-btn" data-page="official">
-        <span>🗺️</span> <span>Hotspots</span>
+        <span>🗺️</span> <span data-i18n="Location">Location</span>
       </button>
     </nav>
     <div class="top-actions">
@@ -222,20 +222,40 @@
       </div>
     </section>
 
-    <!-- OFFICIAL -->
+    <!-- LOCATION / FIELD SURVEILLANCE -->
     <section id="officialPage" class="page">
       <div class="section-wrap">
-        <div class="section-head"><div><p class="eyebrow">EXTENSION / DEPARTMENT VIEW</p><h2>Crop health hotspots</h2><p>Confirmed cases, field-risk signals and response status in one map.</p></div><span class="status-pill"> District view</span></div>
+        <div class="section-head">
+          <div>
+            <p class="eyebrow" data-i18n="locationEyebrow">FIELD SURVEILLANCE &amp; LOCATION</p>
+            <h2 data-i18n="locationTitle">Crop health locations</h2>
+            <p data-i18n="locationSubtitle">Confirmed cases, field-risk signals and response status in one map.</p>
+          </div>
+          <span class="status-pill ok">● District Location Feed</span>
+        </div>
         <div class="official-grid">
           <div class="card map-card">
-            <div class="map-toolbar"><select id="hotspotFilter"><option value="all">All signals</option><option value="high">High risk</option><option value="pending">Awaiting expert</option><option value="reviewed">Reviewed</option></select></div>
-            <div id="hotspotMap"><div id="mapLoading" class="map-loading">Loading field hotspot map…</div></div>
+            <div class="map-toolbar">
+              <select id="hotspotFilter" class="map-filter-select" aria-label="Filter locations">
+                <option value="all">🌐 All signals / सभी लोकेशन</option>
+                <option value="high">🚨 High risk / उच्च जोखिम</option>
+                <option value="pending">⏳ Awaiting expert / विशेषज्ञ समीक्षा लंबित</option>
+                <option value="reviewed">✅ Reviewed / समीक्षा संपन्न</option>
+              </select>
+              <div class="map-legend-strip">
+                <span class="legend-pill high" data-filter="high" role="button" tabindex="0">● High risk</span>
+                <span class="legend-pill pending" data-filter="pending" role="button" tabindex="0">● Awaiting expert</span>
+                <span class="legend-pill reviewed" data-filter="reviewed" role="button" tabindex="0">● Reviewed</span>
+                <span class="legend-pill gps" data-filter="all" role="button" tabindex="0">● Live GPS</span>
+              </div>
+            </div>
+            <div id="hotspotMap"><div id="mapLoading" class="map-loading">Loading field location map…</div></div>
           </div>
           <div class="card official-stats">
-            <div class="stat-row"><span>Cases logged</span><b id="officialCases">0</b></div>
-            <div class="stat-row"><span>High-risk cases</span><b id="officialHighRisk">0</b></div>
-            <div class="stat-row"><span>Awaiting expert</span><b id="officialPending">0</b></div>
-            <div class="stat-row"><span>Reviewed</span><b id="officialReviewed">0</b></div>
+            <div class="stat-row clickable-stat" data-filter="all" title="Click to view all signals"><span>Cases logged</span><b id="officialCases">0</b></div>
+            <div class="stat-row clickable-stat" data-filter="high" title="Click to view high-risk cases"><span>High-risk cases</span><b id="officialHighRisk" style="color:#b71c1c;">0</b></div>
+            <div class="stat-row clickable-stat" data-filter="pending" title="Click to view awaiting expert cases"><span>Awaiting expert</span><b id="officialPending" style="color:#e65100;">0</b></div>
+            <div class="stat-row clickable-stat" data-filter="reviewed" title="Click to view reviewed cases"><span>Reviewed</span><b id="officialReviewed" style="color:#2e7d32;">0</b></div>
             <div class="learning-box"><b>Learning loop</b><p>Expert confirmations are stored with the original assessment so future versions can be evaluated against real field outcomes.</p>
               <div class="learning-mini"><span><b id="learningConfirmed">0</b><small>reviewed</small></span><span><b id="learningPending">0</b><small>pending</small></span><span><b id="learningRate">--</b><small>review rate</small></span></div>
               <button id="exportLearning" class="btn btn-light full">Export feedback CSV</button></div>

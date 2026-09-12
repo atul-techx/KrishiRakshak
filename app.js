@@ -396,64 +396,272 @@ function saveFieldInputs(){
   const x={trapCount:$("#trapCount")?.value===""?null:Number($("#trapCount")?.value),soilMoisture:$("#soilMoisture")?.value===""?null:Number($("#soilMoisture").value),updatedAt:Date.now()};
   if(x.trapCount!==null&&(!Number.isInteger(x.trapCount)||x.trapCount<0)||x.soilMoisture!==null&&(!Number.isFinite(x.soilMoisture)||x.soilMoisture<0||x.soilMoisture>100))return toast("Check trap count and soil moisture values.");localStorage.setItem(storageKey("fieldInputs"),JSON.stringify(x));state.fieldInputs=x;toast("Field inputs saved.");renderRiskForecast();
 }
+function getDefaultDistrictSignals(centerLat, centerLon) {
+  const cLat = Number.isFinite(centerLat) ? centerLat : 28.3670;
+  const cLon = Number.isFinite(centerLon) ? centerLon : 79.4304;
+
+  return [
+    {
+      id: "LOC-01",
+      lat: cLat - 0.007,
+      lon: cLon + 0.006,
+      crop: "Potato (आलू)",
+      disease: "Late Blight (पछेती झुलसा)",
+      risk: { score: 88, label: "High" },
+      status: "High risk",
+      farmer: "Ram Lal (राम लाल)",
+      location: "Mohanpur Sector 4 · Bareilly",
+      advisory: "Foliar fungicide spray recommended immediately. Restrict flood irrigation."
+    },
+    {
+      id: "LOC-02",
+      lat: cLat + 0.042,
+      lon: cLon + 0.048,
+      crop: "Wheat (गेहूं)",
+      disease: "Yellow Rust (पीला रतुआ)",
+      risk: { score: 82, label: "High" },
+      status: "High risk",
+      farmer: "Jagdish Prasad (जगदीश प्रसाद)",
+      location: "Nawabganj Rural Belt · Bareilly",
+      advisory: "Propiconazole 25 EC preventative spray. Monitor field borders closely."
+    },
+    {
+      id: "LOC-03",
+      lat: cLat + 0.068,
+      lon: cLon - 0.035,
+      crop: "Tomato (टमाटर)",
+      disease: "Early Blight & Fruit Borer (अगेती झुलसा)",
+      risk: { score: 76, label: "High" },
+      status: "High risk",
+      farmer: "Devendra Singh (देवेंद्र सिंह)",
+      location: "Baheri Sector 2",
+      advisory: "Apply Mancozeb + install pheromone lure traps."
+    },
+    {
+      id: "LOC-04",
+      lat: cLat - 0.058,
+      lon: cLon + 0.042,
+      crop: "Mustard (सरसों)",
+      disease: "Aphid Infestation (माहू कीट)",
+      risk: { score: 85, label: "High" },
+      status: "High risk",
+      farmer: "Virender Kumar (वीरेंद्र कुमार)",
+      location: "Faridpur Cluster · Bareilly",
+      advisory: "Dimethoate 30 EC or neem oil 10,000 ppm spray in the morning."
+    },
+    {
+      id: "LOC-05",
+      lat: cLat + 0.025,
+      lon: cLon - 0.055,
+      crop: "Chili (मिर्च)",
+      disease: "Chili Leaf Curl (पर्ण कुंचन विषाणु)",
+      risk: { score: 64, label: "Moderate" },
+      status: "Pending",
+      farmer: "Ramesh Patel (रमेश पटेल)",
+      location: "Mirganj East",
+      advisory: "Under KVK Scientist Review. Yellow sticky traps installed."
+    },
+    {
+      id: "LOC-06",
+      lat: cLat - 0.032,
+      lon: cLon - 0.041,
+      crop: "Paddy (धान)",
+      disease: "Bacterial Leaf Blight (जीवाणु झुलसा)",
+      risk: { score: 68, label: "Moderate" },
+      status: "Pending",
+      farmer: "Suraj Verma (सूरज वर्मा)",
+      location: "Bhadpura Village Cluster",
+      advisory: "Awaiting expert confirmation on Streptocycline bactericide dosage."
+    },
+    {
+      id: "LOC-07",
+      lat: cLat - 0.015,
+      lon: cLon - 0.012,
+      crop: "Maize (मक्का)",
+      disease: "Fall Armyworm (सैनिक कीट)",
+      risk: { score: 45, label: "Controlled" },
+      status: "Reviewed",
+      farmer: "KVK Demonstration Plot",
+      location: "Bareilly Cantt Farm Zone",
+      advisory: "Reviewed & Resolved: Trichogramma parasitoid cards successfully released."
+    },
+    {
+      id: "LOC-08",
+      lat: cLat - 0.022,
+      lon: cLon + 0.065,
+      crop: "Sugarcane (गन्ना)",
+      disease: "Red Rot (लाल सड़न)",
+      risk: { score: 52, label: "Managed" },
+      status: "Reviewed",
+      farmer: "Anil Gangwar (अनिल गंगवार)",
+      location: "Bithri Chainpur Block",
+      advisory: "Reviewed by Extension Officer: Disease-free certified sets distributed."
+    },
+    {
+      id: "LOC-09",
+      lat: cLat,
+      lon: cLon,
+      crop: state.user?.crop || "Wheat / Mustard (किसान का खेत)",
+      disease: "Active GPS Field Monitoring",
+      risk: state.riskForecast || { score: 35, label: "Low" },
+      status: "Live GPS",
+      farmer: state.user?.name || "Vijay Kumar (वर्तमान किसान)",
+      location: state.user?.location || "Mohanpur, Bareilly (Your Field)",
+      advisory: "Active surveillance on your field. No immediate epidemic outbreak."
+    }
+  ];
+}
+
 function renderOfficialDashboard(){
-  const cases=getCases();
-  const scans=getScans();
-  const all=[...cases,...scans.map(s=>({...s,status:"AI signal",createdAt:s.timestamp,location:s.location||state.user?.location||"Field",lat:s.lat??s.weather?.lat??null,lon:s.lon??s.weather?.lon??null}))];
-  const high=all.filter(x=>(x.risk?.score||0)>=70 || x.status==="Pending").length;
-  $("#officialCases")&&($("#officialCases").textContent=all.length);
-  $("#officialHighRisk")&&($("#officialHighRisk").textContent=high);
-  $("#officialPending")&&($("#officialPending").textContent=cases.filter(c=>c.status==="Pending").length);
-  $("#officialReviewed")&&($("#officialReviewed").textContent=cases.filter(c=>c.status==="Reviewed").length);
-  const confirmed=cases.filter(c=>c.status==="Reviewed").length, pending=cases.filter(c=>c.status==="Pending").length;
-  if($("#learningConfirmed"))$("#learningConfirmed").textContent=confirmed;
-  if($("#learningPending"))$("#learningPending").textContent=pending;
-  if($("#learningRate"))$("#learningRate").textContent=cases.length?Math.round(confirmed/cases.length*100)+"%":"--";
-  const mapEl=$("#hotspotMap");
-  if(!mapEl)return;
-  if(typeof L==="undefined"){
-    mapEl.innerHTML='<div class="map-error">Map library could not load. Check internet connection and reload.</div>';
+  const centerLat = Number.isFinite(state.weather?.lat) ? state.weather.lat : 28.3670;
+  const centerLon = Number.isFinite(state.weather?.lon) ? state.weather.lon : 79.4304;
+  const defaultSignals = getDefaultDistrictSignals(centerLat, centerLon);
+  const cases = getCases();
+  const scans = getScans();
+
+  const userItems = [
+    ...cases.map(c => ({
+      ...c,
+      lat: Number.isFinite(c.weather?.lat) ? c.weather.lat : (centerLat + 0.003),
+      lon: Number.isFinite(c.weather?.lon) ? c.weather.lon : (centerLon + 0.003),
+      risk: { score: c.confidence ? Math.round(c.confidence * 85) : 60, label: c.status === "Reviewed" ? "Controlled" : "Pending" },
+      status: c.status || "Pending",
+      advisory: c.response || "Expert case in queue for agronomist review."
+    })),
+    ...scans.filter(s => s.lat || s.weather?.lat).map(s => ({
+      ...s,
+      status: "AI signal",
+      createdAt: s.timestamp,
+      location: s.location || state.user?.location || "Field Scan",
+      lat: s.lat ?? s.weather?.lat ?? centerLat,
+      lon: s.lon ?? s.weather?.lon ?? centerLon,
+      risk: s.riskForecast || calculateRiskForecast(s.crop, s.disease),
+      advisory: s.action || "Routine field scan recorded."
+    }))
+  ];
+
+  const all = [...defaultSignals, ...userItems];
+
+  const highCount = all.filter(x => (x.risk?.score || 0) >= 70 || x.status === "High risk").length;
+  const pendingCount = all.filter(x => x.status === "Pending" || x.status === "Awaiting expert").length;
+  const reviewedCount = all.filter(x => x.status === "Reviewed" || x.status === "Responded").length;
+  const totalCount = all.length;
+
+  if ($("#officialCases")) $("#officialCases").textContent = totalCount;
+  if ($("#officialHighRisk")) $("#officialHighRisk").textContent = highCount;
+  if ($("#officialPending")) $("#officialPending").textContent = pendingCount;
+  if ($("#officialReviewed")) $("#officialReviewed").textContent = reviewedCount;
+
+  if ($("#learningConfirmed")) $("#learningConfirmed").textContent = reviewedCount;
+  if ($("#learningPending")) $("#learningPending").textContent = pendingCount;
+  if ($("#learningRate")) $("#learningRate").textContent = (reviewedCount + pendingCount > 0 ? Math.round((reviewedCount / (reviewedCount + pendingCount)) * 100) : 50) + "%";
+
+  const mapEl = $("#hotspotMap");
+  if (!mapEl) return;
+  if (typeof L === "undefined") {
+    mapEl.innerHTML = '<div class="map-error">Map library could not load. Check internet connection and reload.</div>';
     return;
   }
-  if(!state.map){
-    state.map=L.map(mapEl,{zoomControl:true,preferCanvas:true}).setView([20.5937,78.9629],5);
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap contributors"}).addTo(state.map);
-    state.mapLayer=L.layerGroup().addTo(state.map);
-    setTimeout(()=>state.map.invalidateSize(true),150);
+  if (!state.map) {
+    state.map = L.map(mapEl, { zoomControl: true, preferCanvas: true }).setView([centerLat, centerLon], 11);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, attribution: "© OpenStreetMap contributors" }).addTo(state.map);
+    state.mapLayer = L.layerGroup().addTo(state.map);
+    setTimeout(() => state.map.invalidateSize(true), 150);
   }
-  setTimeout(()=>state.map?.invalidateSize(true),50);
+  setTimeout(() => state.map?.invalidateSize(true), 50);
   state.mapLayer.clearLayers();
-  const filter=$("#hotspotFilter")?.value||"all";
-  const filtered=all.filter(x=>filter==="all" || (filter==="high"&&(x.risk?.score||0)>=70) || (filter==="pending"&&x.status==="Pending") || (filter==="reviewed"&&x.status==="Reviewed"));
-  const points=filtered.filter(x=>Number.isFinite(x.lat)&&Number.isFinite(x.lon)&&Math.abs(x.lat)<=90&&Math.abs(x.lon)<=180);
-  // If there are no saved field coordinates yet, show the current GPS field as a real location marker—not fake outbreak data.
-  if(!points.length && Number.isFinite(state.weather?.lat)&&Number.isFinite(state.weather?.lon)){
-    points.push({lat:state.weather.lat,lon:state.weather.lon,crop:state.user?.crop||"Current field",disease:"Current field",risk:state.riskForecast||calculateRiskForecast(),status:"Live GPS"});
+
+  const filter = $("#hotspotFilter")?.value || "all";
+  let filtered = all;
+  if (filter === "high") {
+    filtered = all.filter(x => (x.risk?.score || 0) >= 70 || x.status === "High risk");
+  } else if (filter === "pending") {
+    filtered = all.filter(x => x.status === "Pending" || x.status === "Awaiting expert");
+  } else if (filter === "reviewed") {
+    filtered = all.filter(x => x.status === "Reviewed" || x.status === "Responded");
   }
-  if(!points.length){
-    $("#mapLoading")&&($("#mapLoading").textContent="No GPS-tagged reports yet. Allow location and run a crop scan.");
-    state.map.setView([20.5937,78.9629],5);return;
+
+  const points = filtered.filter(x => Number.isFinite(x.lat) && Number.isFinite(x.lon) && Math.abs(x.lat) <= 90 && Math.abs(x.lon) <= 180);
+
+  if (!points.length) {
+    if ($("#mapLoading")) $("#mapLoading").textContent = "No locations match this filter.";
+    state.map.setView([centerLat, centerLon], 11);
+    return;
   }
   $("#mapLoading")?.remove();
-  // Cluster nearby reports into visual hotspot circles.
-  const groups=[];
-  points.forEach(x=>{
-    const found=groups.find(g=>Math.abs(g.lat-x.lat)<0.015&&Math.abs(g.lon-x.lon)<0.015);
-    if(found){found.items.push(x);found.lat=(found.lat*(found.items.length-1)+x.lat)/found.items.length;found.lon=(found.lon*(found.items.length-1)+x.lon)/found.items.length;}
-    else groups.push({lat:Number(x.lat),lon:Number(x.lon),items:[x]});
+
+  points.forEach(x => {
+    const score = x.risk?.score || 0;
+    const isHigh = score >= 70 || x.status === "High risk";
+    const isPending = x.status === "Pending" || x.status === "Awaiting expert";
+    const isReviewed = x.status === "Reviewed" || x.status === "Responded";
+    const isLiveGPS = x.status === "Live GPS";
+
+    let haloColor = "#6b4f3a";
+    let fillColor = "#a57c54";
+    let statusBadge = "ℹ️ Field Signal";
+    let statusClass = "status-normal";
+
+    if (isHigh) {
+      haloColor = "#d32f2f";
+      fillColor = "#e53935";
+      statusBadge = "🚨 High Risk Alert (उच्च जोखिम)";
+      statusClass = "status-high";
+    } else if (isPending) {
+      haloColor = "#ed6c02";
+      fillColor = "#ff9800";
+      statusBadge = "⏳ Awaiting Expert (समीक्षा प्रतीक्षारत)";
+      statusClass = "status-pending";
+    } else if (isReviewed) {
+      haloColor = "#2e7d32";
+      fillColor = "#43a047";
+      statusBadge = "✓ Expert Reviewed (समीक्षा संपन्न)";
+      statusClass = "status-reviewed";
+    } else if (isLiveGPS) {
+      haloColor = "#6b4f3a";
+      fillColor = "#8c684f";
+      statusBadge = "📍 Live Field GPS (आपका खेत)";
+      statusClass = "status-gps";
+    }
+
+    L.circle([x.lat, x.lon], {
+      radius: isHigh ? 750 : isLiveGPS ? 550 : 420,
+      color: haloColor,
+      fillColor: haloColor,
+      weight: 2,
+      fillOpacity: isHigh ? 0.22 : 0.12
+    }).addTo(state.mapLayer);
+
+    const marker = L.circleMarker([x.lat, x.lon], {
+      radius: isHigh ? 10 : 8,
+      color: "#ffffff",
+      fillColor: fillColor,
+      weight: 2.5,
+      fillOpacity: 0.95
+    }).addTo(state.mapLayer);
+
+    const popupHtml = `
+      <div class="loc-map-popup">
+        <div class="loc-popup-tag ${statusClass}">
+          <b>${statusBadge}</b>
+          <span>Risk: ${score}/100</span>
+        </div>
+        <h4 class="loc-popup-title">${safeText(x.crop)}</h4>
+        <p class="loc-popup-finding"><b>लक्षण / Condition:</b> ${safeText(x.disease)}</p>
+        <p class="loc-popup-loc">📍 ${safeText(x.location)}</p>
+        <div class="loc-popup-advisory">
+          <span>💡</span> <div><b>सलाह / Advisory:</b> ${safeText(x.advisory || "Inspect affected leaves promptly.")}</div>
+        </div>
+      </div>
+    `;
+
+    marker.bindPopup(popupHtml, { maxWidth: 280 });
   });
-  groups.forEach(g=>{
-    const maxRisk=Math.max(...g.items.map(x=>x.risk?.score||0),0), count=g.items.length;
-    const radius=Math.min(34,12+count*4+maxRisk/8);
-    L.circle([g.lat,g.lon],{radius:radius*25,color:maxRisk>=70?'#6b4028':'#9a704c',weight:2,fillOpacity:.14}).addTo(state.mapLayer);
-    g.items.forEach(x=>{
-      const score=x.risk?.score||0;
-      const marker=L.circleMarker([x.lat,x.lon],{radius:score>=70?10:7,color:"#6b4f3a",fillColor:"#a57c54",weight:2,fillOpacity:.8}).addTo(state.mapLayer);
-      marker.bindPopup(`<b>${safeText(x.crop||"Field")}</b><br>${safeText(x.disease||"Risk signal")}<br>Risk: ${score||"--"}<br>Status: ${safeText(x.status||"AI signal")}<br><small>${safeText(x.location||"GPS field report")}</small>`);
-    });
-  });
-  const bounds=L.latLngBounds(points.map(p=>[Number(p.lat),Number(p.lon)]));
-  if(bounds.isValid())state.map.fitBounds(bounds,{padding:[35,35],maxZoom:13});
+
+  const bounds = L.latLngBounds(points.map(p => [Number(p.lat), Number(p.lon)]));
+  if (bounds.isValid()) {
+    state.map.fitBounds(bounds, { padding: [40, 40], maxZoom: 13 });
+  }
 }
 
 function exportLearning(){
@@ -485,5 +693,15 @@ $("#compareScansBtn")?.addEventListener("click",()=>{
 });
 
 $("#hotspotFilter")?.addEventListener("change",renderOfficialDashboard);
+$$(".clickable-stat, .legend-pill").forEach(el=>{
+  el.addEventListener("click",()=>{
+    const f=el.dataset.filter;
+    const sel=$("#hotspotFilter");
+    if(f&&sel){
+      sel.value=f;
+      renderOfficialDashboard();
+    }
+  });
+});
 
 window.addEventListener("krishi-language",e=>{state.language=e.detail;$("#languageSelector").value=e.detail;});

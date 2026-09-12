@@ -233,7 +233,8 @@ Home|होम|मुख्यपृष्ठ|Home
 Scan|स्कैन|स्कॅन|Scan
 Dashboard|डैशबोर्ड|डॅशबोर्ड|Dashboard
 Expert|विशेषज्ञ|तज्ञ|Expert
-Hotspots|प्रभावित क्षेत्र|प्रभावित भाग|Hotspots
+Hotspots|लोकेशन|स्थान|Location
+Location|लोकेशन|स्थान|Location
 Farmer|किसान|शेतकरी|Farmer
 FOR THE FIELDS OF INDIA|भारत के खेतों के लिए|भारताच्या शेतांसाठी|BHARAT KE KHETON KE LIYE
 One photo, one weather signal and one clear next step. KrishiRakshak brings crop health intelligence closer to the farmer.|एक फोटो, मौसम का संकेत और स्पष्ट अगला कदम। कृषिरक्षक फसल की जानकारी किसान तक लाता है।|एक फोटो, हवामानाचा संकेत आणि स्पष्ट पुढचे पाऊल. कृषिरक्षक पीक माहिती शेतकऱ्यापर्यंत आणतो.|Ek photo, weather signal aur clear next step. KrishiRakshak crop information farmer tak laata hai.
@@ -325,13 +326,17 @@ Field watch|खेत निगरानी|शेत निरीक्षण|F
 My crops|मेरी फसलें|माझी पिके|Meri crops
 Add crop|फसल जोड़ें|पीक जोडा|Crop add karein
 EXTENSION / DEPARTMENT VIEW|कृषि विस्तार / विभाग दृश्य|कृषी विस्तार / विभाग दृश्य|EXTENSION / DEPARTMENT VIEW
-Crop health hotspots|फसल प्रभावित क्षेत्र|पीक प्रभावित भाग|Crop health hotspots
+FIELD SURVEILLANCE & LOCATION|खेत निगरानी व लोकेशन|शेत निरीक्षण आणि स्थान|FIELD SURVEILLANCE & LOCATION
+Crop health hotspots|फसल स्वास्थ्य लोकेशन|पीक आरोग्य स्थान|Crop health locations
+Crop health locations|फसल स्वास्थ्य लोकेशन|पीक आरोग्य स्थान|Crop health locations
 Confirmed cases, field-risk signals and response status in one map.|स्थानीय मामले, जोखिम संकेत और समीक्षा स्थिति एक मानचित्र में।|स्थानिक प्रकरणे, जोखीम संकेत आणि समीक्षा स्थिती एका नकाशात.|Local cases, risk signals aur review status ek map mein.
 District view|जिला दृश्य|जिल्हा दृश्य|District view
-All signals|सभी संकेत|सर्व संकेत|All signals
+District Location Feed|जिला लोकेशन रिपोर्ट|जिल्हा स्थान अहवाल|District Location Feed
+All signals|सभी लोकेशन संकेत|सर्व स्थान संकेत|All signals
 High risk|उच्च जोखिम|उच्च जोखीम|High risk
-Awaiting expert|विशेषज्ञ की प्रतीक्षा|तज्ञांची प्रतीक्षा|Expert ka wait
-Loading field hotspot map…|खेत मानचित्र लोड हो रहा है…|शेत नकाशा लोड होत आहे…|Field map loading…
+Awaiting expert|विशेषज्ञ समीक्षा प्रतीक्षारत|तज्ञांचे पुनरावलोकन प्रलंबित|Awaiting expert
+Loading field location map…|खेत लोकेशन मानचित्र लोड हो रहा है…|शेत स्थान नकाशा लोड होत आहे…|Loading field location map…
+Loading field hotspot map…|खेत लोकेशन मानचित्र लोड हो रहा है…|शेत स्थान नकाशा लोड होत आहे…|Loading field location map…
 Cases logged|दर्ज मामले|नोंदवलेली प्रकरणे|Cases logged
 High-risk cases|उच्च जोखिम मामले|उच्च जोखीम प्रकरणे|High-risk cases
 Learning loop|सीखने का चक्र|शिकण्याचे चक्र|Learning loop
