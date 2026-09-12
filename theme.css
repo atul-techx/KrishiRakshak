@@ -854,6 +854,7 @@ aside nav .active {
   .nav {
     order: 3 !important;
     width: 100% !important;
+  }
 }
 
 .brand strong {
@@ -1123,7 +1124,7 @@ aside nav .active {
   box-shadow: 0 0 0 3px rgba(107,79,58,.08) !important;
 }
 
-.market-state-select-wrap select {
+.market-state-select-wrap select, .market-select {
   border: 1px solid var(--line) !important;
   background: #fffaf2 !important;
   padding: 11px 14px !important;
@@ -1167,209 +1168,356 @@ aside nav .active {
   color: #fffaf2 !important;
 }
 
-/* Table View */
-.mandi-table-card {
-  padding: 0 !important;
-  overflow: hidden !important;
-  margin-bottom: 24px !important;
-}
+/* ==========================================================
+   FARMER-FRIENDLY MANDI CARDS (NATURAL RUSTIC / THEME MATCH)
+   ========================================================== */
 
-.table-responsive {
-  width: 100% !important;
-  overflow-x: auto !important;
-}
-
-.mandi-table {
-  width: 100% !important;
-  border-collapse: collapse !important;
-  text-align: left !important;
-  font-size: 13px !important;
-}
-
-.mandi-table thead th {
-  background: var(--beige) !important;
-  color: var(--brown3) !important;
-  font-size: 10.5px !important;
-  font-weight: 800 !important;
-  letter-spacing: 0.08em !important;
-  text-transform: uppercase !important;
-  padding: 13px 16px !important;
-  border-bottom: 1px solid var(--line) !important;
-  white-space: nowrap !important;
-}
-
-.mandi-table tbody tr {
-  border-bottom: 1px solid #eee4d4 !important;
-  transition: background 0.12s ease !important;
-}
-
-.mandi-table tbody tr:hover {
-  background: #fbf7f0 !important;
-}
-
-.mandi-table tbody tr:last-child {
-  border-bottom: none !important;
-}
-
-.mandi-table td {
-  padding: 13px 16px !important;
-  vertical-align: middle !important;
-  color: var(--ink) !important;
-}
-
-.tbl-crop-cell {
-  display: flex !important;
-  align-items: center !important;
-  gap: 10px !important;
-}
-
-.tbl-crop-icon {
-  width: 34px !important;
-  height: 34px !important;
-  border-radius: 9px !important;
-  background: var(--amber2) !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  font-size: 18px !important;
-  flex-shrink: 0 !important;
-}
-
-.tbl-crop-info strong {
-  display: block !important;
-  font-size: 13.5px !important;
-  color: var(--ink) !important;
-}
-
-.tbl-crop-info small {
-  color: var(--muted) !important;
-  font-size: 11px !important;
-}
-
-.tbl-mandi-cell strong {
-  display: block !important;
-  font-size: 13px !important;
-  color: var(--brown) !important;
-}
-
-.tbl-mandi-cell small {
-  color: var(--muted) !important;
-  font-size: 11px !important;
-}
-
-.tbl-price {
-  font-family: Fraunces, Georgia, serif !important;
-  font-size: 17px !important;
-  font-weight: 600 !important;
-  color: var(--brown2) !important;
-  font-variant-numeric: tabular-nums !important;
-}
-
-.tbl-kg {
-  font-variant-numeric: tabular-nums !important;
-  font-size: 12.5px !important;
-  font-weight: 600 !important;
-  color: var(--muted) !important;
-}
-
-.tbl-range {
-  font-size: 11.5px !important;
-  color: var(--muted) !important;
-  font-variant-numeric: tabular-nums !important;
-}
-
-.text-right { text-align: right !important; }
-.text-center { text-align: center !important; }
-
-.trend-pill {
-  display: inline-block !important;
-  padding: 3px 8px !important;
-  border-radius: 6px !important;
-  font-size: 11px !important;
-  font-weight: 800 !important;
-  white-space: nowrap !important;
-  font-variant-numeric: tabular-nums !important;
-}
-
-.trend-gain {
-  background: var(--goodbg) !important;
-  color: var(--good) !important;
-}
-
-.trend-loss {
-  background: var(--dangerbg) !important;
-  color: var(--danger) !important;
-}
-
-.trend-flat {
-  background: var(--beige2) !important;
-  color: var(--muted) !important;
-}
-
-.tbl-advisory {
-  font-size: 11.5px !important;
-  color: var(--muted) !important;
-  line-height: 1.4 !important;
-  max-width: 280px !important;
-}
-
-/* Card View alternative */
-.market-cards-grid {
+.market-farmer-grid {
   display: grid !important;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)) !important;
-  gap: 16px !important;
-  margin-bottom: 24px !important;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)) !important;
+  gap: 20px !important;
+  margin-bottom: 26px !important;
 }
 
-.mandi-crop-card {
+@media (max-width: 768px) {
+  .market-farmer-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+.farmer-mandi-card {
   background: var(--paper) !important;
   border: 1px solid var(--line) !important;
   border-radius: 18px !important;
-  padding: 18px !important;
+  padding: 18px 20px !important;
   display: flex !important;
   flex-direction: column !important;
-  gap: 12px !important;
-  transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+  gap: 13px !important;
+  box-shadow: 0 2px 10px rgba(67, 48, 30, 0.04) !important;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease !important;
 }
 
-.mandi-crop-card:hover {
+.farmer-mandi-card:hover {
   transform: translateY(-2px) !important;
-  box-shadow: 0 10px 28px rgba(67, 48, 30, 0.08) !important;
+  box-shadow: 0 8px 24px rgba(67, 48, 30, 0.08) !important;
+  border-color: #d6c5b0 !important;
 }
 
-.mandi-card-top {
+/* Header */
+.farmer-card-header {
   display: flex !important;
   justify-content: space-between !important;
   align-items: flex-start !important;
+  gap: 10px !important;
 }
 
-.mandi-card-rate-box {
-  background: var(--beige) !important;
-  border-radius: 13px !important;
-  padding: 12px 14px !important;
-  text-align: center !important;
+.farmer-crop-identity {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
 }
 
-.mandi-card-rate-box strong {
+.farmer-crop-avatar {
+  width: 44px !important;
+  height: 44px !important;
+  border-radius: 12px !important;
+  background: #f5eee2 !important;
+  border: 1px solid #ebdccb !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 22px !important;
+  flex-shrink: 0 !important;
+}
+
+.farmer-crop-name {
+  margin: 0 !important;
+  font-size: 16.5px !important;
+  font-weight: 700 !important;
+  color: var(--ink) !important;
+  line-height: 1.25 !important;
+}
+
+.farmer-crop-subname {
+  font-size: 12.5px !important;
+  font-weight: 500 !important;
+  color: var(--muted) !important;
+}
+
+.farmer-mandi-location {
+  margin: 3px 0 0 !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  color: var(--brown) !important;
+  line-height: 1.3 !important;
+}
+
+/* Trend Badges */
+.farmer-trend-badge {
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  padding: 4px 9px !important;
+  border-radius: 7px !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+}
+
+.farmer-trend-up {
+  background: #e8f5e9 !important;
+  color: #1b5e20 !important;
+  border: 1px solid #c8e6c9 !important;
+}
+
+.farmer-trend-down {
+  background: #fbe9e7 !important;
+  color: #b71c1c !important;
+  border: 1px solid #ffccbc !important;
+}
+
+.farmer-trend-flat {
+  background: var(--beige2) !important;
+  color: var(--muted) !important;
+  border: 1px solid var(--line) !important;
+}
+
+/* Big Price Box */
+.farmer-price-box {
+  background: #fffaf2 !important;
+  border: 1px solid #ede1d1 !important;
+  border-radius: 14px !important;
+  padding: 12px 16px !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+}
+
+.farmer-rate-label {
   display: block !important;
-  font: 600 28px Fraunces, serif !important;
-  color: var(--brown2) !important;
+  font-size: 10.5px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+  font-weight: 800 !important;
+  color: var(--brown3) !important;
   margin-bottom: 2px !important;
 }
 
-.mandi-card-rate-box span {
-  font-size: 12px !important;
-  color: var(--muted) !important;
+.farmer-price-value {
+  font-family: Fraunces, Georgia, serif !important;
+  font-size: 26px !important;
+  font-weight: 700 !important;
+  color: var(--brown) !important;
+  line-height: 1.15 !important;
+}
+
+.farmer-price-value .currency {
+  font-size: 20px !important;
   font-weight: 600 !important;
 }
 
-.mandi-card-meta {
+.farmer-price-value .unit {
+  font-family: 'DM Sans', sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: var(--muted) !important;
+}
+
+.farmer-kg-badge {
+  background: #f2e6d5 !important;
+  border: 1px solid #e4d4c0 !important;
+  border-radius: 10px !important;
+  padding: 6px 12px !important;
+  text-align: center !important;
+  flex-shrink: 0 !important;
+}
+
+.farmer-kg-badge .kg-icon {
+  font-size: 13px !important;
+  margin-right: 2px !important;
+}
+
+.farmer-kg-badge b {
+  display: inline-block !important;
+  font-size: 14.5px !important;
+  font-weight: 800 !important;
+  color: var(--brown) !important;
+}
+
+.farmer-kg-badge small {
+  display: block !important;
+  font-size: 10px !important;
+  color: var(--brown3) !important;
+  font-weight: 700 !important;
+}
+
+/* Range Bar */
+.farmer-range-box {
+  background: var(--beige) !important;
+  border-radius: 11px !important;
+  padding: 10px 14px !important;
+}
+
+.farmer-range-values {
   display: flex !important;
   justify-content: space-between !important;
   font-size: 11.5px !important;
+  color: var(--ink) !important;
+  margin-bottom: 6px !important;
+}
+
+.farmer-range-values b {
+  color: var(--brown) !important;
+}
+
+.farmer-range-mid {
+  font-size: 10px !important;
   color: var(--muted) !important;
-  border-top: 1px solid #eee4d4 !important;
-  padding-top: 10px !important;
+  text-transform: uppercase !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.05em !important;
+}
+
+.farmer-range-track {
+  position: relative !important;
+  height: 6px !important;
+  background: #e2d6c6 !important;
+  border-radius: 99px !important;
+}
+
+.farmer-range-fill {
+  position: absolute !important;
+  left: 0 !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  background: linear-gradient(90deg, #c49667, #2d5a27) !important;
+  border-radius: 99px !important;
+}
+
+.farmer-range-pin {
+  position: absolute !important;
+  top: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  width: 12px !important;
+  height: 12px !important;
+  background: var(--brown) !important;
+  border: 2px solid #ffffff !important;
+  border-radius: 50% !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25) !important;
+}
+
+/* Details row: arrivals & MSP */
+.farmer-details-row {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: 8px !important;
+  font-size: 12px !important;
+}
+
+.farmer-arrival-pill {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  background: #fdf7ee !important;
+  border: 1px solid #ebdccb !important;
+  padding: 4px 10px !important;
+  border-radius: 8px !important;
+  color: var(--ink) !important;
+  font-size: 11.5px !important;
+}
+
+.farmer-msp-tag {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  padding: 4px 9px !important;
+  border-radius: 7px !important;
+  white-space: nowrap !important;
+}
+
+.farmer-msp-tag.gain {
+  background: #e8f5e9 !important;
+  color: #1b5e20 !important;
+  border: 1px solid #c8e6c9 !important;
+}
+
+.farmer-msp-tag.alert {
+  background: #fff3e0 !important;
+  color: #e65100 !important;
+  border: 1px solid #ffe0b2 !important;
+}
+
+/* Advisory */
+.farmer-advisory-box {
+  background: #fbf7f0 !important;
+  border-left: 3.5px solid var(--brown) !important;
+  border-radius: 0 9px 9px 0 !important;
+  padding: 9px 12px !important;
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 8px !important;
+}
+
+.farmer-advisory-box .advisory-icon {
+  font-size: 15px !important;
+  flex-shrink: 0 !important;
+  margin-top: 1px !important;
+}
+
+.farmer-advisory-box p {
+  margin: 0 !important;
+  font-size: 12px !important;
+  line-height: 1.45 !important;
+  color: var(--ink) !important;
+}
+
+/* Card Bottom Action */
+.farmer-card-footer {
+  margin-top: 2px !important;
+}
+
+.btn-use-mandi-rate {
+  width: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  background: #f7f1e6 !important;
+  border: 1px solid #ded3c2 !important;
+  color: var(--brown) !important;
+  font-size: 12.5px !important;
+  font-weight: 700 !important;
+  padding: 9px 14px !important;
+  border-radius: 10px !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+}
+
+.btn-use-mandi-rate:hover {
+  background: var(--brown) !important;
+  color: #fffaf2 !important;
+  border-color: var(--brown) !important;
+}
+
+/* Loading and Empty states */
+.mandi-loading-state,
+.mandi-empty-card {
+  grid-column: 1 / -1 !important;
+  text-align: center !important;
+  padding: 44px 20px !important;
+  background: var(--paper) !important;
+  border: 1px dashed var(--line) !important;
+  border-radius: 18px !important;
+  color: var(--ink) !important;
+}
+
+@keyframes calcPulse {
+  0% { box-shadow: 0 0 0 0 rgba(107, 79, 58, 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(107, 79, 58, 0.15); }
+  100% { box-shadow: 0 0 0 0 rgba(107, 79, 58, 0); }
+}
+
+.calc-highlight-pulse {
+  animation: calcPulse 1.2s ease-out !important;
 }
 
 /* MSP Grid matching crop-grid */

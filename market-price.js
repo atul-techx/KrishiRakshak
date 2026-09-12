@@ -9,7 +9,6 @@
     currentCategory: 'all',
     currentState: 'all',
     searchQuery: '',
-    viewMode: 'table', // 'table' | 'cards'
     loading: false,
     updatedAt: '',
     source: ''
@@ -52,23 +51,15 @@
   }
 
   function renderLoading() {
-    const tbody = document.getElementById('mandiTableBody');
-    if (tbody) {
-      tbody.innerHTML = `
-        <tr>
-          <td colspan="9" style="text-align:center; padding:40px; color:var(--muted);">
-            <div style="font-size:24px; margin-bottom:8px;">⏳</div>
-            <strong data-i18n="loadingMarket">Loading live APMC Mandi rates…</strong>
-          </td>
-        </tr>
-      `;
-    }
     const grid = document.getElementById('mandiGrid');
     if (grid) {
+      const lang = getLang();
+      const msg = lang === 'hi' ? 'ताज़ा मंडी भाव लोड हो रहे हैं…' : lang === 'mr' ? 'थेट बाजार भाव लोड होत आहेत…' : 'Loading live APMC Mandi rates…';
       grid.innerHTML = `
-        <div style="grid-column:1/-1; text-align:center; padding:40px; color:var(--muted);">
-          <div style="font-size:24px; margin-bottom:8px;">⏳</div>
-          <strong data-i18n="loadingMarket">Loading live APMC Mandi rates…</strong>
+        <div class="mandi-loading-state">
+          <div style="font-size:32px; margin-bottom:10px;">🌾</div>
+          <strong>${msg}</strong>
+          <p style="color:var(--muted); font-size:13px; margin-top:4px;">APMC सर्वर से संपर्क किया जा रहा है...</p>
         </div>
       `;
     }
@@ -89,24 +80,24 @@
 
     statsContainer.innerHTML = `
       <div class="metric">
-        <span data-i18n="monitoredMandis">MONITORED MANDIS</span>
-        <strong>${state.states.length > 1 ? state.states.length - 1 : 1}+ <small>${lang === 'hi' ? 'राज्य' : lang === 'mr' ? 'राज्ये' : 'States'}</small></strong>
-        <p>${lang === 'hi' ? '25+ आधिकारिक APMC मंडियां जुड़ी हैं' : lang === 'mr' ? '25+ अधिकृत APMC बाजार जोडले आहेत' : '25+ APMC Mandis connected'}</p>
+        <span>${lang === 'hi' ? 'जुड़ी हुई मंडियां' : lang === 'mr' ? 'जोडलेले बाजार' : 'MONITORED MANDIS'}</span>
+        <strong>25+ <small>${lang === 'hi' ? 'मंडियां' : lang === 'mr' ? 'बाजार' : 'Mandis'}</small></strong>
+        <p>${lang === 'hi' ? '7 प्रमुख राज्यों के आधिकारिक APMC केंद्र' : lang === 'mr' ? '7 प्रमुख राज्यांमधील अधिकृत बाजार' : 'Active APMC centers across 7 states'}</p>
       </div>
       <div class="metric">
-        <span data-i18n="trackedCommodities">ACTIVE COMMODITIES</span>
+        <span>${lang === 'hi' ? 'सक्रिय फसलें' : lang === 'mr' ? 'नोंदणीकृत पिके' : 'ACTIVE COMMODITIES'}</span>
         <strong>${totalCrops} <small>${lang === 'hi' ? 'फसलें' : lang === 'mr' ? 'पिके' : 'Crops'}</small></strong>
-        <p>${lang === 'hi' ? 'दैनिक आवक व औसत भाव दर्ज' : lang === 'mr' ? 'दैनंदिन आवक व सरासरी दर नोंद' : 'Daily modal arrivals recorded'}</p>
+        <p>${lang === 'hi' ? 'सब्जियां, अनाज, दलहन, तिलहन व नकदी फसलें' : lang === 'mr' ? 'भाज्या, धान्य, कडधान्ये व नगदी पिके' : 'Vegetables, grains, pulses & oilseeds'}</p>
       </div>
       <div class="metric">
-        <span data-i18n="topGainer">TOP GAINER TODAY</span>
+        <span>${lang === 'hi' ? 'आज की सबसे बड़ी तेजी' : lang === 'mr' ? 'आजची मोठी तेजी' : 'TOP GAINER TODAY'}</span>
         <strong class="text-gain">${topGainerName} <small>${topGainer ? `(+₹${topGainer.change})` : ''}</small></strong>
-        <p>${topGainer ? `${topGainer.market} (${topGainer.changePct})` : 'Stable trading'}</p>
+        <p>${topGainer ? `${topGainer.market} (${topGainer.changePct} बढ़त)` : 'स्थिर व्यापार'}</p>
       </div>
       <div class="metric weather">
-        <span data-i18n="mspStatus">MSP COMPLIANCE</span>
-        <strong>${aboveMspCount}/${mspEligibleCount || 14}</strong>
-        <p>${lang === 'hi' ? 'सरकारी MSP से ऊपर व्यापार' : lang === 'mr' ? 'शासकीय हमीभावापेक्षा जास्त दर' : 'Trading comfortably above Govt MSP'}</p>
+        <span>${lang === 'hi' ? 'MSP समर्थन भाव स्थिति' : lang === 'mr' ? 'हमीभाव तुलना' : 'MSP BENCHMARK'}</span>
+        <strong>${aboveMspCount}/${mspEligibleCount || 14} <small>${lang === 'hi' ? 'फसलें' : lang === 'mr' ? 'पिके' : 'Crops'}</small></strong>
+        <p>${lang === 'hi' ? 'सरकारी न्यूनतम समर्थन मूल्य से अधिक दर' : lang === 'mr' ? 'शासकीय हमीभावापेक्षा जास्त दर' : 'Trading higher than Govt MSP'}</p>
       </div>
     `;
   }
@@ -117,12 +108,12 @@
 
     const lang = getLang();
     const categories = state.categories.length > 0 ? state.categories : [
-      { id: "all", labelEn: "All Crops", labelHi: "सभी फसलें", labelMr: "सर्व पिके" },
-      { id: "vegetables", labelEn: "Vegetables", labelHi: "सब्जियां", labelMr: "भाज्या" },
-      { id: "cereals", labelEn: "Cereals / Grain", labelHi: "अनाज", labelMr: "धान्य" },
-      { id: "pulses", labelEn: "Pulses", labelHi: "दालें", labelMr: "कडधान्ये" },
-      { id: "oilseeds", labelEn: "Oilseeds", labelHi: "तिलहन", labelMr: "गळीत धान्य" },
-      { id: "cash_crops", labelEn: "Cash Crops", labelHi: "नकदी फसलें", labelMr: "नगदी पिके" }
+      { id: "all", labelEn: "All Crops", labelHi: "🌾 सभी फसलें", labelMr: "🌾 सर्व पिके" },
+      { id: "vegetables", labelEn: "Vegetables", labelHi: "🥦 सब्जियां", labelMr: "🥦 भाज्या" },
+      { id: "cereals", labelEn: "Cereals / Grain", labelHi: "🌾 अनाज", labelMr: "🌾 धान्य" },
+      { id: "pulses", labelEn: "Pulses", labelHi: "🫘 दालें", labelMr: "🫘 कडधान्ये" },
+      { id: "oilseeds", labelEn: "Oilseeds", labelHi: "🌻 तिलहन", labelMr: "🌻 गळीत धान्य" },
+      { id: "cash_crops", labelEn: "Cash Crops", labelHi: "💰 नकदी फसलें", labelMr: "💰 नगदी पिके" }
     ];
 
     container.innerHTML = categories.map(cat => {
@@ -140,107 +131,19 @@
     });
   }
 
-  function renderTable() {
-    const tbody = document.getElementById('mandiTableBody');
-    if (!tbody) return;
-
-    if (state.records.length === 0) {
-      tbody.innerHTML = `
-        <tr>
-          <td colspan="9" style="text-align:center; padding:35px; color:var(--muted);">
-            <p data-i18n="noMarketRecords">No Mandi rates match your search</p>
-            <small data-i18n="tryClearFilter">Try selecting 'All Crops' or clearing the search box.</small>
-          </td>
-        </tr>
-      `;
-      return;
-    }
-
-    const lang = getLang();
-
-    tbody.innerHTML = state.records.map(r => {
-      const name = lang === 'hi' ? (r.commodityHi || r.commodity) : lang === 'mr' ? (r.commodityMr || r.commodity) : r.commodity;
-      const subName = lang === 'en' ? (r.commodityHi || '') : r.commodity;
-      const advisory = lang === 'hi' ? (r.advisoryHi || r.advisoryEn) : lang === 'mr' ? (r.advisoryMr || r.advisoryEn) : r.advisoryEn;
-
-      const priceKg = (r.modalPrice / 100).toFixed(1);
-
-      let trendClass = 'trend-flat';
-      let trendSymbol = '● ';
-      if (r.trend === 'up') {
-        trendClass = 'trend-gain';
-        trendSymbol = '▲ +';
-      } else if (r.trend === 'down') {
-        trendClass = 'trend-loss';
-        trendSymbol = '▼ -';
-      }
-
-      const diffVal = r.change !== 0 ? Math.abs(r.change) : 0;
-      const trendText = `${trendSymbol}₹${diffVal} (${r.changePct})`;
-
-      let mspHtml = '';
-      if (r.msp) {
-        const diff = r.modalPrice - r.msp;
-        if (diff >= 0) {
-          mspHtml = `<small class="text-gain" style="font-weight:700;">+₹${diff} > MSP</small>`;
-        } else {
-          mspHtml = `<small style="color:var(--danger); font-weight:700;">-₹${Math.abs(diff)} < MSP</small>`;
-        }
-      }
-
-      return `
-        <tr>
-          <td>
-            <div class="tbl-crop-cell">
-              <span class="tbl-crop-icon">${r.icon || '🌾'}</span>
-              <div class="tbl-crop-info">
-                <strong>${name}</strong>
-                <small>${subName}</small>
-              </div>
-            </div>
-          </td>
-          <td>
-            <div class="tbl-mandi-cell">
-              <strong>${r.market}</strong>
-              <small>${r.district}</small>
-            </div>
-          </td>
-          <td>
-            <span class="mini-pill">${r.state}</span>
-          </td>
-          <td class="text-right">
-            <span class="tbl-price">₹${r.modalPrice.toLocaleString('en-IN')}</span>
-            ${mspHtml ? `<div>${mspHtml}</div>` : ''}
-          </td>
-          <td class="text-right">
-            <span class="tbl-kg">₹${priceKg}</span>
-          </td>
-          <td class="text-center">
-            <span class="tbl-range">₹${r.minPrice} — ₹${r.maxPrice}</span>
-          </td>
-          <td class="text-center">
-            <span class="trend-pill ${trendClass}">${trendText}</span>
-          </td>
-          <td>
-            <small class="muted">${r.arrival}</small>
-          </td>
-          <td>
-            <div class="tbl-advisory">${advisory}</div>
-          </td>
-        </tr>
-      `;
-    }).join('');
-  }
-
   function renderCards() {
     const grid = document.getElementById('mandiGrid');
     if (!grid) return;
 
     if (state.records.length === 0) {
+      const lang = getLang();
+      const emptyMsg = lang === 'hi' ? 'आपकी खोज के अनुसार कोई भाव नहीं मिला।' : lang === 'mr' ? 'कोणतेही भाव आढळले नाहीत.' : 'No Mandi rates match your search';
+      const hint = lang === 'hi' ? "'सभी फसलें' चुनें या खोज शब्द बदलें।" : lang === 'mr' ? "'सर्व पिके' निवडा किंवा शोध बदला." : "Try selecting 'All Crops' or clearing the search.";
       grid.innerHTML = `
-        <div style="grid-column:1/-1; text-align:center; padding:35px; color:var(--muted);">
-          <p data-i18n="noMarketRecords">No Mandi rates match your search</p>
-          <small data-i18n="tryClearFilter">Try selecting 'All Crops' or clearing the search box.</small>
+        <div class="mandi-empty-card">
+          <div style="font-size:36px; margin-bottom:8px;">🔍</div>
+          <strong>${emptyMsg}</strong>
+          <p style="color:var(--muted); font-size:13px; margin:4px 0 0;">${hint}</p>
         </div>
       `;
       return;
@@ -249,50 +152,152 @@
     const lang = getLang();
 
     grid.innerHTML = state.records.map(r => {
-      const name = lang === 'hi' ? (r.commodityHi || r.commodity) : lang === 'mr' ? (r.commodityMr || r.commodity) : r.commodity;
-      const subName = lang === 'en' ? (r.commodityHi || '') : r.commodity;
-      const advisory = lang === 'hi' ? (r.advisoryHi || r.advisoryEn) : lang === 'mr' ? (r.advisoryMr || r.advisoryEn) : r.advisoryEn;
-      const priceKg = (r.modalPrice / 100).toFixed(1);
+      // Primary name should be friendly Hindi first if hindi/marathi, or bilingual
+      const hiName = r.commodityHi || r.commodity;
+      const enName = r.commodity;
+      const mrName = r.commodityMr || r.commodity;
+      
+      const displayName = lang === 'hi' ? hiName : lang === 'mr' ? mrName : enName;
+      const subName = lang === 'hi' ? enName : (lang === 'mr' ? enName : hiName);
 
-      let trendClass = 'trend-flat';
-      let trendSymbol = '● ';
+      const advisory = lang === 'hi' ? (r.advisoryHi || r.advisoryEn) : lang === 'mr' ? (r.advisoryMr || r.advisoryEn) : r.advisoryEn;
+      const pricePerKg = (r.modalPrice / 100).toFixed(1);
+
+      // Trend Calculation
+      let trendClass = 'farmer-trend-flat';
+      let trendLabel = '● भाव स्थिर';
       if (r.trend === 'up') {
-        trendClass = 'trend-gain';
-        trendSymbol = '▲ +';
+        trendClass = 'farmer-trend-up';
+        trendLabel = `▲ +₹${Math.abs(r.change)} तेजी (${r.changePct})`;
       } else if (r.trend === 'down') {
-        trendClass = 'trend-loss';
-        trendSymbol = '▼ -';
+        trendClass = 'farmer-trend-down';
+        trendLabel = `▼ -₹${Math.abs(r.change)} मंदी (${r.changePct})`;
       }
-      const trendText = `${trendSymbol}₹${Math.abs(r.change)} (${r.changePct})`;
+
+      // Range Progress percentage
+      let rangePercent = 50;
+      if (r.maxPrice > r.minPrice) {
+        rangePercent = Math.min(100, Math.max(0, Math.round(((r.modalPrice - r.minPrice) / (r.maxPrice - r.minPrice)) * 100)));
+      }
+
+      // MSP comparison tag
+      let mspBadge = '';
+      if (r.msp) {
+        const diff = r.modalPrice - r.msp;
+        if (diff >= 0) {
+          const mspDiffText = lang === 'hi' 
+            ? `✓ MSP (₹${r.msp}) से ₹${diff} अधिक` 
+            : lang === 'mr' 
+            ? `✓ हमीभावापेक्षा ₹${diff} जास्त` 
+            : `✓ ₹${diff} above MSP (₹${r.msp})`;
+          mspBadge = `<span class="farmer-msp-tag gain" title="Govt MSP Comparison">${mspDiffText}</span>`;
+        } else {
+          const mspLossText = lang === 'hi'
+            ? `⚠️ MSP (₹${r.msp}) से ₹${Math.abs(diff)} कम`
+            : lang === 'mr'
+            ? `⚠️ हमीभावापेक्षा ₹${Math.abs(diff)} कमी`
+            : `⚠️ ₹${Math.abs(diff)} below MSP`;
+          mspBadge = `<span class="farmer-msp-tag alert" title="Govt MSP Comparison">${mspLossText}</span>`;
+        }
+      }
+
+      const mandiLocation = `${r.market} · ${r.district} (${r.state})`;
 
       return `
-        <article class="mandi-crop-card">
-          <div class="mandi-card-top">
-            <div class="tbl-crop-cell">
-              <span class="tbl-crop-icon">${r.icon || '🌾'}</span>
-              <div class="tbl-crop-info">
-                <strong>${name}</strong>
-                <small>${subName} · ${r.market}</small>
+        <article class="farmer-mandi-card" data-crop="${r.commodity}" data-rate="${r.modalPrice}">
+          <!-- Top Row: Icon, Crop Name, Mandi & Trend -->
+          <div class="farmer-card-header">
+            <div class="farmer-crop-identity">
+              <div class="farmer-crop-avatar">${r.icon || '🌾'}</div>
+              <div>
+                <h4 class="farmer-crop-name">${displayName} <span translate="no" class="notranslate farmer-crop-subname">(${subName})</span></h4>
+                <p class="farmer-mandi-location">📍 ${mandiLocation}</p>
               </div>
             </div>
-            <span class="trend-pill ${trendClass}">${trendText}</span>
+            <span class="farmer-trend-badge ${trendClass}">${trendLabel}</span>
           </div>
 
-          <div class="mandi-card-rate-box">
-            <strong>₹${r.modalPrice.toLocaleString('en-IN')}</strong>
-            <span>₹${priceKg} / kg (प्रति किलो)</span>
+          <!-- Main Rate Highlight -->
+          <div class="farmer-price-box">
+            <div class="farmer-price-main">
+              <span class="farmer-rate-label">${lang === 'hi' ? 'आज का औसत मंडी भाव (Modal Rate)' : lang === 'mr' ? 'आजचा सरासरी बाजार भाव' : "Today's Modal Rate"}</span>
+              <div class="farmer-price-value">
+                <span class="currency">₹</span><span class="num">${r.modalPrice.toLocaleString('en-IN')}</span>
+                <span class="unit">/ ${lang === 'hi' ? 'क्विंटल' : lang === 'mr' ? 'क्विंटल' : 'Quintal'}</span>
+              </div>
+            </div>
+            <div class="farmer-kg-badge">
+              <span class="kg-icon">⚖️</span>
+              <b>₹${pricePerKg}</b>
+              <small>${lang === 'hi' ? 'प्रति किलो' : lang === 'mr' ? 'प्रति किलो' : 'per kg'}</small>
+            </div>
           </div>
 
-          <div class="mandi-card-meta">
-            <span><b>न्यूनतम:</b> ₹${r.minPrice}</span>
-            <span><b>अधिकतम:</b> ₹${r.maxPrice}</span>
-            <span>📦 ${r.arrival}</span>
+          <!-- Price Range Slider / Indicator -->
+          <div class="farmer-range-box">
+            <div class="farmer-range-values">
+              <span><b>${lang === 'hi' ? 'न्यूनतम:' : 'Min:'}</b> ₹${r.minPrice.toLocaleString('en-IN')}</span>
+              <span class="farmer-range-mid">${lang === 'hi' ? 'रेंज' : 'Range'}</span>
+              <span><b>${lang === 'hi' ? 'अधिकतम:' : 'Max:'}</b> ₹${r.maxPrice.toLocaleString('en-IN')}</span>
+            </div>
+            <div class="farmer-range-track">
+              <div class="farmer-range-fill" style="width:${rangePercent}%;"></div>
+              <div class="farmer-range-pin" style="left:${rangePercent}%;" title="Modal Rate: ₹${r.modalPrice}"></div>
+            </div>
           </div>
 
-          <p class="muted" style="font-size:12px; margin:0; line-height:1.4;">${advisory}</p>
+          <!-- Extra details: Arrivals & MSP -->
+          <div class="farmer-details-row">
+            <div class="farmer-arrival-pill">
+              <span>🚜</span>
+              <span>${lang === 'hi' ? 'आवक:' : 'Arrival:'} <b>${r.arrival}</b></span>
+            </div>
+            ${mspBadge}
+          </div>
+
+          <!-- Farmer Selling Advisory -->
+          <div class="farmer-advisory-box">
+            <span class="advisory-icon">💡</span>
+            <p><b>${lang === 'hi' ? 'किसान सलाह:' : lang === 'mr' ? 'शेतकरी सल्ला:' : 'Selling Advisory:'}</b> ${advisory}</p>
+          </div>
+
+          <!-- Card Bottom Action: Auto calculate earnings -->
+          <div class="farmer-card-footer">
+            <button type="button" class="btn-use-mandi-rate" data-rate="${r.modalPrice}" data-crop="${displayName}">
+              <span>💰</span> <span>${lang === 'hi' ? 'इस भाव पर कुल कमाई निकालें' : lang === 'mr' ? 'या दराने एकूण उत्पन्न काढा' : 'Calculate my income at this rate'}</span>
+            </button>
+          </div>
         </article>
       `;
     }).join('');
+
+    // Attach click events for "Calculate income at this rate"
+    grid.querySelectorAll('.btn-use-mandi-rate').forEach(btn => {
+      btn.onclick = () => {
+        const rate = btn.dataset.rate;
+        const cropName = btn.dataset.crop;
+        const rateInput = document.getElementById('calcRate');
+        if (rateInput) {
+          rateInput.value = rate;
+          rateInput.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+
+        const calcCard = document.querySelector('.calc-container-card');
+        if (calcCard) {
+          calcCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          calcCard.classList.add('calc-highlight-pulse');
+          setTimeout(() => calcCard.classList.remove('calc-highlight-pulse'), 1500);
+        }
+
+        if (window.toast) {
+          const lang = getLang();
+          const msg = lang === 'hi' 
+            ? `${cropName} का भाव (₹${rate}/क्विंटल) गणक में भर दिया गया है।` 
+            : `${cropName} rate (₹${rate}/Qtl) applied to income calculator.`;
+          window.toast(msg);
+        }
+      };
+    });
   }
 
   function renderMspComparison() {
@@ -314,10 +319,10 @@
       const name = lang === 'hi' ? item.cropHi : item.crop;
       return `
         <div class="msp-item">
-          <small>Govt MSP 2024-25</small>
+          <small>${lang === 'hi' ? 'सरकारी MSP 2024-25' : 'Govt MSP 2024-25'}</small>
           <b>${name}</b>
           <strong>₹${item.msp.toLocaleString('en-IN')}</strong>
-          <span class="muted" style="font-size:11px;">₹${(item.msp / 100).toFixed(1)} / kg</span>
+          <span class="muted" style="font-size:11.5px;">₹${(item.msp / 100).toFixed(1)} / kg (प्रति किलो)</span>
         </div>
       `;
     }).join('');
@@ -391,35 +396,11 @@
         });
       };
     }
-
-    const viewTableBtn = document.getElementById('viewTableBtn');
-    const viewGridBtn = document.getElementById('viewGridBtn');
-    const tableWrap = document.getElementById('mandiTableWrap');
-    const gridWrap = document.getElementById('mandiGrid');
-
-    if (viewTableBtn && viewGridBtn) {
-      viewTableBtn.onclick = () => {
-        state.viewMode = 'table';
-        viewTableBtn.classList.add('active');
-        viewGridBtn.classList.remove('active');
-        if (tableWrap) tableWrap.classList.remove('hidden');
-        if (gridWrap) gridWrap.classList.add('hidden');
-      };
-
-      viewGridBtn.onclick = () => {
-        state.viewMode = 'cards';
-        viewGridBtn.classList.add('active');
-        viewTableBtn.classList.remove('active');
-        if (tableWrap) tableWrap.classList.add('hidden');
-        if (gridWrap) gridWrap.classList.remove('hidden');
-      };
-    }
   }
 
   function render() {
     renderStats();
     renderCategoryPills();
-    renderTable();
     renderCards();
     renderMspComparison();
     window.KrishiI18n?.translate();

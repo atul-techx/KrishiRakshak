@@ -298,10 +298,6 @@
             <button id="marketRefreshBtn" class="btn btn-light" type="button">
               <span>🔄</span> <span data-i18n="Refresh">Refresh rates</span>
             </button>
-            <div class="market-view-toggle">
-              <button id="viewTableBtn" class="view-btn active" type="button" title="Table View">▤ Table</button>
-              <button id="viewGridBtn" class="view-btn" type="button" title="Cards View">🎴 Cards</button>
-            </div>
           </div>
         </div>
 
@@ -312,48 +308,26 @@
         <div class="card market-filter-card">
           <div class="market-filter-top">
             <div class="market-search-box">
-              <input id="marketSearchInput" class="search-input" placeholder="Search commodity or mandi (e.g. Tomato, Nashik, गेहूं, प्याज)..." aria-label="Search Mandi or Crop">
+              <input id="marketSearchInput" class="search-input" placeholder="🔍 फसल या मंडी का नाम खोजें (उदा. प्याज, टमाटर, लासलगांव, इंदौर, गेहूं)..." aria-label="Search Mandi or Crop">
             </div>
             <div class="market-state-select-wrap">
               <select id="marketStateFilter" class="market-select" aria-label="Select State">
-                <option value="all">All States / सभी राज्य</option>
-                <option value="Maharashtra">Maharashtra (महाराष्ट्र)</option>
-                <option value="Madhya Pradesh">Madhya Pradesh (मध्य प्रदेश)</option>
-                <option value="Uttar Pradesh">Uttar Pradesh (उत्तर प्रदेश)</option>
-                <option value="Punjab">Punjab (पंजाब)</option>
-                <option value="Haryana">Haryana (हरियाणा)</option>
-                <option value="Rajasthan">Rajasthan (राजस्थान)</option>
-                <option value="Gujarat">Gujarat (गुजरात)</option>
+                <option value="all">🇮🇳 सभी राज्य (All States)</option>
+                <option value="Maharashtra">महाराष्ट्र (Maharashtra)</option>
+                <option value="Madhya Pradesh">मध्य प्रदेश (Madhya Pradesh)</option>
+                <option value="Uttar Pradesh">उत्तर प्रदेश (Uttar Pradesh)</option>
+                <option value="Punjab">पंजाब (Punjab)</option>
+                <option value="Haryana">हरियाणा (Haryana)</option>
+                <option value="Rajasthan">राजस्थान (Rajasthan)</option>
+                <option value="Gujarat">गुजरात (Gujarat)</option>
               </select>
             </div>
           </div>
           <div id="marketCategoryPills" class="market-category-strip"></div>
         </div>
 
-        <!-- Table View (Default) -->
-        <div id="mandiTableWrap" class="card mandi-table-card">
-          <div class="table-responsive">
-            <table class="mandi-table">
-              <thead>
-                <tr>
-                  <th data-i18n="thCommodity">Crop / Commodity</th>
-                  <th data-i18n="thMandi">Mandi & District</th>
-                  <th data-i18n="thState">State</th>
-                  <th class="text-right" data-i18n="thModal">Modal Price (₹/Qtl)</th>
-                  <th class="text-right" data-i18n="thKg">Rate / kg</th>
-                  <th class="text-center" data-i18n="thRange">Min — Max (₹)</th>
-                  <th class="text-center" data-i18n="thTrend">Trend</th>
-                  <th data-i18n="thArrival">Arrivals</th>
-                  <th data-i18n="thAdvisory">Selling Advisory</th>
-                </tr>
-              </thead>
-              <tbody id="mandiTableBody"></tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Card View (Alternative) -->
-        <div id="mandiGrid" class="market-cards-grid hidden"></div>
+        <!-- Farmer-friendly Mandi Cards Grid -->
+        <div id="mandiGrid" class="market-farmer-grid"></div>
 
         <!-- MSP Benchmark Section matching Dashboard style -->
         <div class="card msp-overview-card">
