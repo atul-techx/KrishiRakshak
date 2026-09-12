@@ -1,11 +1,79 @@
 (()=>{'use strict';
 let busy=false,history=[],ready=false,photo=null,photoVersion=0,preparing=false;
+let currentSpeakingBtn=null;
+
 const labels={
-en:['Ask Rakshak','Crop questions & photo review','Ask about your crop…','Send','Close','Connecting…','● Online · AI Assistant','Assistant setup required','Unable to connect. Retry.','Thinking…','Retry','Add photo','Remove','New conversation','Choose a JPEG, PNG or WebP photo under 12 MB.','Photo could not be opened.','Photo attached for visual analysis','Describe this crop photo. What should I check next?','','Service unavailable or quota reached. Retry later.','Crop photo','Photo ready','No photo attached'],
-hi:['रक्षक से पूछें','फसल समाधान एवं फोटो समीक्षा','फसल के बारे में पूछें…','भेजें','बंद करें','जुड़ रहा है…','● ऑनलाइन · कृषक AI','सहायक का सेटअप जरूरी है','कनेक्शन नहीं हुआ। दोबारा कोशिश करें।','सोच रहा है…','दोबारा भेजें','फोटो जोड़ें','हटाएँ','नई बातचीत','12 MB से छोटा JPEG, PNG या WebP फोटो चुनें।','फोटो नहीं खुल सका।','फोटो जुड़ा हुआ है','इस फसल के फोटो को समझाएँ। आगे क्या जाँचें?','','सेवा अनुपलब्ध है या सीमा पूरी है। बाद में कोशिश करें।','फसल का फोटो','फोटो तैयार है','कोई फोटो नहीं जुड़ा'],
-mr:['रक्षकला विचारा','पीक सल्ला आणि फोटो परीक्षण','पिकाबद्दल विचारा…','पाठवा','बंद करा','जोडत आहे…','● ऑनलाइन · शेती AI','सहाय्यकाचे सेटअप आवश्यक आहे','जोडणी झाली नाही. पुन्हा प्रयत्न करा.','विचार करत आहे…','पुन्हा पाठवा','फोटो जोडा','काढा','नवीन संभाषण','12 MB पेक्षा लहान JPEG, PNG किंवा WebP फोटो निवडा.','फोटो उघडता आला नाही.','फोटो जोडला आहे','या पिकाचा फोटो समजावून सांगा. पुढे काय तपासावे?','','सेवा अनुपलब्ध आहे किंवा मर्यादा संपली आहे. नंतर प्रयत्न करा.','पिकाचा फोटो','फोटो तयार आहे','फोटो जोडलेला नाही'],
+en:['Ask Rakshak','Crop questions & photo review','Ask about your crop…','Send','Close','Connecting…','● Online · AI Assistant','Assistant setup required','Unable to connect. Retry.','Thinking…','Retry','Add photo','Remove','New conversation','Choose a JPEG, PNG or WebP photo under 12 MB.','Photo could not be opened.','Photo attached for visual analysis','Describe this crop photo. What should I check next?','','Service unavailable or quota reached. Retry later.','Crop photo','Photo ready','No photo attached','Listen','Stop'],
+hi:['रक्षक से पूछें','फसल समाधान एवं फोटो समीक्षा','फसल के बारे में पूछें…','भेजें','बंद करें','जुड़ रहा है…','● ऑनलाइन · कृषक AI','सहायक का सेटअप जरूरी है','कनेक्शन नहीं हुआ। दोबारा कोशिश करें।','सोच रहा है…','दोबारा भेजें','फोटो जोड़ें','हटाएँ','नई बातचीत','12 MB से छोटा JPEG, PNG या WebP फोटो चुनें।','फोटो नहीं खुल सका।','फोटो जुड़ा हुआ है','इस फसल के फोटो को समझाएँ। आगे क्या जाँचें?','','सेवा अनुपलब्ध है या सीमा पूरी है। बाद में कोशिश करें।','फसल का फोटो','फोटो तैयार है','कोई फोटो नहीं जुड़ा','बोलकर सुनें','रोकें'],
+mr:['रक्षकला विचारा','पीक सल्ला आणि फोटो परीक्षण','पिकाबद्दल विचारा…','पाठवा','बंद करा','जोडत आहे…','● ऑनलाइन · शेती AI','सहाय्यकाचे सेटअप आवश्यक आहे','जोडणी झाली नाही. पुन्हा प्रयत्न करा.','विचार करत आहे…','पुन्हा पाठवा','फोटो जोडा','काढा','नवीन संभाषण','12 MB पेक्षा लहान JPEG, PNG किंवा WebP फोटो निवडा.','फोटो उघडता आला नाही.','फोटो जोडला आहे','या पिकाचा फोटो समजावून सांगा. पुढे काय तपासावे?','','सेवा अनुपलब्ध आहे किंवा मर्यादा संपली आहे. नंतर प्रयत्न करा.','पिकाचा फोटो','फोटो तयार आहे','फोटो जोडलेला नाही','ऐका','थांबवा'],
 };
 const lang=()=>window.KrishiI18n?.getLanguage()||(['en','hi','mr'].includes(localStorage.getItem('krishiLanguage'))?localStorage.getItem('krishiLanguage'):'en'),L=()=>labels[lang()]||labels.en;
+
+function stopSpeaking(){
+  if('speechSynthesis' in window){
+    try{speechSynthesis.cancel();}catch{}
+  }
+  if(currentSpeakingBtn){
+    currentSpeakingBtn.classList.remove('speaking');
+    const label=currentSpeakingBtn.querySelector('.speak-label');
+    if(label)label.textContent=L()[23]||'Listen';
+    const icon=currentSpeakingBtn.querySelector('.speak-icon');
+    if(icon)icon.innerHTML='<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>';
+    currentSpeakingBtn=null;
+  }
+}
+
+function cleanForSpeech(text){
+  return text
+    .replace(/\*\*(.*?)\*\*/g,'$1')
+    .replace(/(?<!\*)\*([^*]+?)\*(?!\*)/g,'$1')
+    .replace(/`.*?`/g,'')
+    .replace(/^[-*•]\s+/gm,'')
+    .replace(/^\d+\.\s+/gm,'')
+    .replace(/https?:\/\/\S+/g,'')
+    .replace(/[#_~]/g,'')
+    .replace(/\n+/g,'. ')
+    .replace(/\s+/g,' ')
+    .trim();
+}
+
+function speakText(text,btn){
+  if(!('speechSynthesis' in window)){
+    alert('Speech is not supported in this browser.');
+    return;
+  }
+  if(currentSpeakingBtn===btn){
+    stopSpeaking();
+    return;
+  }
+  stopSpeaking();
+  const clean=cleanForSpeech(text);
+  if(!clean)return;
+
+  const u=new SpeechSynthesisUtterance(clean);
+  const langCode={en:'en-IN',hi:'hi-IN',mr:'mr-IN'}[lang()]||'en-IN';
+  u.lang=langCode;
+  u.rate=0.92;
+
+  try{
+    const voices=speechSynthesis.getVoices();
+    const voice=voices.find(v=>v.lang===langCode)||
+                voices.find(v=>v.lang&&v.lang.startsWith(langCode.slice(0,2)))||
+                voices.find(v=>v.lang&&v.lang.includes('IN'));
+    if(voice)u.voice=voice;
+  }catch{}
+
+  currentSpeakingBtn=btn;
+  btn.classList.add('speaking');
+  const label=btn.querySelector('.speak-label');
+  if(label)label.textContent=L()[24]||'Stop';
+  const icon=btn.querySelector('.speak-icon');
+  if(icon)icon.innerHTML='<rect x="6" y="6" width="12" height="12" rx="2"/>';
+
+  u.onend=()=>stopSpeaking();
+  u.onerror=()=>stopSpeaking();
+  speechSynthesis.speak(u);
+}
 
 const root=document.createElement('div');
 root.id='rakshak-widget';
@@ -177,7 +245,10 @@ q('.rakshak-launch').onclick=()=>{
     if(!messages.children.length)showWelcome();
   }
 };
-q('.rakshak-close').onclick=()=>panel.hidden=true;
+q('.rakshak-close').onclick=()=>{
+  panel.hidden=true;
+  stopSpeaking();
+};
 
 function message(text,role){
   const welcome=messages.querySelector('.rakshak-welcome');
@@ -225,6 +296,7 @@ fileInput.onchange=async()=>{
 
 q('.new-chat').onclick=()=>{
   if(busy)return;
+  stopSpeaking();
   clearPhoto();history=[];
   messages.replaceChildren();
   input.value='';
@@ -243,7 +315,11 @@ function showAnswer(node,d){
   node.replaceChildren();
   let answer=String(d.answer||'');
   answer=answer.replace(/^\s*(?:Please note that )?(?:live )?(?:web )?search is (?:currently )?unavailable[^\n]*\n*/i,'').replace(/^\s*Sources were not verified[^\n]*\n*/i,'').trim();
-  node.innerHTML=formatMarkdown(answer);
+  
+  const contentDiv=document.createElement('div');
+  contentDiv.className='rakshak-msg-content';
+  contentDiv.innerHTML=formatMarkdown(answer);
+  node.append(contentDiv);
 
   if(Array.isArray(d.citations)&&d.citations.length>0){
     const sourcesDiv=document.createElement('div');
@@ -270,6 +346,26 @@ function showAnswer(node,d){
     frame.srcdoc=String(d.searchSuggestions);
     frame.style.cssText='width:100%;height:160px;border:0;margin-top:8px;border-radius:8px';
     node.append(frame);
+  }
+
+  // Voice playback button
+  if('speechSynthesis' in window){
+    const actions=document.createElement('div');
+    actions.className='rakshak-msg-actions';
+    const speakBtn=document.createElement('button');
+    speakBtn.type='button';
+    speakBtn.className='rakshak-speak-btn';
+    speakBtn.setAttribute('aria-label',L()[23]||'Listen');
+    speakBtn.innerHTML=`
+      <svg class="speak-icon" viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+        <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+      </svg>
+      <span class="speak-label">${L()[23]||'Listen'}</span>
+      <span class="speaking-waves" aria-hidden="true"><span></span><span></span><span></span></span>
+    `;
+    speakBtn.onclick=()=>speakText(answer,speakBtn);
+    actions.append(speakBtn);
+    node.append(actions);
   }
 }
 
@@ -332,6 +428,11 @@ q('form').onsubmit=e=>{
 };
 
 window.addEventListener('krishi-language',refresh);
-root.addEventListener('keydown',e=>{if(e.key==='Escape')panel.hidden=true});
+root.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    panel.hidden=true;
+    stopSpeaking();
+  }
+});
 refresh();
 })();
