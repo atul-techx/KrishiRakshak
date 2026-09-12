@@ -861,5 +861,833 @@ aside nav .active {
   }
 }
 
+/* ==========================================================
+   MARKET PRICE / MANDI BHAV STYLES
+   ========================================================== */
 
+.market-wrap {
+  max-width: 1280px !important;
+  margin: 0 auto !important;
+  padding: 18px 16px 60px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 24px !important;
+}
 
+.market-hero-card {
+  background: linear-gradient(135deg, #1b4324 0%, #275d33 55%, #357444 100%) !important;
+  border-radius: 18px !important;
+  padding: 28px 32px !important;
+  color: #ffffff !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 20px !important;
+  box-shadow: 0 8px 24px rgba(27, 67, 36, 0.18) !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.market-hero-card::before {
+  content: "🌾" !important;
+  position: absolute !important;
+  right: 180px !important;
+  top: -10px !important;
+  font-size: 130px !important;
+  opacity: 0.07 !important;
+  pointer-events: none !important;
+}
+
+.market-hero-content {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  z-index: 1 !important;
+}
+
+.market-live-pill {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  background: rgba(255, 255, 255, 0.14) !important;
+  backdrop-filter: blur(6px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  padding: 4px 12px !important;
+  border-radius: 20px !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.5px !important;
+  width: fit-content !important;
+}
+
+.live-dot-pulse {
+  width: 8px !important;
+  height: 8px !important;
+  border-radius: 50% !important;
+  background: #4ade80 !important;
+  box-shadow: 0 0 8px #4ade80 !important;
+  animation: liveDotBlink 1.4s infinite !important;
+}
+
+@keyframes liveDotBlink {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+.market-live-pill .source-tag {
+  background: rgba(0, 0, 0, 0.2) !important;
+  padding: 2px 7px !important;
+  border-radius: 10px !important;
+  font-size: 10.5px !important;
+  font-weight: 600 !important;
+  color: #d1fae5 !important;
+}
+
+.market-title {
+  margin: 0 !important;
+  font-size: 1.95rem !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.02em !important;
+  line-height: 1.2 !important;
+}
+
+.market-title small {
+  font-size: 1.15rem !important;
+  font-weight: 600 !important;
+  color: #fef08a !important;
+  margin-left: 6px !important;
+}
+
+.market-sub {
+  margin: 0 !important;
+  font-size: 14px !important;
+  color: #e2f5e7 !important;
+  max-width: 620px !important;
+  line-height: 1.45 !important;
+}
+
+.market-hero-actions {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  z-index: 1 !important;
+}
+
+.market-refresh-btn {
+  background: rgba(255, 255, 255, 0.95) !important;
+  color: #1b4324 !important;
+  border: none !important;
+  font-weight: 700 !important;
+  font-size: 13.5px !important;
+  border-radius: 10px !important;
+  padding: 10px 18px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12) !important;
+}
+
+.market-refresh-btn:hover {
+  background: #ffffff !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2) !important;
+}
+
+.market-refresh-btn.spinning .refresh-icon {
+  animation: spinIcon 0.8s linear infinite !important;
+}
+
+@keyframes spinIcon {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Stats Row */
+.market-stats-grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 14px !important;
+}
+
+.market-stat-card {
+  background: #ffffff !important;
+  border: 1px solid #e7ded5 !important;
+  border-radius: 14px !important;
+  padding: 14px 18px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+  box-shadow: 0 2px 6px rgba(67, 48, 30, 0.03) !important;
+  transition: transform 0.15s ease !important;
+}
+
+.market-stat-card:hover {
+  transform: translateY(-1px) !important;
+}
+
+.mstat-icon {
+  font-size: 24px !important;
+  background: #fbf6f0 !important;
+  width: 44px !important;
+  height: 44px !important;
+  border-radius: 10px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+}
+
+.mstat-info {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+}
+
+.mstat-info small {
+  font-size: 11.5px !important;
+  color: #7d6b5c !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.4px !important;
+}
+
+.mstat-info strong {
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  color: #2b1e16 !important;
+}
+
+.text-success { color: #047857 !important; }
+.text-amber { color: #b45309 !important; }
+
+/* Filter Controls */
+.market-controls-card {
+  background: #ffffff !important;
+  border: 1px solid #e5dbcf !important;
+  border-radius: 16px !important;
+  padding: 18px 20px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 16px !important;
+  box-shadow: 0 2px 8px rgba(67, 48, 30, 0.04) !important;
+}
+
+.market-search-row {
+  display: flex !important;
+  gap: 14px !important;
+  align-items: center !important;
+}
+
+.market-search-box {
+  flex: 1 !important;
+  position: relative !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.market-search-box .search-lens {
+  position: absolute !important;
+  left: 14px !important;
+  font-size: 16px !important;
+  color: #9c8a7b !important;
+  pointer-events: none !important;
+}
+
+.market-search-box input {
+  width: 100% !important;
+  padding: 11px 14px 11px 40px !important;
+  border: 1.5px solid #d9cdbe !important;
+  border-radius: 11px !important;
+  font-size: 14px !important;
+  background: #faf7f3 !important;
+  color: #2e2017 !important;
+  transition: all 0.18s ease !important;
+}
+
+.market-search-box input:focus {
+  outline: none !important;
+  border-color: #275d33 !important;
+  background: #ffffff !important;
+  box-shadow: 0 0 0 3px rgba(39, 93, 51, 0.12) !important;
+}
+
+.market-state-select-wrap {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  flex-shrink: 0 !important;
+}
+
+.market-state-select-wrap label {
+  font-size: 13.5px !important;
+  font-weight: 700 !important;
+  color: #5c412d !important;
+}
+
+.market-state-select-wrap select {
+  padding: 11px 16px !important;
+  border: 1.5px solid #d9cdbe !important;
+  border-radius: 11px !important;
+  background: #faf7f3 !important;
+  color: #2e2017 !important;
+  font-size: 13.5px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.18s ease !important;
+}
+
+.market-state-select-wrap select:focus {
+  outline: none !important;
+  border-color: #275d33 !important;
+  background: #ffffff !important;
+}
+
+.market-pills-row {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+}
+
+.market-pill-btn {
+  background: #f5efe8 !important;
+  border: 1px solid #dfd3c5 !important;
+  color: #5c412d !important;
+  border-radius: 20px !important;
+  padding: 7px 16px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.16s ease !important;
+}
+
+.market-pill-btn:hover {
+  background: #ece3d7 !important;
+  color: #2b1b11 !important;
+}
+
+.market-pill-btn.active {
+  background: #1b4324 !important;
+  border-color: #1b4324 !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  box-shadow: 0 2px 6px rgba(27, 67, 36, 0.25) !important;
+}
+
+/* Mandi Cards Grid */
+.market-cards-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)) !important;
+  gap: 18px !important;
+}
+
+.mandi-card {
+  background: #ffffff !important;
+  border: 1px solid #e7ded5 !important;
+  border-radius: 16px !important;
+  padding: 20px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 14px !important;
+  box-shadow: 0 2px 8px rgba(67, 48, 30, 0.04) !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.mandi-card:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 8px 20px rgba(67, 48, 30, 0.08) !important;
+  border-color: #d2c3b2 !important;
+}
+
+.mandi-card-header {
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+}
+
+.mandi-crop-id {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+.mandi-icon {
+  font-size: 32px !important;
+  background: #fbf7f2 !important;
+  width: 52px !important;
+  height: 52px !important;
+  border-radius: 14px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: 1px solid #ece2d7 !important;
+  flex-shrink: 0 !important;
+}
+
+.mandi-crop-name {
+  margin: 0 !important;
+  font-size: 1.18rem !important;
+  font-weight: 800 !important;
+  color: #241810 !important;
+  line-height: 1.25 !important;
+}
+
+.mandi-crop-sub {
+  font-size: 12.5px !important;
+  color: #8c7868 !important;
+  font-weight: 500 !important;
+}
+
+.trend-badge {
+  padding: 5px 10px !important;
+  border-radius: 8px !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  white-space: nowrap !important;
+}
+
+.trend-up {
+  background: #ecfdf5 !important;
+  color: #047857 !important;
+  border: 1px solid #a7f3d0 !important;
+}
+
+.trend-down {
+  background: #fef2f2 !important;
+  color: #b91c1c !important;
+  border: 1px solid #fecaca !important;
+}
+
+.trend-stable {
+  background: #f3f4f6 !important;
+  color: #4b5563 !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+.mandi-location-badge {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  background: #faf6f1 !important;
+  border: 1px solid #eee5db !important;
+  border-radius: 9px !important;
+  padding: 6px 12px !important;
+  font-size: 12.5px !important;
+  color: #5c412d !important;
+  font-weight: 600 !important;
+}
+
+.mandi-state-tag {
+  background: #ece0d2 !important;
+  padding: 2px 7px !important;
+  border-radius: 6px !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: #4a3424 !important;
+}
+
+.mandi-price-box {
+  background: linear-gradient(180deg, #f7faf7 0%, #edf4ee 100%) !important;
+  border: 1px solid #dce8dd !important;
+  border-radius: 12px !important;
+  padding: 14px 16px !important;
+  text-align: center !important;
+}
+
+.mandi-price-label {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  color: #3b6b44 !important;
+}
+
+.mandi-modal-rate {
+  display: flex !important;
+  align-items: baseline !important;
+  justify-content: center !important;
+  gap: 4px !important;
+  margin: 4px 0 2px !important;
+}
+
+.mandi-rupee {
+  font-size: 1.3rem !important;
+  font-weight: 700 !important;
+  color: #174220 !important;
+}
+
+.mandi-amount {
+  font-size: 2.1rem !important;
+  font-weight: 900 !important;
+  color: #174220 !important;
+  letter-spacing: -0.02em !important;
+}
+
+.mandi-unit {
+  font-size: 13.5px !important;
+  font-weight: 600 !important;
+  color: #466c4d !important;
+}
+
+.mandi-kg-rate {
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  color: #275d33 !important;
+}
+
+/* Range track */
+.mandi-range-wrap {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+}
+
+.mandi-range-labels {
+  display: flex !important;
+  justify-content: space-between !important;
+  font-size: 11.5px !important;
+  color: #635345 !important;
+}
+
+.mandi-range-labels small {
+  color: #8c7868 !important;
+}
+
+.mandi-range-track {
+  height: 8px !important;
+  background: #ede5db !important;
+  border-radius: 4px !important;
+  position: relative !important;
+  overflow: visible !important;
+}
+
+.mandi-range-fill {
+  height: 100% !important;
+  background: linear-gradient(90deg, #86efac, #22c55e) !important;
+  border-radius: 4px !important;
+}
+
+.mandi-range-marker {
+  position: absolute !important;
+  top: -4px !important;
+  width: 16px !important;
+  height: 16px !important;
+  border-radius: 50% !important;
+  background: #1b4324 !important;
+  border: 2px solid #ffffff !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25) !important;
+  transform: translateX(-50%) !important;
+}
+
+.mandi-card-footer {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  margin-top: 2px !important;
+}
+
+.mandi-meta-row {
+  display: flex !important;
+  justify-content: space-between !important;
+  font-size: 11.5px !important;
+  color: #826e5e !important;
+}
+
+.mandi-msp-tag {
+  padding: 4px 10px !important;
+  border-radius: 6px !important;
+  font-size: 11.5px !important;
+  font-weight: 700 !important;
+  text-align: center !important;
+}
+
+.msp-above {
+  background: #ecfdf5 !important;
+  color: #065f46 !important;
+  border: 1px dashed #6ee7b7 !important;
+}
+
+.msp-below {
+  background: #fffbeb !important;
+  color: #92400e !important;
+  border: 1px dashed #fcd34d !important;
+}
+
+.mandi-advisory-pill {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 8px !important;
+  background: #fdfbf7 !important;
+  border: 1px solid #eee4d9 !important;
+  border-radius: 8px !important;
+  padding: 8px 10px !important;
+}
+
+.mandi-advisory-pill p {
+  margin: 0 !important;
+  font-size: 12px !important;
+  line-height: 1.35 !important;
+  color: #513e2f !important;
+}
+
+/* Loading & Empty */
+.market-loading-box, .market-empty-box {
+  grid-column: 1 / -1 !important;
+  background: #ffffff !important;
+  border: 1.5px dashed #dfd4c5 !important;
+  border-radius: 16px !important;
+  padding: 50px 20px !important;
+  text-align: center !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 12px !important;
+  color: #635041 !important;
+}
+
+.market-spinner {
+  width: 38px !important;
+  height: 38px !important;
+  border: 3px solid #e7ded5 !important;
+  border-top-color: #275d33 !important;
+  border-radius: 50% !important;
+  animation: spinIcon 0.8s linear infinite !important;
+}
+
+/* MSP Section */
+.market-msp-section {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 16px !important;
+  margin-top: 10px !important;
+}
+
+.section-head-simple h2 {
+  margin: 4px 0 6px !important;
+  font-size: 1.5rem !important;
+  font-weight: 800 !important;
+  color: #291c13 !important;
+}
+
+.section-head-simple p {
+  margin: 0 !important;
+  color: #725f50 !important;
+  font-size: 13.5px !important;
+}
+
+.msp-cards-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)) !important;
+  gap: 12px !important;
+}
+
+.msp-card {
+  background: #ffffff !important;
+  border: 1px solid #e2d9cd !important;
+  border-radius: 12px !important;
+  padding: 14px 16px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  box-shadow: 0 1px 4px rgba(67, 48, 30, 0.03) !important;
+}
+
+.msp-head {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+}
+
+.msp-crop-title {
+  font-size: 14px !important;
+  font-weight: 800 !important;
+  color: #2b1f17 !important;
+}
+
+.msp-govt-tag {
+  font-size: 10.5px !important;
+  font-weight: 700 !important;
+  color: #047857 !important;
+  text-transform: uppercase !important;
+}
+
+.msp-rate-display strong {
+  font-size: 1.3rem !important;
+  font-weight: 900 !important;
+  color: #174220 !important;
+}
+
+.msp-rate-display small {
+  display: block !important;
+  font-size: 11px !important;
+  color: #635345 !important;
+  margin-top: 2px !important;
+}
+
+/* Calculator Card */
+.market-calculator-card {
+  background: #ffffff !important;
+  border: 1.5px solid #d9cdbd !important;
+  border-radius: 18px !important;
+  padding: 24px 28px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 20px !important;
+  box-shadow: 0 4px 14px rgba(67, 48, 30, 0.05) !important;
+}
+
+.calc-header {
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+}
+
+.calc-icon {
+  font-size: 28px !important;
+  background: #fbf6f0 !important;
+  width: 50px !important;
+  height: 50px !important;
+  border-radius: 12px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: 1px solid #ebd9c7 !important;
+  flex-shrink: 0 !important;
+}
+
+.calc-header h3 {
+  margin: 0 0 4px !important;
+  font-size: 1.35rem !important;
+  font-weight: 800 !important;
+  color: #291c13 !important;
+}
+
+.calc-header p {
+  margin: 0 !important;
+  color: #725f50 !important;
+  font-size: 13.5px !important;
+}
+
+.calc-grid {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 24px !important;
+  align-items: start !important;
+}
+
+.calc-inputs {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 14px !important;
+}
+
+.calc-input-group {
+  display: flex !important;
+  gap: 8px !important;
+}
+
+.calc-input-group input {
+  flex: 1 !important;
+}
+
+.calc-input-group select {
+  width: 170px !important;
+  padding: 10px !important;
+  border: 1px solid #d5c8b7 !important;
+  border-radius: 8px !important;
+  background: #faf6f1 !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+}
+
+.calc-outputs {
+  background: #fbf7f2 !important;
+  border: 1px solid #e7ded3 !important;
+  border-radius: 14px !important;
+  padding: 20px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 16px !important;
+}
+
+.calc-result-box.primary {
+  background: #ffffff !important;
+  border: 1.5px solid #bdd5c2 !important;
+  border-radius: 12px !important;
+  padding: 14px 18px !important;
+  text-align: center !important;
+}
+
+.calc-result-box.primary small {
+  font-size: 11.5px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  color: #275d33 !important;
+}
+
+.calc-result-box.primary strong {
+  display: block !important;
+  font-size: 2rem !important;
+  font-weight: 900 !important;
+  color: #174220 !important;
+  margin-top: 4px !important;
+}
+
+.calc-sub-results {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 10px !important;
+}
+
+.calc-sub-box {
+  background: #ffffff !important;
+  border: 1px solid #ebd9c7 !important;
+  border-radius: 10px !important;
+  padding: 10px 12px !important;
+}
+
+.calc-sub-box small {
+  display: block !important;
+  font-size: 11px !important;
+  color: #7d6a5a !important;
+  margin-bottom: 2px !important;
+}
+
+.calc-sub-box strong {
+  font-size: 14px !important;
+  font-weight: 800 !important;
+  color: #2b1f16 !important;
+}
+
+@media(max-width: 960px) {
+  .market-stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  .calc-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media(max-width: 640px) {
+  .market-hero-card {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    padding: 20px 18px !important;
+  }
+  .market-stats-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .market-search-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+  .market-state-select-wrap select {
+    width: 100% !important;
+  }
+  .market-cards-grid {
+    grid-template-columns: 1fr !important;
+  }
+}

@@ -67,6 +67,9 @@
       <button class="nav-btn" data-page="dashboard">
         <span>📊</span> <span data-i18n="dashboard">Dashboard</span>
       </button>
+      <button class="nav-btn" data-page="market">
+        <span>🌾</span> <span data-i18n="marketPrice">Market Price</span>
+      </button>
       <button class="nav-btn" data-page="expert">
         <span>🩺</span> <span data-i18n="expert">Expert</span>
       </button>
@@ -279,6 +282,118 @@
         </div>
       </div>
     </section>
+
+    <!-- MARKET PRICE / MANDI BHAV -->
+    <section id="marketPage" class="page">
+      <div class="section-wrap market-wrap">
+        <!-- Hero Header -->
+        <div class="market-hero-card">
+          <div class="market-hero-content">
+            <div class="market-live-pill">
+              <span class="live-dot-pulse"></span>
+              <span data-i18n="Live Mandi Rates">Live Mandi Rates</span>
+              <span class="source-tag">Agmarknet / APMC</span>
+            </div>
+            <h1 class="market-title">🌾 <span data-i18n="Market Price">Market Price</span> <small>&amp; मंडी भाव</small></h1>
+            <p class="market-sub">Official APMC benchmark prices, daily modal rates, volume arrivals, and selling advisory for Indian farmers.</p>
+          </div>
+          <div class="market-hero-actions">
+            <button id="marketRefreshBtn" class="btn btn-light market-refresh-btn" type="button" title="Refresh rates">
+              <span class="refresh-icon">🔄</span> <span>Refresh Rates</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Quick Stats Row -->
+        <div id="marketStatsRow" class="market-stats-grid"></div>
+
+        <!-- Controls: Search & Filters -->
+        <div class="market-controls-card">
+          <div class="market-search-row">
+            <div class="market-search-box">
+              <span class="search-lens">🔍</span>
+              <input id="marketSearchInput" type="text" placeholder="Search crop or mandi (e.g. Nashik Tomato, प्याज, गेहूं)..." aria-label="Search Mandi or Crop">
+            </div>
+            <div class="market-state-select-wrap">
+              <label for="marketStateFilter">📍 <span>State</span>:</label>
+              <select id="marketStateFilter" aria-label="Select State">
+                <option value="all">All States / सभी राज्य</option>
+                <option value="Maharashtra">Maharashtra (महाराष्ट्र)</option>
+                <option value="Madhya Pradesh">Madhya Pradesh (मध्य प्रदेश)</option>
+                <option value="Uttar Pradesh">Uttar Pradesh (उत्तर प्रदेश)</option>
+                <option value="Punjab">Punjab (पंजाब)</option>
+                <option value="Haryana">Haryana (हरियाणा)</option>
+                <option value="Rajasthan">Rajasthan (राजस्थान)</option>
+                <option value="Gujarat">Gujarat (गुजरात)</option>
+              </select>
+            </div>
+          </div>
+          <div id="marketCategoryPills" class="market-pills-row"></div>
+        </div>
+
+        <!-- Mandi Cards Grid -->
+        <div id="mandiGrid" class="market-cards-grid"></div>
+
+        <!-- MSP Benchmark Comparison Section -->
+        <div class="market-msp-section">
+          <div class="section-head-simple">
+            <div>
+              <p class="eyebrow">BENCHMARK COMPARISON</p>
+              <h2>⚖️ <span data-i18n="Govt MSP Comparison">Govt MSP Comparison</span> (2024-25)</h2>
+              <p>Compare daily open mandi prices against Government Minimum Support Price (न्यूनतम समर्थन मूल्य) to secure fair returns.</p>
+            </div>
+          </div>
+          <div id="mspComparisonGrid" class="msp-cards-grid"></div>
+        </div>
+
+        <!-- Farmer Income & Unit Calculator -->
+        <div class="market-calculator-card">
+          <div class="calc-header">
+            <span class="calc-icon">🧮</span>
+            <div>
+              <h3><span data-i18n="Farmer Income Calculator">Farmer Income Calculator</span></h3>
+              <p>Calculate your estimated earnings from quintals or bags into total rupees (₹) and per-kg net price.</p>
+            </div>
+          </div>
+          <div class="calc-grid">
+            <div class="calc-inputs">
+              <div class="field">
+                <span><b data-i18n="Quantity">Quantity</b></span>
+                <div class="calc-input-group">
+                  <input id="calcQty" type="number" min="0" step="0.5" value="25" placeholder="e.g. 25">
+                  <select id="calcUnit">
+                    <option value="quintal">Quintals (क्विंटल - 100 kg)</option>
+                    <option value="bag50">Bags (बोरी - 50 kg)</option>
+                    <option value="ton">Tonnes (टन - 1000 kg)</option>
+                    <option value="kg">Kilograms (किलो)</option>
+                  </select>
+                </div>
+              </div>
+              <div class="field">
+                <span><b data-i18n="Mandi Rate">Mandi Rate</b> (₹ / क्विंटल)</span>
+                <input id="calcRate" type="number" min="0" step="10" value="2450" placeholder="e.g. 2450">
+              </div>
+            </div>
+            <div class="calc-outputs">
+              <div class="calc-result-box primary">
+                <small data-i18n="Total Expected Income">Total Expected Income</small>
+                <strong id="calcTotalResult">₹61,250</strong>
+              </div>
+              <div class="calc-sub-results">
+                <div class="calc-sub-box">
+                  <small>Rate per kg</small>
+                  <strong id="calcKgResult">₹24.50 / kg</strong>
+                </div>
+                <div class="calc-sub-box">
+                  <small>Estimated Net (after 1.5% mandi cess)</small>
+                  <strong id="calcNetResult" class="text-success">₹60,331</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 
   <!-- CHAT -->
@@ -325,5 +440,5 @@
   }
 </script>
 <script src="./workflow.js"></script><script src="./app.js"></script>
-<script src="./scan-bridge.js"></script><script src="./i18n.js"></script><script src="./dual-check.js"></script><script src="./repairs.js"></script><script src="./rakshak-chat.js"></script><script src="./reports.js"></script><script src="./product-fixes.js"></script></body>
+<script src="./scan-bridge.js"></script><script src="./i18n.js"></script><script src="./dual-check.js"></script><script src="./repairs.js"></script><script src="./rakshak-chat.js"></script><script src="./market-price.js"></script><script src="./reports.js"></script><script src="./product-fixes.js"></script></body>
 </html>

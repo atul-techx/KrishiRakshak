@@ -736,6 +736,24 @@ Listening… speak now|सुन रहा हूँ… बोलिए|ऐक�
 Voice recognition not supported|इस ब्राउज़र में वॉइस सपोर्ट नहीं है|या ब्राउझरमध्ये व्हॉइस सपोर्ट नाही|Voice support nahi mila
 Tap to speak|बोलने के लिए दबाएँ|बोलण्यासाठी दाबा|Bolne ke liye dabayein
 Stop listening|सुनना बंद करें|ऐकणे थांबवा|Stop listening
+Market Price|बाज़ार भाव|बाजार भाव|Market Price
+Mandi Bhav|मंडी भाव|बाजार भाव|Mandi Bhav
+Live Mandi Rates|लाइव मंडी भाव|थेट बाजार भाव|Live Mandi Rates
+Modal Price|औसत भाव|सरासरी भाव|Modal Price
+Monitored Mandis|निगरानी वाली मंडियां|निरीक्षणातील बाजार|Monitored Mandis
+Active Commodities|सक्रिय फसलें|सक्रिय पिके|Active Commodities
+Top Mandi Gainer|शीर्ष बढ़त वाली फसल|सर्वाधिक तेजीचे पीक|Top Mandi Gainer
+MSP Benchmark|MSP समर्थन मूल्य|हमीभाव संदर्भ|MSP Benchmark
+Search Mandi or Crop|मंडी या फसल का नाम खोजें|बाजार किंवा पिकाचे नाव शोधा|Search Mandi or Crop
+All States|सभी राज्य|सर्व राज्ये|All States
+Farmer Income Calculator|किसान उपज आय गणक|शेतकरी उत्पन्न गणक|Farmer Income Calculator
+Quantity|मात्रा|प्रमाण|Quantity
+Mandi Rate|मंडी भाव|बाजार दर|Mandi Rate
+Total Expected Income|कुल अनुमानित आय|एकूण अंदाजे उत्पन्न|Total Expected Income
+Govt MSP Comparison|सरकारी MSP तुलना|शासकीय हमीभाव तुलना|Govt MSP Comparison
+Loading live APMC Mandi rates…|लाइव मंडी भाव लोड हो रहे हैं…|थेट बाजार भाव लोड होत आहेत…|Loading live APMC Mandi rates…
+No Mandi rates match your search|आपकी खोज से कोई मंडी भाव नहीं मिला|तुमच्या शोधानुसार कोणतेही बाजार भाव आढळले नाहीत|No Mandi rates match your search
+Try selecting 'All Crops' or clearing the search box.|'सभी फसलें' चुनें या खोज बॉक्स साफ़ करें।|'सर्व पिके' निवडा किंवा शोध बॉक्स साफ करा.|Try selecting 'All Crops' or clearing the search box.
 `);
 let pattern;
 function compile(){pattern=new RegExp(Object.keys(entries).sort((a,b)=>b.length-a.length).map(s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|'),'g');}
