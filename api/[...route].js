@@ -1,4 +1,1 @@
-import handler, { config } from './index.js';
-
-export { config };
-export default handler;
+module.exports = require('./index.js');

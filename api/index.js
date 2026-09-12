@@ -1,12 +1,8 @@
-import { handleAPI } from '../api.mjs';
+module.exports = async function handler(req, res) {
+  const { handleAPI } = await import('../api.mjs');
 
-export const config = {
-  maxDuration: 30
-};
-
-export default async function handler(req, res) {
-  // If invoked with standard Web Request (Edge / Web-style runtime)
-  if (req instanceof Request || (!res && req.url)) {
+  // If invoked with standard Web Request
+  if (typeof Request !== 'undefined' && (req instanceof Request || (!res && req.url))) {
     return handleAPI(req, process.env);
   }
 
@@ -43,7 +39,7 @@ export default async function handler(req, res) {
     const text = await response.text();
     return res.send(text);
   } catch (err) {
-    console.error('API execution error:', err);
-    return res.status(500).json({ error: 'Unable to process API request.' });
+    console.error('API error:', err);
+    return res.status(500).json({ error: 'Internal Server Error' });
   }
-}
+};
