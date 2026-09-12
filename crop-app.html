@@ -233,7 +233,29 @@
             <div id="caseList"></div>
           </div>
           <div class="card case-detail" id="caseDetail">
-            <div class="empty">Select a case to review.</div>
+            <div class="empty-case-guide">
+              <div class="guide-icon">🌱</div>
+              <h3>Start a review request</h3>
+              <p class="guide-desc">Add a leaf photo and describe what changed. A report helps your expert review the case.</p>
+              <button class="btn btn-primary" id="expert-start" type="button" onclick="showPage('scan')">Scan a leaf</button>
+              <div class="guide-steps">
+                <div class="guide-step">
+                  <span>1</span>
+                  <b>Take leaf photo</b>
+                  <small>Clear photo in daylight</small>
+                </div>
+                <div class="guide-step">
+                  <span>2</span>
+                  <b>AI triage</b>
+                  <small>Instant crop risk check</small>
+                </div>
+                <div class="guide-step">
+                  <span>3</span>
+                  <b>Expert review</b>
+                  <small>Agronomist recommendations</small>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

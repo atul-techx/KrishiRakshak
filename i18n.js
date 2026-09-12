@@ -57,6 +57,12 @@ Prioritise with evidence|प्रमाण से प्राथमिकत�
 Review the contributing signals and seek expert validation.|संकेतों के कारण देखें और विशेषज्ञ की पुष्टि लें।|कारणीभूत संकेत पाहा आणि तज्ञांची पडताळणी घ्या.|Signals review karein aur expert validation lein.
 Return and record|वापस जाकर दर्ज करें|पुन्हा भेट देऊन नोंदवा|Wapas jaakar record karein
 Compare symptom share before closing the action.|कार्य बंद करने से पहले लक्षण वाले पौधों का अनुपात तुलना करें।|कृती बंद करण्यापूर्वी लक्षणग्रस्त रोपांच्या प्रमाणाची तुलना करा.|Action close karne se pehle symptom share compare karein.
+Take leaf photo|पत्ती का फोटो लें|पानाचा फोटो घ्या|Patti ka photo lein
+Clear photo in daylight|दिन के उजाले में साफ फोटो|दिवसाच्या प्रकाशात स्पष्ट फोटो|Daylight me saaf photo
+AI triage|एआई जाँच|एआय तपासणी|AI jaanch
+Instant crop risk check|फसल जोखिम की तुरंत जाँच|पीक जोखीम त्वरित तपासणी|Fasal risk ki turant jaanch
+Expert review|विशेषज्ञ समीक्षा|तज्ञ समीक्षा|Expert samiksha
+Agronomist recommendations|कृषि विशेषज्ञ की सलाह|कृषी तज्ञांचा सल्ला|Agronomist ki salah
 Device-local prototype. Expert portal records are not sent to a real extension service.|उपकरण-स्थानीय नमूना। रिकॉर्ड वास्तविक कृषि विस्तार सेवा को नहीं भेजे जाते।|उपकरणावरील नमुना. नोंदी प्रत्यक्ष कृषी विस्तार सेवेकडे पाठवल्या जात नाहीत.|Local prototype. Records real extension service ko send nahi hote.
 sample symptomatic|नमूने में लक्षण|नमुन्यात लक्षणे|sample mein symptoms
 trap catch|ट्रैप में कीट|सापळ्यातील कीटक|trap catch
