@@ -703,6 +703,15 @@ Prepare expert review|विशेषज्ञ समीक्षा तैय�
 Field records|खेत के रिकॉर्ड|शेताच्या नोंदी|Field records
 Uncertain cases can be saved for expert review.|अनिश्चित मामले विशेषज्ञ समीक्षा के लिए सेव किए जा सकते हैं।|अनिश्चित प्रकरणे तज्ज्ञ परीक्षणासाठी जतन करता येतात.|Uncertain cases can be saved for expert review.
 Leaf verification is required before disease assessment. Photo checks use secure server services.|रोग आकलन से पहले पत्ती की पुष्टि जरूरी है। फोटो की जाँच सुरक्षित सर्वर सेवाओं से होती है।|रोग मूल्यांकनापूर्वी पानाची खात्री आवश्यक आहे. फोटो तपासणी सुरक्षित सर्व्हर सेवांद्वारे होते.|Leaf verification is required before disease assessment. Photo checks use secure server services.
+Add field|खेत जोड़ें|शेत जोडा|Add field
+Add new field|नया खेत जोड़ें|नवीन शेत जोडा|Add new field
+Save field & start monitoring|खेत सहेजें और निगरानी शुरू करें|शेत जतन करा आणि निरीक्षण सुरू करा|Save field & start monitoring
+Remove field|खेत हटाएँ|शेत काढा|Remove field
+Plot area / size|खेत का क्षेत्रफल / आकार|शेताचे क्षेत्रफळ / आकार|Plot area / size
+Soil type|मिट्टी का प्रकार|मातीचा प्रकार|Soil type
+Irrigation type|सिंचाई का प्रकार|सिंचनाचा प्रकार|Irrigation type
+Initial notes|प्रारंभिक विवरण|सुरुवातीची नोंद|Initial notes
+Link to an existing saved field|सहेजे गए खेत से जोड़ें|जतन केलेल्या शेताशी जोडा|Link to an existing saved field
 `);
 let pattern;
 function compile(){pattern=new RegExp(Object.keys(entries).sort((a,b)=>b.length-a.length).map(s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|'),'g');}

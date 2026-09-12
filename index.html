@@ -1,3 +1,77 @@
 <!doctype html><html lang="en"><head><script src="./config.js"></script><script src="./api-client.js"></script><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#6b4f3a"><title>KrishiRakshak · Field Sentinel</title><link rel="stylesheet" href="sentinel.css"><link rel="stylesheet" href="./theme.css"></head><body>
-<aside><a class="brand" href="index.html"><span class="mark">K</span><span>KrishiRakshak<small>FIELD SENTINEL</small></span></a><nav aria-label="Main navigation"><button data-view="overview" class="active">◈ &nbsp; Field overview</button><button data-view="scout">⊕ &nbsp; Record observation</button><button data-view="actions">☷ &nbsp; Action & follow-up</button><button data-view="evidence">◎ &nbsp; Evidence & impact</button><a href="crop-app.html">↗ &nbsp; Leaf scan & expert portal</a></nav><div class="aside-bottom"><span class="pill">MAHARASHTRA FOCUS</span><small>SIH working prototype<br>Records stay on this device.</small></div></aside>
-<div class="shell"><header><div><span class="status-dot"></span><span id="connection">Device workspace</span><span class="divider">/</span><span id="mode-label">Your field records</span></div><div class="header-actions"><select id="lang" aria-label="Advisory language"><option value="en">English</option><option value="hi">हिन्दी</option><option value="mr">मराठी</option></select><button id="demo" class="quiet">Explore SIH demo</button></div></header><main id="content"></main><footer>KrishiRakshak Field Sentinel · Observations → triage → expert review → follow-up <span>Decision support · Not a diagnosis</span></footer></div><div id="notice" role="status" aria-live="polite"></div><script src="workflow.js"></script><script src="sentinel-core.js"></script><script src="sentinel.js"></script><script src="./i18n.js"></script><script src="./rakshak-chat.js"></script><script src="./reports.js"></script><script src="./product-fixes.js"></script></body></html>
+<aside><a class="brand" href="index.html"><span class="mark">K</span><span>KrishiRakshak<small>FIELD SENTINEL</small></span></a><div class="aside-action-wrap"><button id="openAddFieldNavBtn" class="btn full light add-field-btn" type="button">＋ &nbsp; Add field</button></div><nav aria-label="Main navigation"><button data-view="overview" class="active">◈ &nbsp; Field overview</button><button data-view="scout">⊕ &nbsp; Record observation</button><button data-view="actions">☷ &nbsp; Action & follow-up</button><button data-view="evidence">◎ &nbsp; Evidence & impact</button><a href="crop-app.html">↗ &nbsp; Leaf scan & expert portal</a></nav><div class="aside-bottom"><span class="pill">MAHARASHTRA FOCUS</span><small>SIH working prototype<br>Records stay on this device.</small></div></aside>
+<div class="shell"><header><div><span class="status-dot"></span><span id="connection">Device workspace</span><span class="divider">/</span><span id="mode-label">Your field records</span></div><div class="header-actions"><select id="lang" aria-label="Advisory language"><option value="en">English</option><option value="hi">हिन्दी</option><option value="mr">मराठी</option></select><button id="demo" class="quiet">Explore SIH demo</button></div></header><main id="content"></main><footer>KrishiRakshak Field Sentinel · Observations → triage → expert review → follow-up <span>Decision support · Not a diagnosis</span></footer></div><div id="notice" role="status" aria-live="polite"></div>
+<dialog id="addFieldModal" class="field-modal">
+  <div class="modal-head" style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
+    <div>
+      <h2 style="margin:0 0 4px">🌾 Add New Field</h2>
+      <p class="sub" style="margin:0;font-size:13px">Register a new plot to track scouting, crop stages and health follow-ups.</p>
+    </div>
+    <button type="button" id="closeAddFieldModal" class="quiet small" style="border-radius:50%;width:32px;height:32px;padding:0;display:flex;align-items:center;justify-content:center;font-size:16px" aria-label="Close">✕</button>
+  </div>
+  <form id="addFieldForm">
+    <div class="form-grid">
+      <label class="field">Field name *
+        <input name="fieldName" required maxlength="80" placeholder="e.g. East Tomato Plot, Gat No. 42">
+      </label>
+      <label class="field">Village / District *
+        <input name="village" required maxlength="100" placeholder="e.g. Dindori, Nashik">
+      </label>
+      <label class="field">Crop *
+        <select name="crop" required>
+          <option value="Tomato">Tomato (टमाटर / टोमॅटो)</option>
+          <option value="Cotton">Cotton (कपास / कापूस)</option>
+          <option value="Soybean">Soybean (सोयाबीन)</option>
+          <option value="Grape">Grape (अंगूर / द्राक्ष)</option>
+          <option value="Onion">Onion (प्याज / कांदा)</option>
+          <option value="Pomegranate">Pomegranate (अनार / डाळिंब)</option>
+          <option value="Wheat">Wheat (गेहूं / गहू)</option>
+          <option value="Jowar">Jowar / Sorghum (ज्वार / ज्वारी)</option>
+          <option value="Maize">Maize (मक्का / मका)</option>
+          <option value="Rice">Rice / Paddy (धान / भात)</option>
+          <option value="Chickpea">Chickpea / Gram (चना / हरभरा)</option>
+          <option value="Sugarcane">Sugarcane (गन्ना / ऊस)</option>
+          <option value="Other">Other crop</option>
+        </select>
+      </label>
+      <label class="field">Crop stage
+        <select name="stage">
+          <option value="Sowing / Germination">Sowing / Germination</option>
+          <option value="Vegetative" selected>Vegetative</option>
+          <option value="Flowering">Flowering</option>
+          <option value="Fruiting">Fruiting</option>
+          <option value="Harvest approaching">Harvest approaching</option>
+        </select>
+      </label>
+      <label class="field">Plot area / size (optional)
+        <input name="area" maxlength="50" placeholder="e.g. 2.5 Acres / 1 Hectare">
+      </label>
+      <label class="field">Soil type (optional)
+        <select name="soil">
+          <option value="">Select soil type</option>
+          <option value="Deep black soil">Deep black soil (काळी माती)</option>
+          <option value="Medium black soil">Medium black soil (मध्यम काळी)</option>
+          <option value="Red / Sandy loam">Red / Sandy loam (तांबडी माती)</option>
+          <option value="Light / Murrum soil">Light / Murrum (हलकी जमीन)</option>
+        </select>
+      </label>
+      <label class="field">Irrigation type (optional)
+        <select name="irrigation">
+          <option value="">Select irrigation</option>
+          <option value="Drip irrigation">Drip irrigation (ठिबक)</option>
+          <option value="Sprinkler">Sprinkler (तुषार)</option>
+          <option value="Flood / Furrow">Flood / Furrow (पाटपाणी)</option>
+          <option value="Rainfed">Rainfed (कोरडवाहू)</option>
+        </select>
+      </label>
+      <label class="field full">Initial notes (optional)
+        <textarea name="notes" maxlength="500" placeholder="e.g. Sown last week, variety: Phule Samruddhi, soil treated."></textarea>
+      </label>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:22px">
+      <button type="button" id="cancelAddFieldBtn" class="btn light">Cancel</button>
+      <button type="submit" class="btn">Save field & start monitoring →</button>
+    </div>
+  </form>
+</dialog>
+<script src="workflow.js"></script><script src="sentinel-core.js"></script><script src="sentinel.js"></script><script src="./i18n.js"></script><script src="./rakshak-chat.js"></script><script src="./reports.js"></script><script src="./product-fixes.js"></script></body></html>

@@ -107,3 +107,19 @@ body{font-family:'DM Sans','Noto Sans Devanagari',system-ui,sans-serif}.shell h1
 .field-link-status{padding:8px 12px;background:#e7f5ea;color:#1f6b36;border-radius:8px;font-size:12px;font-weight:600;margin:10px 0 6px}
 .field-link-footer{margin-top:12px;padding-top:8px;border-top:1px solid #ebd9c5}
 .field-link-banner .mini{font-size:11.5px!important;color:#8c7560!important;line-height:1.45}
+
+/* Field Management and Modal */
+.aside-action-wrap{margin-top:20px}
+.add-field-btn{background:#eddcca!important;color:#3d2b1c!important;border:1px solid #c9b49e!important;font-weight:700!important;font-size:13px!important;border-radius:9px!important;padding:11px 14px!important;transition:all 0.18s}
+.add-field-btn:hover{background:#e2cdb8!important;transform:translateY(-1px)}
+.field-modal{max-width:580px!important;width:min(580px,94vw)!important;border-radius:20px!important;padding:26px 30px!important;background:#fffaf3!important;border:1px solid #d8c7b4!important;box-shadow:0 24px 60px rgba(50,35,22,0.3)!important}
+.field-modal h2{font-size:22px!important;color:#3d2b1d!important;margin:0 0 6px!important;font-family:Fraunces,Georgia,serif!important}
+.field-modal .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:16px}
+.field-modal .field{display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:600;color:#543f2d}
+.field-modal .field.full{grid-column:1/-1}
+.field-modal input,.field-modal select,.field-modal textarea{border:1.5px solid #d8c8b6!important;background:#fff!important;border-radius:9px!important;padding:10px 13px!important;font-size:13.5px!important;color:#35271d!important;outline:none;transition:border-color 0.2s,box-shadow 0.2s}
+.field-modal input:focus,.field-modal select:focus,.field-modal textarea:focus{border-color:#734e32!important;box-shadow:0 0 0 3px rgba(115,78,50,0.12)!important}
+.field-meta-chip{display:inline-block;background:#efe5d8;color:#593f2c;padding:2px 7px;border-radius:6px;font-size:11px;font-weight:600}
+.danger-btn{color:#a83b24!important;border-color:#e4c7be!important;background:transparent!important}
+.danger-btn:hover{background:#faece8!important;border-color:#d59f92!important}
+
