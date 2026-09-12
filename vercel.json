@@ -1,4 +1,5 @@
 {
+  "outputDirectory": "dist",
   "rewrites": [
     { "source": "/scan", "destination": "/crop-app.html" },
     { "source": "/crop-app", "destination": "/crop-app.html" }
