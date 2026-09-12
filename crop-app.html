@@ -285,38 +285,37 @@
 
     <!-- MARKET PRICE / MANDI BHAV -->
     <section id="marketPage" class="page">
-      <div class="section-wrap market-wrap">
-        <!-- Hero Header -->
-        <div class="market-hero-card">
-          <div class="market-hero-content">
-            <div class="market-live-pill">
-              <span class="live-dot-pulse"></span>
-              <span data-i18n="Live Mandi Rates">Live Mandi Rates</span>
-              <span class="source-tag">Agmarknet / APMC</span>
-            </div>
-            <h1 class="market-title">🌾 <span data-i18n="Market Price">Market Price</span> <small>&amp; मंडी भाव</small></h1>
-            <p class="market-sub">Official APMC benchmark prices, daily modal rates, volume arrivals, and selling advisory for Indian farmers.</p>
+      <div class="section-wrap">
+        <!-- Section Header matching Dashboard -->
+        <div class="section-head">
+          <div>
+            <p class="eyebrow" data-i18n="eyebrowMarket">APMC MANDI INTELLIGENCE</p>
+            <h2 data-i18n="marketTitle">Today's Mandi Bhav.</h2>
+            <p data-i18n="marketSubtitle">Official daily modal rates, volume arrivals, and selling advisories reported across major Indian APMCs.</p>
           </div>
-          <div class="market-hero-actions">
-            <button id="marketRefreshBtn" class="btn btn-light market-refresh-btn" type="button" title="Refresh rates">
-              <span class="refresh-icon">🔄</span> <span>Refresh Rates</span>
+          <div class="head-actions">
+            <span class="status-pill ok">● Live APMC Feed</span>
+            <button id="marketRefreshBtn" class="btn btn-light" type="button">
+              <span>🔄</span> <span data-i18n="Refresh">Refresh rates</span>
             </button>
+            <div class="market-view-toggle">
+              <button id="viewTableBtn" class="view-btn active" type="button" title="Table View">▤ Table</button>
+              <button id="viewGridBtn" class="view-btn" type="button" title="Cards View">🎴 Cards</button>
+            </div>
           </div>
         </div>
 
-        <!-- Quick Stats Row -->
-        <div id="marketStatsRow" class="market-stats-grid"></div>
+        <!-- Metric Grid matching website standard -->
+        <div id="marketStatsRow" class="metric-grid"></div>
 
-        <!-- Controls: Search & Filters -->
-        <div class="market-controls-card">
-          <div class="market-search-row">
+        <!-- Filter & Search Card -->
+        <div class="card market-filter-card">
+          <div class="market-filter-top">
             <div class="market-search-box">
-              <span class="search-lens">🔍</span>
-              <input id="marketSearchInput" type="text" placeholder="Search crop or mandi (e.g. Nashik Tomato, प्याज, गेहूं)..." aria-label="Search Mandi or Crop">
+              <input id="marketSearchInput" class="search-input" placeholder="Search commodity or mandi (e.g. Tomato, Nashik, गेहूं, प्याज)..." aria-label="Search Mandi or Crop">
             </div>
             <div class="market-state-select-wrap">
-              <label for="marketStateFilter">📍 <span>State</span>:</label>
-              <select id="marketStateFilter" aria-label="Select State">
+              <select id="marketStateFilter" class="market-select" aria-label="Select State">
                 <option value="all">All States / सभी राज्य</option>
                 <option value="Maharashtra">Maharashtra (महाराष्ट्र)</option>
                 <option value="Madhya Pradesh">Madhya Pradesh (मध्य प्रदेश)</option>
@@ -328,65 +327,92 @@
               </select>
             </div>
           </div>
-          <div id="marketCategoryPills" class="market-pills-row"></div>
+          <div id="marketCategoryPills" class="market-category-strip"></div>
         </div>
 
-        <!-- Mandi Cards Grid -->
-        <div id="mandiGrid" class="market-cards-grid"></div>
-
-        <!-- MSP Benchmark Comparison Section -->
-        <div class="market-msp-section">
-          <div class="section-head-simple">
-            <div>
-              <p class="eyebrow">BENCHMARK COMPARISON</p>
-              <h2>⚖️ <span data-i18n="Govt MSP Comparison">Govt MSP Comparison</span> (2024-25)</h2>
-              <p>Compare daily open mandi prices against Government Minimum Support Price (न्यूनतम समर्थन मूल्य) to secure fair returns.</p>
-            </div>
+        <!-- Table View (Default) -->
+        <div id="mandiTableWrap" class="card mandi-table-card">
+          <div class="table-responsive">
+            <table class="mandi-table">
+              <thead>
+                <tr>
+                  <th data-i18n="thCommodity">Crop / Commodity</th>
+                  <th data-i18n="thMandi">Mandi & District</th>
+                  <th data-i18n="thState">State</th>
+                  <th class="text-right" data-i18n="thModal">Modal Price (₹/Qtl)</th>
+                  <th class="text-right" data-i18n="thKg">Rate / kg</th>
+                  <th class="text-center" data-i18n="thRange">Min — Max (₹)</th>
+                  <th class="text-center" data-i18n="thTrend">Trend</th>
+                  <th data-i18n="thArrival">Arrivals</th>
+                  <th data-i18n="thAdvisory">Selling Advisory</th>
+                </tr>
+              </thead>
+              <tbody id="mandiTableBody"></tbody>
+            </table>
           </div>
-          <div id="mspComparisonGrid" class="msp-cards-grid"></div>
         </div>
 
-        <!-- Farmer Income & Unit Calculator -->
-        <div class="market-calculator-card">
-          <div class="calc-header">
-            <span class="calc-icon">🧮</span>
+        <!-- Card View (Alternative) -->
+        <div id="mandiGrid" class="market-cards-grid hidden"></div>
+
+        <!-- MSP Benchmark Section matching Dashboard style -->
+        <div class="card msp-overview-card">
+          <div class="card-head">
             <div>
-              <h3><span data-i18n="Farmer Income Calculator">Farmer Income Calculator</span></h3>
-              <p>Calculate your estimated earnings from quintals or bags into total rupees (₹) and per-kg net price.</p>
+              <p class="eyebrow" style="margin-bottom:4px;">GOVERNMENT SUPPORT PRICE</p>
+              <h3 data-i18n="Govt MSP Comparison">Govt MSP Comparison (2024-25)</h3>
             </div>
+            <span class="status-pill ok">100% Minimum Floor Benchmark</span>
           </div>
-          <div class="calc-grid">
-            <div class="calc-inputs">
+          <p class="muted" style="font-size:13px; margin:0 0 16px;">Compare open APMC auction rates against official Minimum Support Price (न्यूनतम समर्थन मूल्य) to ensure fair returns.</p>
+          <div id="mspComparisonGrid" class="crop-grid msp-grid"></div>
+        </div>
+
+        <!-- Farmer Income Calculator matching Form card -->
+        <div class="card calc-container-card">
+          <div class="card-head">
+            <div>
+              <p class="eyebrow" style="margin-bottom:4px;">HARVEST VALUATION</p>
+              <h3 data-i18n="Farmer Income Calculator">Farmer Income Calculator</h3>
+            </div>
+            <span class="status-pill">Quick Yield Converter</span>
+          </div>
+          <p class="muted" style="font-size:13px; margin:0 0 18px;">Convert your harvest weight (Quintal, Boras, Tonnes) into total revenue and net earnings.</p>
+
+          <div class="calc-form-layout">
+            <div class="calc-inputs-side">
               <div class="field">
-                <span><b data-i18n="Quantity">Quantity</b></span>
-                <div class="calc-input-group">
-                  <input id="calcQty" type="number" min="0" step="0.5" value="25" placeholder="e.g. 25">
+                <span><b data-i18n="Quantity">Harvest Quantity</b></span>
+                <div class="calc-split-input">
+                  <input id="calcQty" type="number" min="0" step="0.5" value="25" placeholder="Quantity">
                   <select id="calcUnit">
-                    <option value="quintal">Quintals (क्विंटल - 100 kg)</option>
-                    <option value="bag50">Bags (बोरी - 50 kg)</option>
-                    <option value="ton">Tonnes (टन - 1000 kg)</option>
-                    <option value="kg">Kilograms (किलो)</option>
+                    <option value="quintal">Quintals (100 kg)</option>
+                    <option value="bag50">Bora / Bags (50 kg)</option>
+                    <option value="ton">Tonnes (1000 kg)</option>
+                    <option value="kg">Kilograms</option>
                   </select>
                 </div>
               </div>
               <div class="field">
-                <span><b data-i18n="Mandi Rate">Mandi Rate</b> (₹ / क्विंटल)</span>
+                <span><b data-i18n="Mandi Rate">Auction / Mandi Rate</b> (₹ / Quintal)</span>
                 <input id="calcRate" type="number" min="0" step="10" value="2450" placeholder="e.g. 2450">
               </div>
             </div>
-            <div class="calc-outputs">
-              <div class="calc-result-box primary">
-                <small data-i18n="Total Expected Income">Total Expected Income</small>
+
+            <div class="calc-results-side">
+              <div class="metric calc-total-metric">
+                <span data-i18n="Total Expected Income">TOTAL ESTIMATED VALUE</span>
                 <strong id="calcTotalResult">₹61,250</strong>
+                <p>Gross harvest valuation before cess & transport</p>
               </div>
-              <div class="calc-sub-results">
-                <div class="calc-sub-box">
-                  <small>Rate per kg</small>
+              <div class="calc-sub-grid">
+                <div class="calc-mini-stat">
+                  <span class="muted">Effective Rate / kg</span>
                   <strong id="calcKgResult">₹24.50 / kg</strong>
                 </div>
-                <div class="calc-sub-box">
-                  <small>Estimated Net (after 1.5% mandi cess)</small>
-                  <strong id="calcNetResult" class="text-success">₹60,331</strong>
+                <div class="calc-mini-stat">
+                  <span class="muted">Net in Hand (after ~1.5% APMC cess)</span>
+                  <strong id="calcNetResult" class="text-gain">₹60,331</strong>
                 </div>
               </div>
             </div>
