@@ -1,0 +1,9 @@
+CropGuard compact ONNX model
+Author/source: AbhiCommits/cropguard-models
+https://huggingface.co/AbhiCommits/cropguard-models
+Original file: cropguard.static-int8.onnx
+Local file: cropguard.onnx (renamed, binary unmodified)
+License: Creative Commons Attribution-ShareAlike 4.0 International
+https://creativecommons.org/licenses/by-sa/4.0/
+SHA-256: 60ba2c9549027ffc3eec19d86691fcce12664e4ee54a7429e8b6caf9489fd2cd
+38 PlantVillage classes, 14 crops; controlled leaf images, not field-validated.

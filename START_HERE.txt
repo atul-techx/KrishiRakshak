@@ -1,0 +1,16 @@
+KRISHIRAKSHAK — UPDATED SCAN VERSION
+
+Start with Node.js 22+: npm start, then open http://localhost:3000.
+
+REQUIRED: Put a real Google AI Studio key in .env as GEMINI_API_KEY=...
+An OpenAI key will not work. The server loads .env at startup; restart after editing it.
+Optional: KINDWISE_API_KEY enables a separate crop.health second opinion.
+The browser ONNX model compares its suggestion with the Gemini visual assessment.
+
+For Netlify, set GEMINI_API_KEY in server function environment variables and redeploy this entire project through Git or the Netlify CLI. Merely uploading static files does not configure backend credentials.
+
+Changed: missing Kindwise credentials or a failed second opinion no longer block a valid Gemini assessment. Non-leaf and uncertain photos still get no disease result. Precautions, management options and follow-up questions appear below the possible condition and are included in saved scan advice/report exports.
+
+28 automated tests passed with mocked providers. No live provider credential was available during this update. Image assessments and advice require field/expert confirmation; do not claim guaranteed diagnosis or cure.
+
+English, Hindi and Marathi are supported. Records are stored on this device. Expert review is a local record, not an actual message to an extension officer.

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><script src="./config.js"></script><script src="./api-client.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#6b4f3a">
+  <title>KrishiRakshak — Farmer-first crop intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="./theme.css"></head>
+<body>
+<div id="toast" class="toast hidden"></div>
+
+<!-- LOGIN -->
+<div id="authScreen" class="auth-screen">
+  <div class="auth-visual">
+    <div class="auth-brand"> <span>Krishi<span>Rakshak</span></span></div>
+    <div class="auth-copy">
+      <p class="eyebrow">FARMER-FIRST CROP INTELLIGENCE</p>
+      <h1>Worry less.<br><span>Grow wiser.</span></h1>
+      <p>Crop health, live weather, field risk and expert support — designed around the farmer.</p>
+      <div class="auth-points">
+        <span> Leaf analysis</span><span> Live local weather</span><span> Expert review</span>
+      </div>
+    </div>
+  </div>
+  <div class="auth-card">
+    <div class="auth-mobile-brand"> KrishiRakshak</div>
+    <div class="auth-tabs">
+      <button id="loginTab" class="auth-tab active">Login</button>
+      <button id="registerTab" class="auth-tab">Create account</button>
+    </div>
+    <h2 id="authTitle">Welcome back</h2>
+    <p id="authSubtitle">Sign in to your farmer workspace.</p>
+    <form id="authForm">
+      <label class="field"><span>Full name</span><input id="authName" autocomplete="name" placeholder="e.g. Vijay Kumar" /></label>
+      <label class="field"><span>Mobile / Email</span><input id="authId" required autocomplete="username" placeholder="Your mobile or email" /></label>
+      <label class="field"><span>Password</span><input id="authPassword" required type="password" autocomplete="current-password" placeholder="At least 4 characters" /></label>
+      <label id="authLocationField" class="field optional-field"><span>Village / District</span><input id="authLocation" placeholder="e.g. Dindori, Maharashtra" /></label>
+      <button id="authSubmit" class="btn btn-primary full" type="submit">Login →</button>
+    </form>
+    <p class="auth-note">Prototype accounts are stored locally in this browser. For production, connect Firebase/Supabase authentication.</p>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" class="app hidden">
+  <header class="topbar">
+    <div class="brand" id="brandHome">
+      <div class="brand-logo">K</div>
+      <div><strong>Krishi<span>Rakshak</span></strong><small>Farmer intelligence</small></div>
+    </div>
+    <nav class="nav"><a class="nav-btn" href="index.html">◈ Field Sentinel</a>
+      <button class="nav-btn active" data-page="home">⌂ <span data-i18n="home">Home</span></button>
+      <button class="nav-btn" data-page="scan"> <span data-i18n="scan">Scan</span></button>
+      <button class="nav-btn" data-page="dashboard">▦ <span data-i18n="dashboard">Dashboard</span></button>
+      <button class="nav-btn" data-page="expert"> <span data-i18n="expert">Expert</span></button>
+      <button class="nav-btn" data-page="official"> <span>Hotspots</span></button>
+    </nav>
+    <div class="top-actions">
+      <select id="languageSelector" title="Language">
+        <option value="en">English</option>
+        <option value="hi">हिन्दी</option>
+        
+        <option value="mr">मराठी</option>
+      </select>
+      <button id="profileBtn" class="profile-btn"> <span id="profileName">Farmer</span></button>
+      <button id="logoutBtn" class="icon-btn" title="Logout">↪</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- HOME -->
+    <section id="homePage" class="page active">
+      <div class="home-hero">
+        <div class="home-copy">
+          <p class="eyebrow" data-i18n="eyebrow">FOR THE FIELDS OF INDIA</p>
+          <h1 data-i18n="heroTitle">Worry less.<br><span>Grow wiser.</span></h1>
+          <p class="hero-lead" data-i18n="heroLead">One photo, one weather signal and one clear next step. KrishiRakshak brings crop health intelligence closer to the farmer.</p>
+          <div class="hero-actions">
+            <button class="btn btn-primary" data-go="scan" data-i18n="startScan"> Scan my crop</button>
+            <button class="btn btn-light" data-go="dashboard" data-i18n="openDashboard">Open dashboard →</button>
+          </div>
+          <div class="hero-badges">
+            <span> Smart crop analysis</span><span> Live weather</span><span> 4 languages</span><span> Expert escalation</span>
+          </div>
+        </div>
+        <div class="home-panel">
+          <div class="panel-top"><span>FIELD PULSE</span><span id="homeLocation">Location pending</span></div>
+          <div class="pulse-grid">
+            <div class="pulse-main"><small>Weather context</small><strong id="homeTemp">--°</strong><span id="homeWeatherText">Fetching local conditions…</span></div>
+            <div class="pulse-stat"><span>Field risk</span><strong id="homeRisk">--</strong><small id="homeRiskReason">Waiting for weather</small></div>
+            <div class="pulse-stat"><span>Crop health check</span><strong id="modelStatus">Loading</strong><small>Ready for image analysis</small></div>
+            <div class="pulse-stat"><span>Scans</span><strong id="homeScanCount">0</strong><small>Saved on this account</small></div>
+          </div>
+          <div class="home-alert"><span></span><div><b>Farmer-first design</b><p>Low-confidence results are flagged instead of pretending certainty.</p></div></div>
+        </div>
+      </div>
+
+      <div class="feature-strip">
+        <article><span>01</span><h3>Detect</h3><p>Image analysis identifies visible crop-health patterns. Optional Kindwise adds a broader crop-health second opinion.</p></article>
+        <article><span>02</span><h3>Predict</h3><p>Temperature, humidity and rainfall become supporting signals for crop-risk awareness.</p></article>
+        <article><span>03</span><h3>Act</h3><p>Simple next steps, safe guidance and expert escalation keep the farmer in control.</p></article>
+      </div>
+    </section>
+
+    <!-- SCAN -->
+    <section id="scanPage" class="page">
+      <div class="section-wrap">
+        <div class="section-head">
+          <div><p class="eyebrow">CROP HEALTH CHECK</p><h2 data-i18n="scanTitle">Show us the leaf.</h2><p data-i18n="scanSub">Upload a clear photo of one affected leaf. We analyse the image and show practical next steps.</p></div>
+          <span id="aiBadge" class="status-pill">● Crop check loading</span>
+        </div>
+        <div class="scan-layout">
+          <div class="card scan-card">
+            <input id="imageInput" type="file" accept="image/*" capture="environment" hidden>
+            <input id="cameraInput" type="file" accept="image/*" capture="environment" hidden>
+            <label id="uploadBox" class="upload-box">
+              <img id="previewImage" class="preview-image" alt="Selected crop">
+              <div id="uploadPlaceholder"><div class="upload-icon">↑</div><h3 data-i18n="upload">Upload crop image</h3><p>JPG, PNG, WEBP · daylight works best</p></div>
+            </label>
+            <div class="scan-controls">
+              <select id="cropSelector">
+                <option value="auto">Auto detect crop</option>
+                <option>Apple</option><option>Blueberry</option><option>Cherry</option><option>Maize</option>
+                <option>Grape</option><option>Orange</option><option>Peach</option><option>Bell Pepper</option>
+                <option>Potato</option><option>Raspberry</option><option>Soybean</option><option>Squash</option>
+                <option>Strawberry</option><option>Tomato</option>
+              </select>
+              <button id="cameraBtn" class="btn btn-light" type="button"> Camera</button>
+              <button id="clearImageBtn" class="btn btn-light" type="button">Clear</button>
+            </div>
+            <button id="diagnoseBtn" class="btn btn-primary full" type="button"> <span data-i18n="diagnose">Run diagnosis</span></button>
+            <button id="expertBtn" class="btn btn-amber full" type="button"> Prepare expert review</button>
+            <div id="imageQuality" class="quality-box hidden"></div>
+            <div id="diagnosisResult" class="diagnosis-result hidden"></div>
+          </div>
+          <div class="card scan-side">
+            <h3>Field context</h3>
+            <div class="mini-form-grid">
+              <label class="field"><span>Crop stage</span><select id="cropStage"><option>Vegetative</option><option>Flowering</option><option>Fruit/Grain filling</option><option>Harvest</option></select></label>
+              <label class="field"><span>Variety</span><input id="cropVariety" placeholder="Optional variety" /></label>
+            </div>
+            <div class="image-tip"><div><b>Photo tip</b><p>Use daylight, keep one leaf sharp, and include the full symptom area.</p></div></div>
+            <div class="decision-step"><b>1</b><div><strong>Fast image analysis</strong><p>The crop image is analysed first so the initial result is not blocked by external APIs.</p></div></div>
+            <div class="decision-step"><b>2</b><div><strong>Risk forecast</strong><p>Weather + crop stage + recent field history produce a scouting risk signal.</p></div></div>
+            <div class="decision-step"><b>3</b><div><strong>Human validation</strong><p>Uncertain cases can be saved for expert review.</p></div></div>
+            <div class="privacy-note"> Leaf verification is required before disease assessment. Photo checks use secure server services.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DASHBOARD -->
+    <section id="dashboardPage" class="page">
+      <div class="section-wrap">
+        <div class="dashboard-head"><div><p class="eyebrow">FARMER WORKSPACE</p><h2><span data-i18n="goodMorning">Good morning</span>, <span id="dashName">Farmer</span> </h2><p id="dashLocation" class="muted">Your field pulse is ready.</p></div><button class="btn btn-primary" data-go="scan">＋ New scan</button></div>
+        <div class="metric-grid">
+          <div class="metric weather"><span> Weather context</span><strong id="dashTemp">--°C</strong><p id="dashWeather">Fetching weather…</p></div>
+          <div class="metric"><span>Awaiting expert review</span><strong id="healthScore">--<small>/100</small></strong><p id="healthText">Based on recent scans and field signals.</p></div>
+          <div class="metric"><span>⚠ CURRENT RISK</span><strong id="dashRisk">--</strong><p id="dashRiskText">Weather-aware risk estimate.</p></div>
+          <div class="metric"><span> TOTAL SCANS</span><strong id="dashScans">0</strong><p>Saved to your local farmer account.</p></div>
+        </div>
+        <div class="dashboard-grid forecast-grid">
+          <div class="card">
+            <div class="card-head"><h3>Outbreak watch</h3><div class="head-actions"><button id="refreshWeatherBtn" class="text-btn">↻ Refresh weather</button><span class="live-dot">Field records</span></div></div>
+            <div id="riskForecast" class="risk-forecast"><div class="empty">Waiting for field weather and crop context.</div></div>
+            <div id="weatherForecast" class="weather-forecast"></div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3>Field inputs</h3><span class="mini-pill">IoT-ready</span></div>
+            <div class="sensor-grid">
+              <label class="field"><span>Trap count / 24h</span><input id="trapCount" type="number" min="0" placeholder="0"></label>
+              <label class="field"><span>Soil moisture %</span><input id="soilMoisture" type="number" min="0" max="100" placeholder="Optional"></label>
+              <button id="saveFieldInputs" class="btn btn-light">Save field inputs</button>
+            </div>
+            <p class="muted small">These inputs mirror future pheromone-trap and soil-sensor feeds. Manual values are clearly marked as field inputs.</p>
+          </div>
+        </div>
+
+        <div class="dashboard-grid">
+          <div class="card">
+            <div class="card-head"><h3>Recent crop scans</h3><div class="head-actions"><button id="compareScansBtn" class="text-btn">Compare latest</button><button id="downloadLatestReport" class="text-btn">Download report</button></div></div>
+            <div id="scanTrend" class="scan-trend hidden"></div>
+            <div id="recentScans" class="scan-list"><div class="empty">No scans yet. Start with a clear leaf photo.</div></div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3>Field watch</h3><span class="live-dot">Field records</span></div>
+            <div id="fieldWatch" class="watch-list"></div>
+          </div>
+        </div>
+        <div class="card crops-card">
+          <div class="card-head"><h3>My crops</h3><button id="addCropBtn" class="text-btn">＋ Add crop</button></div>
+          <div id="myCrops" class="crop-grid"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- OFFICIAL -->
+    <section id="officialPage" class="page">
+      <div class="section-wrap">
+        <div class="section-head"><div><p class="eyebrow">EXTENSION / DEPARTMENT VIEW</p><h2>Crop health hotspots</h2><p>Confirmed cases, field-risk signals and response status in one map.</p></div><span class="status-pill"> District view</span></div>
+        <div class="official-grid">
+          <div class="card map-card">
+            <div class="map-toolbar"><select id="hotspotFilter"><option value="all">All signals</option><option value="high">High risk</option><option value="pending">Awaiting expert</option><option value="reviewed">Reviewed</option></select></div>
+            <div id="hotspotMap"><div id="mapLoading" class="map-loading">Loading field hotspot map…</div></div>
+          </div>
+          <div class="card official-stats">
+            <div class="stat-row"><span>Cases logged</span><b id="officialCases">0</b></div>
+            <div class="stat-row"><span>High-risk cases</span><b id="officialHighRisk">0</b></div>
+            <div class="stat-row"><span>Awaiting expert</span><b id="officialPending">0</b></div>
+            <div class="stat-row"><span>Reviewed</span><b id="officialReviewed">0</b></div>
+            <div class="learning-box"><b>Learning loop</b><p>Expert confirmations are stored with the original assessment so future versions can be evaluated against real field outcomes.</p>
+              <div class="learning-mini"><span><b id="learningConfirmed">0</b><small>reviewed</small></span><span><b id="learningPending">0</b><small>pending</small></span><span><b id="learningRate">--</b><small>review rate</small></span></div>
+              <button id="exportLearning" class="btn btn-light full">Export feedback CSV</button></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXPERT -->
+    <section id="expertPage" class="page">
+      <div class="section-wrap">
+        <div class="section-head"><div><p class="eyebrow">COMMUNITY CARE</p><h2>Expert portal</h2><p>Review uncertain farmer cases, add practical advice and generate a report.</p></div><span class="status-pill"> Human-in-the-loop</span></div>
+        <div class="expert-layout">
+          <div class="card case-queue">
+            <div class="card-head"><h3>Case queue</h3><span id="caseCount">0</span></div>
+            <input id="caseSearch" class="search-input" placeholder="Search farmer, crop, disease…">
+            <div id="caseList"></div>
+          </div>
+          <div class="card case-detail" id="caseDetail">
+            <div class="empty">Select a case to review.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- CHAT -->
+  <button id="chatToggle" class="chat-fab"> <span>Ask Sirib Rakshak</span></button>
+  <div id="chatWindow" class="chat-window hidden">
+    <div class="chat-head"><div><b> Sirib Rakshak</b><small>Crop + weather assistant</small></div><button id="closeChat">×</button></div>
+    <div id="chatMessages" class="chat-messages"><div class="msg bot">Namaste! Ask me about crop disease, irrigation, pests, weather or your latest scan.</div></div>
+    <div id="chatImagePreview" class="chat-image-preview hidden"><img id="chatPreviewImg" alt="Chat crop"><button id="removeChatImage">×</button></div>
+    <div class="chat-input"><input type="file" id="chatImageInput" accept="image/*" hidden><button id="chatImageBtn" class="chat-attach"></button><input id="chatInput" placeholder="Ask about your crop…"><button id="sendChat">➤</button></div>
+  </div>
+
+  <!-- PROFILE MODAL -->
+  <div id="profileModal" class="modal hidden">
+    <div class="modal-card">
+      <button class="modal-close" data-close="profileModal">×</button>
+      <p class="eyebrow">FARMER PROFILE</p><h2>Your field identity</h2>
+      <label class="field"><span>Name</span><input id="profileEditName"></label>
+      <label class="field"><span>Village / District</span><input id="profileEditLocation"></label>
+      <label class="field"><span>Primary crop</span><input id="profileEditCrop" placeholder="Tomato / Wheat / Soybean…"></label>
+      <button id="saveProfileBtn" class="btn btn-primary full">Save profile</button>
+    </div>
+  </div>
+
+  <div id="cropModal" class="modal hidden">
+    <div class="modal-card">
+      <button class="modal-close" data-close="cropModal">×</button>
+      <p class="eyebrow">MY CROPS</p><h2>Add a crop</h2>
+      <label class="field"><span>Crop</span><input id="cropNameInput" placeholder="e.g. Tomato"></label>
+      <label class="field"><span>Area</span><input id="cropAreaInput" placeholder="e.g. 2.5 acres"></label>
+      <button id="saveCropBtn" class="btn btn-primary full">Add crop</button>
+    </div>
+  </div>
+
+  <footer>KrishiRakshak · Farmer-first crop health platform</footer>
+</div>
+
+<script>
+  window.KRISHI_CONFIG = window.KRISHI_CONFIG || {};
+</script>
+
+<script>
+  if (window.ort) {
+    ort.env.wasm.wasmPaths = "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.29.0/dist/";
+  }
+</script>
+<script src="./workflow.js"></script><script src="./app.js"></script>
+<script src="./scan-bridge.js"></script><script src="./i18n.js"></script><script src="./dual-check.js"></script><script src="./repairs.js"></script><script src="./rakshak-chat.js"></script><script src="./reports.js"></script><script src="./product-fixes.js"></script></body>
+</html>

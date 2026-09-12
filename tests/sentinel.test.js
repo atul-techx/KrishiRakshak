@@ -1,0 +1,9 @@
+const test=require('node:test'),assert=require('node:assert/strict'),S=require('../sentinel-core');
+const now=Date.now(),base={id:'b',fieldId:'f',field:'East',village:'Nashik',sampled:20,affected:1,trap:null,pest:'A',trapHours:24,at:now,wet:'no',spread:'no'};
+test('rejects invalid plant counts and absent field identity',()=>{for(const change of [{sampled:0},{sampled:1.5},{affected:21},{affected:-1},{trap:-1},{field:''}])assert.ok(S.validate({...base,...change}));assert.equal(S.validate(base),'')});
+test('symptom increase and rapid spread escalate with explicit reasons',()=>{const prev={...base,at:now-86400000};const r=S.assess({...base,affected:7,spread:'yes'},prev,now);assert.equal(r.level,'High');assert.equal(r.score,85);assert.equal(r.reasons.length,3)});
+test('missing trap readings are not interpreted as zero or increases',()=>{assert.equal(S.assess(base,{...base,trap:4},now).score,15);assert.equal(S.assess({...base,trap:8},{...base,trap:null},now).score,15)});
+test('trap comparison requires matching identifier and interval',()=>{const prev={...base,trap:4};assert.equal(S.assess({...base,trap:7},prev,now).score,35);assert.equal(S.assess({...base,trap:7,trapHours:48},prev,now).score,15);assert.equal(S.assess({...base,trap:7,pest:'B'},prev,now).score,15)});
+test('score capped and stale evidence flagged',()=>{const r=S.assess({...base,affected:20,trap:10,wet:'yes',spread:'yes',at:now-4*86400000},{...base,trap:2},now);assert.equal(r.score,100);assert.equal(r.stale,true)});
+test('history uses only earlier observations of same field',()=>{const old={...base,id:'old',at:now-100};assert.equal(S.previous([old,{...base,id:'other',fieldId:'g',at:now-50},base],base).id,'old');assert.equal(S.latest([old,base]).length,1)});
+test('CSV escapes quotes, newlines and formula-leading input',()=>{const result=S.csv([['=SUM(A1)','line\n"quote"']]);assert.ok(result.startsWith('"\'=SUM(A1)"'));assert.ok(result.includes('""quote""'))});

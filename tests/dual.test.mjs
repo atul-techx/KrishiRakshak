@@ -1,0 +1,3 @@
+import test from 'node:test';import assert from 'node:assert/strict';import vm from 'node:vm';import {readFileSync} from 'node:fs';
+const window={};vm.runInNewContext(readFileSync(new URL('../dual-check.js',import.meta.url),'utf8'),{window});
+test('dual agreement requires crop and condition, never only a common disease word',()=>{const x={className:'Tomato___Early_blight'};assert.equal(window.KrishiDual.compare(x,{crop:'Tomato',finding:'Early blight'}),true);assert.equal(window.KrishiDual.compare(x,{crop:'Potato',finding:'Early blight'}),false);assert.equal(window.KrishiDual.compare(x,{crop:'Tomato',finding:'Late blight'}),false);assert.equal(window.KrishiDual.supports('Cotton'),false);});
