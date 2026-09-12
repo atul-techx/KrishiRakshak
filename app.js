@@ -342,20 +342,24 @@ $("#expertBtn").onclick=()=>{if(!state.lastResult)return toast("Run a diagnosis 
 
 function renderCases(){
   const cases=getCases();$("#caseCount").textContent=cases.length;const q=($("#caseSearch")?.value||"").toLowerCase();const filtered=cases.filter(c=>(`${safeText(c.farmer)} ${safeText(c.crop)} ${safeText(c.disease)}`).toLowerCase().includes(q));
-  $("#caseList").innerHTML=filtered.length?filtered.map(c=>`<div class="caseitem ${state.currentCaseId===c.id?"active":""}" data-case="${c.id}"><div class="case-avatar"></div><div><h4>${safeText(c.farmer)}</h4><p>${safeText(c.crop)} · ${safeText(c.disease)}</p><small>${new Date(c.createdAt).toLocaleString()}</small></div><span class="priority">${safeText(c.status)}</span></div>`).join(""):`<div class="empty">No expert cases yet.</div>`;
-  $$(".caseitem").forEach(el=>el.onclick=()=>{state.currentCaseId=el.dataset.case;renderCases();renderCaseDetail(el.dataset.case)});
+  $("#caseList").innerHTML=filtered.length?filtered.map(c=>`<div class="caseitem ${state.currentCaseId===c.id?"active":""}" data-case="${c.id}"><div class="case-avatar"></div><div style="flex:1;min-width:0"><h4>${safeText(c.farmer)}</h4><p>${safeText(c.crop)} · ${safeText(c.disease)}</p><small>${new Date(c.createdAt).toLocaleString()}</small></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px"><span class="priority">${safeText(c.status)}</span><button class="case-del-btn" data-delete-case="${c.id}" title="Remove case / मामला हटाएं" aria-label="Remove case" type="button">✕</button></div></div>`).join(""):`<div class="empty">No expert cases yet.</div>`;
+  $$(".caseitem").forEach(el=>el.onclick=e=>{if(e.target.closest('.case-del-btn'))return;state.currentCaseId=el.dataset.case;renderCases();renderCaseDetail(el.dataset.case)});
+  $$(".case-del-btn").forEach(btn=>btn.onclick=e=>{e.stopPropagation();const id=btn.dataset.deleteCase;if(!confirm(window.KrishiI18n?.t('Delete this case from the queue? This cannot be undone.')||'Delete this case from the queue? This cannot be undone.'))return;const remaining=getCases().filter(x=>x.id!==id);saveCases(remaining);if(state.currentCaseId===id){state.currentCaseId=remaining[0]?.id||null;}renderCases();if(typeof renderDashboard==='function')renderDashboard();toast(window.KrishiI18n?.t('Case removed from queue.')||'Case removed from queue.');});
   if(state.currentCaseId&&filtered.some(c=>c.id===state.currentCaseId))renderCaseDetail(state.currentCaseId);else if(filtered[0]){state.currentCaseId=filtered[0].id;renderCaseDetail(filtered[0].id)}
 }
 $("#caseSearch").oninput=renderCases;
 function renderCaseDetail(id){
   const c=getCases().find(x=>x.id===id);if(!c)return;$("#caseDetail").innerHTML=`
-    <p class="eyebrow">${c.id} · ${safeText(c.status)}</p><h2>${safeText(c.disease)}</h2><p class="case-meta">${safeText(c.farmer)} · ${safeText(c.crop)} · ${safeText(c.location)}</p>
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:8px"><p class="eyebrow" style="margin:0">${c.id} · ${safeText(c.status)}</p><button class="btn btn-light danger-btn" id="deleteCaseTop" type="button" style="padding:6px 14px;font-size:12px;font-weight:600">🗑 Delete case</button></div><h2>${safeText(c.disease)}</h2><p class="case-meta">${safeText(c.farmer)} · ${safeText(c.crop)} · ${safeText(c.location)}</p>
     ${c.image?`<img class="case-image" src="${c.image}" alt="Farmer crop">`:""}
     <div class="ai-block"><b>AI first read</b><br>Confidence: ${(c.confidence*100).toFixed(1)}% · Source: ${safeText(c.source)}<br>${safeText(c.problem||"Review the image and farmer context before responding.")}</div>
     <p class="muted" style="font-size:12px">Weather at scan: ${c.weather?`${Math.round(c.weather.temperature_2m)}°C · humidity ${c.weather.relative_humidity_2m}% · rain ${c.weather.precipitation} mm`:"not available"}</p>
     <label class="field"><span>Expert recommendation</span><textarea id="expertResponse" class="response-box" placeholder="Write a practical, farmer-friendly response…">${safeText(c.response||"")}</textarea></label>
-    <div class="case-actions"><button id="saveExpert" class="btn btn-primary">Send recommendation</button><button id="reportExpert" class="btn btn-light">Download report</button><button id="closeCase" class="btn btn-light">Mark reviewed</button></div>
+    <div class="case-actions"><button id="saveExpert" class="btn btn-primary">Send recommendation</button><button id="reportExpert" class="btn btn-light">Download report</button><button id="closeCase" class="btn btn-light">Mark reviewed</button><button id="deleteCase" class="btn btn-light danger-btn" type="button">🗑 Delete case</button></div>
   `;
+  const remove=()=>{if(!confirm(window.KrishiI18n?.t('Delete this case from the queue? This cannot be undone.')||'Delete this case from the queue? This cannot be undone.'))return;const remaining=getCases().filter(x=>x.id!==id);saveCases(remaining);state.currentCaseId=remaining[0]?.id||null;renderCases();if(typeof renderDashboard==='function')renderDashboard();toast(window.KrishiI18n?.t('Case removed from queue.')||'Case removed from queue.');};
+  $("#deleteCase")?.addEventListener('click',remove);
+  $("#deleteCaseTop")?.addEventListener('click',remove);
   $("#saveExpert").onclick=()=>{const cases=getCases().map(x=>x.id===id?{...x,response:$("#expertResponse").value,status:"Responded"}:x);saveCases(cases);renderCases();toast("Expert response saved.");};
   $("#closeCase").onclick=()=>{const cases=getCases().map(x=>x.id===id?{...x,status:"Reviewed"}:x);saveCases(cases);renderCases();toast("Case marked reviewed.");};
   $("#reportExpert").onclick=()=>downloadReport(c);

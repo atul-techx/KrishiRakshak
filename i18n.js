@@ -340,6 +340,10 @@ Review uncertain farmer cases, add practical advice and generate a report.|अ�
 Human-in-the-loop|विशेषज्ञ भागीदारी|तज्ञ सहभाग|Human-in-the-loop
 Case queue|मामला सूची|प्रकरण रांग|Case queue
 Select a case to review.|समीक्षा के लिए मामला चुनें।|समीक्षेसाठी प्रकरण निवडा.|Review ke liye case chunein.
+Delete case|मामला हटाएं|प्रकरण हटवा|Delete case
+Remove case|मामला हटाएं|प्रकरण काढा|Remove case
+Delete this case from the queue? This cannot be undone.|क्या आप इस मामले को सूची से हटाना चाहते हैं? इसे वापस नहीं लाया जा सकेगा।|तुम्हाला हे प्रकरण रांगेतून काढायचे आहे का? ही कृती पूर्ववत केली जाऊ शकत नाही.|Delete this case from the queue? This cannot be undone.
+Case removed from queue.|मामला सूची से हटा दिया गया।|प्रकरण रांगेतून काढण्यात आले.|Case removed from queue.
 Ask Sirib Rakshak|रक्षक से पूछें|रक्षकला विचारा|Rakshak se poochein
 Sirib Rakshak|रक्षक सहायक|रक्षक सहाय्यक|Rakshak assistant
 Crop + weather assistant|फसल + मौसम सहायक|पीक + हवामान सहाय्यक|Crop + weather assistant
