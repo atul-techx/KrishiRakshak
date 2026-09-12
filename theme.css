@@ -86,3 +86,20 @@ body{font-family:'DM Sans','Noto Sans Devanagari',system-ui,sans-serif}.shell h1
 #diagnoseBtn{margin-bottom:14px!important}
 #expertBtn{margin-bottom:16px!important}
 
+.field-link-banner{background:#fdfbf7!important;border:1px solid #dfd1be!important;border-radius:18px!important;padding:18px 24px!important;margin:18px 0 28px!important;box-shadow:0 6px 20px rgba(67,48,30,0.05)!important}
+.field-link-header{margin-bottom:12px}
+.field-link-badge{display:inline-block;background:#eee0cb;color:#5c412d;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;margin-bottom:6px;letter-spacing:0.3px}
+.field-link-banner b{display:block;font-size:17px;font-weight:700;color:#3b281b;margin-bottom:4px}
+.field-link-banner p{margin:0;color:#6d5846;font-size:13px;line-height:1.5}
+.field-link-controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:14px 0 10px}
+.field-link-select-group{flex:1 1 240px;min-width:0}
+.field-link-banner select{width:100%!important;padding:11px 14px!important;border:1.5px solid #d8c7b2!important;background:#fffaf2!important;border-radius:10px!important;font-size:13.5px!important;font-weight:600!important;color:#3b281b!important;outline:none;transition:border-color 0.2s,box-shadow 0.2s}
+.field-link-banner select:focus{border-color:#6e4f37!important;box-shadow:0 0 0 3px rgba(110,79,55,0.12)!important}
+.field-link-btn-group{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.field-link-action-btn{display:inline-flex;align-items:center;gap:6px;padding:11px 16px;border-radius:10px;font-size:13px;font-weight:600;text-decoration:none!important;cursor:pointer;transition:all 0.18s cubic-bezier(0.16,1,0.3,1);border:1px solid #d4c2ab!important;background:#ffffff!important;color:#553d29!important}
+.field-link-action-btn:hover{background:#f4ecdf!important;border-color:#ba9f83!important;color:#3b281b!important;transform:translateY(-1px)}
+.field-link-action-btn.save-manual{background:#ede2d1!important;border-color:#c9b49b!important}
+.field-link-action-btn.save-manual:hover{background:#e2d2bc!important}
+.field-link-status{padding:8px 12px;background:#e7f5ea;color:#1f6b36;border-radius:8px;font-size:12px;font-weight:600;margin:10px 0 6px}
+.field-link-footer{margin-top:12px;padding-top:8px;border-top:1px solid #ebd9c5}
+.field-link-banner .mini{font-size:11.5px!important;color:#8c7560!important;line-height:1.45}
