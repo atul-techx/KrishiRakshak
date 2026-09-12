@@ -304,9 +304,11 @@ async function send(text,attached,retry=false){
     q('.rakshak-status-pill').textContent=L()[6];
     q('.rakshak-status').hidden=true;
   }catch(e){
-    ready=false;
-    q('.rakshak-status-pill').textContent=L()[8];
-    pending.textContent=e.name==='TimeoutError'?L()[8]:e.message;
+    if(e.name==='TimeoutError'||(e.message&&e.message.includes('NETWORK'))){
+      ready=false;
+      q('.rakshak-status-pill').textContent=L()[8];
+    }
+    pending.textContent=e.name==='TimeoutError'?L()[8]:(e.message||L()[19]);
     pending.classList.add('error');
     const b=document.createElement('button');
     b.type='button';

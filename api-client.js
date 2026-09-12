@@ -25,6 +25,8 @@ REQUEST:['AI provider rejected this request. The site owner must check the API c
 NON_LEAF:['This is not a suitable leaf photo. Upload a clear close-up of one real leaf.','यह उपयुक्त पत्ती की फोटो नहीं है। एक असली पत्ती की साफ नज़दीकी फोटो डालें।','हा योग्य पानाचा फोटो नाही. एका खऱ्या पानाचा स्पष्ट जवळचा फोटो द्या.'],
 LEAF_UNCERTAIN:['A clear leaf could not be verified. Retake the photo in daylight.','साफ पत्ती की पुष्टि नहीं हो सकी। दिन की रोशनी में दोबारा फोटो लें।','स्पष्ट पानाची खात्री झाली नाही. दिवसाच्या प्रकाशात पुन्हा फोटो घ्या.'],
 TIMEOUT:['AI service took too long. Please retry once your connection is stable.','AI सेवा ने अधिक समय लिया। कनेक्शन ठीक होने पर दोबारा कोशिश करें।','AI सेवेला जास्त वेळ लागला. जोडणी स्थिर झाल्यावर पुन्हा प्रयत्न करा.'],
+INCOMPLETE:['Could not complete the response. Please retry or rephrase.','जवाब पूरा नहीं हो सका। कृपया दोबारा पूछें।','उत्तर पूर्ण झाले नाही. कृपया पुन्हा विचारा.'],
+SAFETY:['Question or photo triggered safety filter. Please rephrase.','सामग्री फ़िल्टर हुआ। कृपया दोबारा पूछें।','सामग्री फिल्टर झाली. कृपया पुन्हा विचारा.'],
 UNAVAILABLE:['AI service is unavailable. No diagnosis was issued.','AI सेवा उपलब्ध नहीं है। कोई निदान नहीं दिया गया।','AI सेवा उपलब्ध नाही. निदान दिलेले नाही.']};
 window.KrishiAPI.message=code=>{let key=String(code||'UNAVAILABLE').replace(/^(GEMINI|KINDWISE)_/,'');if(key==='LEAF_CHECK_UNAVAILABLE')key='NOT_CONFIGURED';const n={en:0,hi:1,mr:2}[window.KrishiI18n?.getLanguage()||'en']||0;return (messages[key]||messages.UNAVAILABLE)[n]+(code?' ['+String(code).replace(/[^A-Z_]/g,'')+']':'');};
 })();

@@ -41,7 +41,8 @@ const instructions=`You are Rakshak, an agriculture assistant for farmers in Mah
 const history=Array.isArray(input.history)?input.history.slice(-6).filter(t=>['user','model'].includes(t.role)&&typeof t.text==='string').map(t=>({role:t.role,parts:[{text:t.text.slice(0,3000)}]})):[];
 const parts=[{text:`Field context (unverified): ${typeof input.context==='string'?input.context.slice(0,2500):''}\nFarmer question: ${question||'Describe this crop photo and ask what information you need to assess it.'}`}];
 if(image)parts.push({inlineData:image});
-const chatBody={systemInstruction:{parts:[{text:instructions}]},contents:[...history,{role:'user',parts}],tools:[{google_search:{}}],generationConfig:{maxOutputTokens:4096}};
+const useSearch=Boolean(env.ENABLE_GOOGLE_SEARCH);
+const chatBody={systemInstruction:{parts:[{text:instructions}]},contents:[...history,{role:'user',parts}],...(useSearch?{tools:[{google_search:{}}]}:{}),generationConfig:{maxOutputTokens:4096}};
 let r=await gemini(fetcher,env,chatBody,25000);
 if(r.status===429&&chatBody.tools){
  delete chatBody.tools;
@@ -49,11 +50,13 @@ if(r.status===429&&chatBody.tools){
 }
 if(!r.ok)return providerError(r,'GEMINI');
 const result=await r.json(),candidate=result.candidates?.[0];
-if(candidate?.finishReason&&candidate.finishReason!=='STOP')return json({error:'Answer could not be completed. Please rephrase or retry.',code:'INCOMPLETE'},502);
 let answer=geminiText(result);
 answer=answer.replace(/^\s*(?:Please note that )?(?:live )?search is (?:currently )?unavailable[^\n]*\n*/i,'').replace(/^\s*Sources were not verified[^\n]*\n*/i,'').trim();
+if(!answer.trim()){
+ if(candidate?.finishReason==='SAFETY')return json({error:'Content filter triggered. Please rephrase your crop question.',code:'SAFETY'},422);
+ return json({error:'Could not complete the response. Please retry.',code:'INCOMPLETE'},502);
+}
 const citations=[];
-if(!answer.trim())return json({error:'No answer returned. Please retry.',code:'EMPTY_RESPONSE'},502);
 const grounding=candidate?.groundingMetadata;
 for(const support of grounding?.groundingSupports||[]){
  const segment=support.segment||{};
@@ -85,7 +88,7 @@ if(cross){response.headers.set('Access-Control-Allow-Origin',origin);response.he
 return response;
 }
 
-function geminiText(result){return (result.candidates?.[0]?.content?.parts||[]).filter(p=>!p.thought&&typeof p.text==='string').map(p=>p.text).join('');}
+function geminiText(result){const parts=result.candidates?.[0]?.content?.parts||[];const normal=parts.filter(p=>!p.thought&&typeof p.text==='string').map(p=>p.text).join('');return normal||parts.filter(p=>typeof p.text==='string').map(p=>p.text).join('');}
 function gemini(fetcher,env,body,timeout){
  const model=env.GEMINI_MODEL||'gemini-3.6-flash';
  return fetcher('https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(model)+':generateContent',{method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':env.GEMINI_API_KEY},signal:AbortSignal.timeout(timeout),body:JSON.stringify(body)});
