@@ -614,5 +614,241 @@ aside nav .active {
   }
 }
 
+/* Topbar Polish & Robust Responsive Layout */
+.topbar {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 100 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 14px !important;
+  padding: 10px 24px !important;
+  background: rgba(254, 251, 246, 0.97) !important;
+  border-bottom: 1px solid #dfd2c1 !important;
+  backdrop-filter: blur(12px) !important;
+  box-shadow: 0 2px 12px rgba(67, 48, 30, 0.04) !important;
+}
+
+.brand {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  cursor: pointer !important;
+  text-decoration: none !important;
+  flex-shrink: 0 !important;
+  margin-right: 0 !important;
+}
+
+.brand-logo-img {
+  width: 38px !important;
+  height: 38px !important;
+  border-radius: 10px !important;
+  object-fit: cover !important;
+  border: 1.5px solid #d4c2ab !important;
+  box-shadow: 0 2px 8px rgba(67, 48, 30, 0.12) !important;
+  flex-shrink: 0 !important;
+}
+
+.brand strong {
+  display: block !important;
+  font-size: 16.5px !important;
+  font-weight: 700 !important;
+  color: #3b281b !important;
+  line-height: 1.2 !important;
+}
+
+.brand strong span {
+  color: #6b4f3a !important;
+}
+
+.brand small {
+  display: block !important;
+  color: #8c7462 !important;
+  font-size: 9.5px !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+  font-weight: 700 !important;
+  line-height: 1.2 !important;
+}
+
+.nav {
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  flex: 1 !important;
+  justify-content: center !important;
+  min-width: 0 !important;
+}
+
+.nav-btn {
+  border: 0 !important;
+  background: transparent !important;
+  padding: 7px 11px !important;
+  border-radius: 10px !important;
+  color: #6d5846 !important;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  cursor: pointer !important;
+  transition: all 0.16s ease !important;
+  white-space: nowrap !important;
+  text-decoration: none !important;
+  line-height: 1 !important;
+}
+
+.nav-btn:hover {
+  background: #f0e4d2 !important;
+  color: #3b281b !important;
+}
+
+.nav-btn.active {
+  background: #e8dccb !important;
+  color: #3b281b !important;
+  font-weight: 700 !important;
+  box-shadow: 0 1px 4px rgba(67, 48, 30, 0.08) !important;
+}
+
+.sentinel-nav-link {
+  background: #f4ecdf !important;
+  color: #5c412d !important;
+  border: 1px solid #dfd2c1 !important;
+  margin-right: 4px !important;
+  font-weight: 700 !important;
+}
+
+.sentinel-nav-link:hover {
+  background: #e9decb !important;
+  border-color: #c9b59d !important;
+}
+
+.top-actions {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  flex-shrink: 0 !important;
+  margin-left: 0 !important;
+}
+
+.lang-select-wrap {
+  position: relative !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  flex-shrink: 0 !important;
+}
+
+#languageSelector {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  border: 1px solid #dfd2c1 !important;
+  background: #ffffff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%235c412d' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 9px center !important;
+  padding: 7px 28px 7px 11px !important;
+  border-radius: 10px !important;
+  color: #493526 !important;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  cursor: pointer !important;
+  outline: none !important;
+  transition: all 0.18s ease !important;
+  flex-shrink: 0 !important;
+}
+
+#languageSelector:focus {
+  border-color: #6e4f37 !important;
+  box-shadow: 0 0 0 3px rgba(110, 79, 55, 0.12) !important;
+}
+
+.profile-btn {
+  border: 1px solid #dfd2c1 !important;
+  background: #ffffff !important;
+  padding: 7px 12px !important;
+  border-radius: 10px !important;
+  color: #493526 !important;
+  font-weight: 700 !important;
+  font-size: 13px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  cursor: pointer !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+  transition: all 0.18s ease !important;
+  box-shadow: 0 1px 3px rgba(67, 48, 30, 0.04) !important;
+}
+
+.profile-btn:hover {
+  background: #fbf7f0 !important;
+  border-color: #baa48b !important;
+  transform: translateY(-1px) !important;
+}
+
+.profile-avatar {
+  font-size: 14px !important;
+  line-height: 1 !important;
+}
+
+.logout-btn {
+  border: 1px solid #dfd2c1 !important;
+  background: #ffffff !important;
+  border-radius: 10px !important;
+  padding: 7px 9px !important;
+  color: #5c412d !important;
+  cursor: pointer !important;
+  font-size: 14px !important;
+  line-height: 1 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+  transition: all 0.18s ease !important;
+  box-shadow: 0 1px 3px rgba(67, 48, 30, 0.04) !important;
+}
+
+.logout-btn:hover {
+  background: #faeae6 !important;
+  border-color: #dfb2a9 !important;
+  color: #a83b24 !important;
+  transform: translateY(-1px) !important;
+}
+
+@media(max-width: 1160px) {
+  .topbar {
+    gap: 8px !important;
+    padding: 8px 12px !important;
+  }
+  .nav-btn {
+    padding: 6px 8px !important;
+    font-size: 12px !important;
+    gap: 4px !important;
+  }
+  .sentinel-nav-link {
+    margin-right: 2px !important;
+  }
+}
+
+@media(max-width: 920px) {
+  .topbar {
+    flex-wrap: wrap !important;
+    padding: 8px 12px !important;
+  }
+  .brand {
+    order: 1 !important;
+  }
+  .top-actions {
+    order: 2 !important;
+    margin-left: auto !important;
+  }
+  .nav {
+    order: 3 !important;
+    width: 100% !important;
+    justify-content: flex-start !important;
+    overflow-x: auto !important;
+    padding: 4px 0 2px !important;
+    gap: 4px !important;
+  }
+}
+
 
 

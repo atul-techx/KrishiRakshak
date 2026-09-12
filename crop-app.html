@@ -50,26 +50,44 @@
 <!-- APP -->
 <div id="app" class="app hidden">
   <header class="topbar">
-    <div class="brand" id="brandHome">
-      <div class="brand-logo">K</div>
+    <div class="brand" id="brandHome" title="KrishiRakshak Home">
+      <img src="rakshak-logo.png" class="brand-logo-img" alt="KrishiRakshak">
       <div><strong>Krishi<span>Rakshak</span></strong><small>Farmer intelligence</small></div>
     </div>
-    <nav class="nav"><a class="nav-btn" href="index.html">◈ Field Sentinel</a>
-      <button class="nav-btn active" data-page="home">⌂ <span data-i18n="home">Home</span></button>
-      <button class="nav-btn" data-page="scan"> <span data-i18n="scan">Scan</span></button>
-      <button class="nav-btn" data-page="dashboard">▦ <span data-i18n="dashboard">Dashboard</span></button>
-      <button class="nav-btn" data-page="expert"> <span data-i18n="expert">Expert</span></button>
-      <button class="nav-btn" data-page="official"> <span>Hotspots</span></button>
+    <nav class="nav">
+      <a class="nav-btn sentinel-nav-link" href="index.html" title="Field Sentinel">
+        <span>◈</span> <span>Field Sentinel</span>
+      </a>
+      <button class="nav-btn active" data-page="home">
+        <span>⌂</span> <span data-i18n="home">Home</span>
+      </button>
+      <button class="nav-btn" data-page="scan">
+        <span>📷</span> <span data-i18n="scan">Scan</span>
+      </button>
+      <button class="nav-btn" data-page="dashboard">
+        <span>📊</span> <span data-i18n="dashboard">Dashboard</span>
+      </button>
+      <button class="nav-btn" data-page="expert">
+        <span>🩺</span> <span data-i18n="expert">Expert</span>
+      </button>
+      <button class="nav-btn" data-page="official">
+        <span>🗺️</span> <span>Hotspots</span>
+      </button>
     </nav>
     <div class="top-actions">
-      <select id="languageSelector" title="Language">
-        <option value="en">English</option>
-        <option value="hi">हिन्दी</option>
-        
-        <option value="mr">मराठी</option>
-      </select>
-      <button id="profileBtn" class="profile-btn"> <span id="profileName">Farmer</span></button>
-      <button id="logoutBtn" class="icon-btn" title="Logout">↪</button>
+      <div class="lang-select-wrap">
+        <select id="languageSelector" title="Language" aria-label="Select Language">
+          <option value="en">English</option>
+          <option value="hi">हिन्दी</option>
+          <option value="mr">मराठी</option>
+        </select>
+      </div>
+      <button id="profileBtn" class="profile-btn" type="button" title="Farmer profile">
+        <span class="profile-avatar">👤</span> <span id="profileName">Farmer</span>
+      </button>
+      <button id="logoutBtn" class="icon-btn logout-btn" title="Logout" aria-label="Logout" type="button">
+        <span>🚪</span>
+      </button>
     </div>
   </header>
 
