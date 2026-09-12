@@ -1,3 +1,5 @@
+import { stateMap, transformAgmarkRecord } from './crop-intelligence.mjs';
+const marketCache = new Map();
 const json=(body,status=200)=>new Response(JSON.stringify(body),{status,headers:{'Content-Type':'application/json','Cache-Control':'no-store'}});
 const windows=new Map();
 const textOf=value=>typeof value==='string'?value:JSON.stringify(value||'');
@@ -637,37 +639,49 @@ async function handleMarketPrices(request, env, fetcher) {
 
   if (env.DATA_GOV_IN_API_KEY) {
     try {
-      const apiUrl = `https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070?api-key=${encodeURIComponent(env.DATA_GOV_IN_API_KEY)}&format=json&limit=50`;
-      const res = await fetcher(apiUrl, { signal: AbortSignal.timeout(4000) });
-      if (res.ok) {
-        const agmark = await res.json();
-        if (agmark?.records && Array.isArray(agmark.records) && agmark.records.length > 0) {
-          records = agmark.records.map((r, idx) => ({
-            id: 'agmark-' + idx,
-            commodity: r.commodity || 'Crop',
-            commodityHi: r.commodity || 'फसल',
-            commodityMr: r.commodity || 'पीक',
-            category: 'vegetables',
-            icon: '🌾',
-            market: `${r.market || 'APMC'} (${r.district || ''})`,
-            district: r.district || '',
-            state: r.state || '',
-            modalPrice: Number(r.modal_price) || 0,
-            minPrice: Number(r.min_price) || 0,
-            maxPrice: Number(r.max_price) || 0,
-            change: 0,
-            changePct: '0%',
-            trend: 'stable',
-            arrival: 'APMC Recorded',
-            msp: null,
-            advisoryEn: 'Official daily Agmarknet reported rate.',
-            advisoryHi: 'आधिकारिक एगमार्कनेट दैनिक दर्ज भाव।',
-            advisoryMr: 'अधिकृत ॲगमार्कनेट दैनंदिन नोंदवलेला दर.',
-            updatedAt: r.arrival_date || '13 Sep 2026'
-          }));
+      const cacheKey = stateQuery || 'all';
+      const now = Date.now();
+      const cached = marketCache.get(cacheKey);
+
+      if (cached && (now - cached.timestamp < 600000)) {
+        records = cached.records;
+      } else {
+        let liveRecords = [];
+        if (stateQuery && stateQuery !== 'all') {
+          const targetState = stateMap[stateQuery] || (stateQuery.charAt(0).toUpperCase() + stateQuery.slice(1));
+          const apiUrl = `https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070?api-key=${encodeURIComponent(env.DATA_GOV_IN_API_KEY)}&format=json&limit=150&filters%5Bstate%5D=${encodeURIComponent(targetState)}`;
+          const res = await fetcher(apiUrl, { signal: AbortSignal.timeout(5000) });
+          if (res.ok) {
+            const data = await res.json();
+            if (Array.isArray(data?.records) && data.records.length > 0) {
+              liveRecords = data.records;
+            }
+          }
+        } else {
+          // Query major agricultural hubs in parallel: Maharashtra, Uttar Pradesh, Madhya Pradesh, Gujarat, Punjab, Rajasthan
+          const topStates = ['Maharashtra', 'Uttar Pradesh', 'Madhya Pradesh', 'Gujarat', 'Punjab', 'Rajasthan'];
+          const fetchPromises = topStates.map(st =>
+            fetcher(
+              `https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070?api-key=${encodeURIComponent(env.DATA_GOV_IN_API_KEY)}&format=json&limit=35&filters%5Bstate%5D=${encodeURIComponent(st)}`,
+              { signal: AbortSignal.timeout(5000) }
+            ).then(r => r.ok ? r.json() : null).catch(() => null)
+          );
+          const results = await Promise.allSettled(fetchPromises);
+          for (const res of results) {
+            if (res.status === 'fulfilled' && Array.isArray(res.value?.records)) {
+              liveRecords.push(...res.value.records);
+            }
+          }
+        }
+
+        if (liveRecords.length > 0) {
+          records = liveRecords.map((r, idx) => transformAgmarkRecord(r, idx));
+          marketCache.set(cacheKey, { timestamp: now, records });
         }
       }
-    } catch {}
+    } catch (e) {
+      console.warn('Market prices live fetch failed, using fallback:', e);
+    }
   }
 
   let filtered = records;
@@ -693,7 +707,24 @@ async function handleMarketPrices(request, env, fetcher) {
     source: env.DATA_GOV_IN_API_KEY ? 'Agmarknet Live API (data.gov.in)' : 'Agmarknet APMC Daily Intelligence (Ministry of Agriculture)',
     updatedAt: "13 Sep 2026",
     total: filtered.length,
-    states: ["All", "Maharashtra", "Madhya Pradesh", "Uttar Pradesh", "Punjab", "Haryana", "Rajasthan", "Gujarat"],
+    states: [
+      "All",
+      "Maharashtra",
+      "Uttar Pradesh",
+      "Madhya Pradesh",
+      "Gujarat",
+      "Punjab",
+      "Haryana",
+      "Rajasthan",
+      "Bihar",
+      "Karnataka",
+      "Telangana",
+      "Andhra Pradesh",
+      "Tamil Nadu",
+      "West Bengal",
+      "Odisha",
+      "Kerala"
+    ],
     categories: [
       { id: "all", labelEn: "All Crops", labelHi: "सभी फसलें", labelMr: "सर्व पिके" },
       { id: "vegetables", labelEn: "Vegetables", labelHi: "सब्जियां", labelMr: "भाज्या" },
