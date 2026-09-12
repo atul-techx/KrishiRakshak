@@ -629,7 +629,7 @@ aside nav .active {
 .topbar {
   position: sticky !important;
   top: 0 !important;
-  z-index: 100 !important;
+  z-index: 2500 !important;
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
@@ -1663,21 +1663,52 @@ aside nav .active {
 }
 
 /* ==========================================================
-   LOCATION & FIELD SURVEILLANCE STYLES
+   LOCATION & FIELD SURVEILLANCE STYLES (NON-COLLAPSIBLE)
    ========================================================== */
 
+#officialPage .section-wrap {
+  padding: 24px 24px 32px !important;
+}
+
+#officialPage .section-head {
+  margin-bottom: 20px !important;
+}
+
+.official-grid {
+  display: grid !important;
+  grid-template-columns: 2fr 1fr !important;
+  gap: 18px !important;
+  align-items: stretch !important;
+}
+
+.map-card {
+  position: relative !important;
+  overflow: hidden !important;
+  border-radius: 18px !important;
+  background: #fffaf2 !important;
+  border: 1px solid #dfd2c1 !important;
+  box-shadow: 0 4px 20px rgba(67, 48, 30, 0.08) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 520px !important;
+  z-index: 2 !important;
+}
+
 .map-toolbar {
-  position: absolute !important;
-  top: 14px !important;
-  left: 14px !important;
-  right: 14px !important;
-  z-index: 500 !important;
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  z-index: 10 !important;
   display: flex !important;
   flex-wrap: wrap !important;
   align-items: center !important;
   justify-content: space-between !important;
   gap: 10px !important;
-  pointer-events: none !important;
+  padding: 12px 16px !important;
+  background: #fcf8f1 !important;
+  border-bottom: 1px solid #e7dcce !important;
+  pointer-events: auto !important;
 }
 
 .map-toolbar > * {
@@ -1688,14 +1719,14 @@ aside nav .active {
   border: 1px solid #d4c5b2 !important;
   background: rgba(255, 250, 242, 0.96) !important;
   backdrop-filter: blur(8px) !important;
-  padding: 9px 14px !important;
+  padding: 8px 14px !important;
   border-radius: 12px !important;
   color: var(--brown) !important;
   font-weight: 700 !important;
   font-size: 13px !important;
   cursor: pointer !important;
   outline: none !important;
-  box-shadow: 0 4px 14px rgba(67, 48, 30, 0.12) !important;
+  box-shadow: 0 2px 8px rgba(67, 48, 30, 0.08) !important;
   transition: all 0.18s ease !important;
 }
 
@@ -1712,8 +1743,8 @@ aside nav .active {
   backdrop-filter: blur(8px) !important;
   border: 1px solid #dcd0bf !important;
   border-radius: 30px !important;
-  padding: 5px 12px !important;
-  box-shadow: 0 4px 14px rgba(67, 48, 30, 0.1) !important;
+  padding: 4px 10px !important;
+  box-shadow: 0 2px 8px rgba(67, 48, 30, 0.06) !important;
 }
 
 .legend-pill {
@@ -1750,10 +1781,24 @@ aside nav .active {
   background: #f2e6d5 !important;
 }
 
+.map-card #hotspotMap {
+  position: relative !important;
+  width: 100% !important;
+  height: 480px !important;
+  flex: 1 !important;
+  z-index: 1 !important;
+}
+
+.official-stats {
+  position: relative !important;
+  z-index: 2 !important;
+}
+
 .clickable-stat {
   transition: all 0.15s ease !important;
   border-radius: 10px !important;
   padding: 10px 8px !important;
+  cursor: pointer !important;
 }
 
 .clickable-stat:hover {
@@ -1849,4 +1894,14 @@ aside nav .active {
   color: var(--ink) !important;
   margin-top: 2px !important;
 }
+
+@media(max-width: 900px) {
+  .official-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .map-card #hotspotMap {
+    height: 380px !important;
+  }
+}
+
 

@@ -563,7 +563,7 @@ function renderOfficialDashboard(){
     return;
   }
   if (!state.map) {
-    state.map = L.map(mapEl, { zoomControl: true, preferCanvas: true }).setView([centerLat, centerLon], 11);
+    state.map = L.map(mapEl, { zoomControl: true, preferCanvas: false }).setView([centerLat, centerLon], 11);
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, attribution: "© OpenStreetMap contributors" }).addTo(state.map);
     state.mapLayer = L.layerGroup().addTo(state.map);
     setTimeout(() => state.map.invalidateSize(true), 150);
@@ -624,7 +624,7 @@ function renderOfficialDashboard(){
       statusClass = "status-gps";
     }
 
-    L.circle([x.lat, x.lon], {
+    const halo = L.circle([x.lat, x.lon], {
       radius: isHigh ? 750 : isLiveGPS ? 550 : 420,
       color: haloColor,
       fillColor: haloColor,
@@ -656,11 +656,12 @@ function renderOfficialDashboard(){
     `;
 
     marker.bindPopup(popupHtml, { maxWidth: 280 });
+    halo.bindPopup(popupHtml, { maxWidth: 280 });
   });
 
   const bounds = L.latLngBounds(points.map(p => [Number(p.lat), Number(p.lon)]));
   if (bounds.isValid()) {
-    state.map.fitBounds(bounds, { padding: [40, 40], maxZoom: 13 });
+    state.map.fitBounds(bounds, { padding: [35, 35], maxZoom: 13, animate: false });
   }
 }
 
