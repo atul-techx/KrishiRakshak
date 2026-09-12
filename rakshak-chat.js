@@ -1,35 +1,335 @@
 (()=>{'use strict';
 let busy=false,history=[],ready=false,photo=null,photoVersion=0,preparing=false;
 const labels={
-en:['Ask Rakshak','Crop questions & photo review','Ask about your crop…','Send','Close','Connecting…','Assistant configured; checked when you send','Assistant setup required','Unable to connect. Retry.','Checking your question and sources…','Retry','Add crop photo','Remove photo','New conversation','Choose a JPEG, PNG or WebP photo under 12 MB.','Photo could not be opened.','Photo stays attached for follow-up questions. Sending shares it with Google Gemini.','Describe this crop photo. What should I check next?','Sources were not verified for this answer.','Service unavailable or quota reached. Retry later.','Crop photo','Photo ready','No photo attached'],
-hi:['रक्षक से पूछें','फसल के सवाल और फोटो समीक्षा','अपनी फसल के बारे में पूछें…','भेजें','बंद करें','जुड़ रहा है…','सहायक तैयार; भेजने पर कनेक्शन जाँचेंगे','सहायक का सेटअप जरूरी है','कनेक्शन नहीं हुआ। दोबारा कोशिश करें।','सवाल और स्रोत जाँच रहा है…','दोबारा भेजें','फसल का फोटो जोड़ें','फोटो हटाएँ','नई बातचीत','12 MB से छोटा JPEG, PNG या WebP फोटो चुनें।','फोटो नहीं खुल सका।','अगले सवालों के लिए फोटो जुड़ा रहेगा। भेजने पर यह Google Gemini से साझा होगा।','इस फसल के फोटो को समझाएँ। आगे क्या जाँचें?','इस उत्तर के स्रोत सत्यापित नहीं हुए।','सेवा उपलब्ध नहीं है या सीमा पूरी है। बाद में कोशिश करें।','फसल का फोटो','फोटो तैयार है','कोई फोटो नहीं जुड़ा'],
-mr:['रक्षकला विचारा','पिकांचे प्रश्न आणि फोटो परीक्षण','तुमच्या पिकाबद्दल विचारा…','पाठवा','बंद करा','जोडत आहे…','सहाय्यक तयार; पाठवताना जोडणी तपासू','सहाय्यकाचे सेटअप आवश्यक आहे','जोडणी झाली नाही. पुन्हा प्रयत्न करा.','प्रश्न आणि स्रोत तपासत आहे…','पुन्हा पाठवा','पिकाचा फोटो जोडा','फोटो काढा','नवीन संभाषण','12 MB पेक्षा लहान JPEG, PNG किंवा WebP फोटो निवडा.','फोटो उघडता आला नाही.','पुढील प्रश्नांसाठी फोटो जोडलेला राहील. पाठवल्यावर तो Google Gemini सोबत शेअर होईल.','या पिकाचा फोटो समजावून सांगा. पुढे काय तपासावे?','या उत्तरातील स्रोत पडताळलेले नाहीत.','सेवा अनुपलब्ध आहे किंवा मर्यादा संपली आहे. नंतर प्रयत्न करा.','पिकाचा फोटो','फोटो तयार आहे','फोटो जोडलेला नाही'],
+en:['Ask Rakshak','Crop questions & photo review','Ask about your crop…','Send','Close','Connecting…','● Online · AI Assistant','Assistant setup required','Unable to connect. Retry.','Thinking…','Retry','Add photo','Remove','New conversation','Choose a JPEG, PNG or WebP photo under 12 MB.','Photo could not be opened.','Photo attached for visual analysis','Describe this crop photo. What should I check next?','','Service unavailable or quota reached. Retry later.','Crop photo','Photo ready','No photo attached'],
+hi:['रक्षक से पूछें','फसल समाधान एवं फोटो समीक्षा','फसल के बारे में पूछें…','भेजें','बंद करें','जुड़ रहा है…','● ऑनलाइन · कृषक AI','सहायक का सेटअप जरूरी है','कनेक्शन नहीं हुआ। दोबारा कोशिश करें।','सोच रहा है…','दोबारा भेजें','फोटो जोड़ें','हटाएँ','नई बातचीत','12 MB से छोटा JPEG, PNG या WebP फोटो चुनें।','फोटो नहीं खुल सका।','फोटो जुड़ा हुआ है','इस फसल के फोटो को समझाएँ। आगे क्या जाँचें?','','सेवा अनुपलब्ध है या सीमा पूरी है। बाद में कोशिश करें।','फसल का फोटो','फोटो तैयार है','कोई फोटो नहीं जुड़ा'],
+mr:['रक्षकला विचारा','पीक सल्ला आणि फोटो परीक्षण','पिकाबद्दल विचारा…','पाठवा','बंद करा','जोडत आहे…','● ऑनलाइन · शेती AI','सहाय्यकाचे सेटअप आवश्यक आहे','जोडणी झाली नाही. पुन्हा प्रयत्न करा.','विचार करत आहे…','पुन्हा पाठवा','फोटो जोडा','काढा','नवीन संभाषण','12 MB पेक्षा लहान JPEG, PNG किंवा WebP फोटो निवडा.','फोटो उघडता आला नाही.','फोटो जोडला आहे','या पिकाचा फोटो समजावून सांगा. पुढे काय तपासावे?','','सेवा अनुपलब्ध आहे किंवा मर्यादा संपली आहे. नंतर प्रयत्न करा.','पिकाचा फोटो','फोटो तयार आहे','फोटो जोडलेला नाही'],
 };
 const lang=()=>window.KrishiI18n?.getLanguage()||(['en','hi','mr'].includes(localStorage.getItem('krishiLanguage'))?localStorage.getItem('krishiLanguage'):'en'),L=()=>labels[lang()]||labels.en;
-const root=document.createElement('div');root.id='rakshak-widget';root.dataset.noTranslate='';
-root.innerHTML='<button class="rakshak-launch" type="button"></button><section class="rakshak-panel" hidden aria-label="Rakshak"><div class="rakshak-head"><div><b></b><small></small></div><button class="rakshak-close" type="button">×</button></div><p class="rakshak-status" role="status"></p><div class="rakshak-messages" role="log" aria-live="polite"></div><div class="rakshak-attachment"><div class="rakshak-photo" hidden><img><span></span><button type="button" class="remove-photo"></button></div><div class="rakshak-tools"><button type="button" class="add-photo"></button><button type="button" class="new-chat"></button></div><input type="file" class="photo-input" accept="image/jpeg,image/png,image/webp" hidden><small class="photo-notice"></small></div><form class="rakshak-form"><input maxlength="4000"><button type="submit"></button></form></section>';document.body.append(root);
+
+const root=document.createElement('div');
+root.id='rakshak-widget';
+root.dataset.noTranslate='';
+
+root.innerHTML=`
+<button class="rakshak-launch" type="button">
+  <span class="rakshak-launch-icon">🌱</span>
+  <span class="rakshak-launch-text"></span>
+</button>
+<section class="rakshak-panel" hidden aria-label="Rakshak">
+  <div class="rakshak-head">
+    <div class="rakshak-head-info">
+      <div class="rakshak-avatar">🌱</div>
+      <div>
+        <div class="rakshak-head-title-row">
+          <b></b>
+          <span class="rakshak-head-tag">AI</span>
+        </div>
+        <small class="rakshak-status-pill"></small>
+      </div>
+    </div>
+    <div class="rakshak-head-actions">
+      <button type="button" class="new-chat" title="New conversation" aria-label="New conversation">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
+      </button>
+      <button class="rakshak-close" type="button" aria-label="Close">×</button>
+    </div>
+  </div>
+  <p class="rakshak-status" role="status" hidden></p>
+  <div class="rakshak-messages" role="log" aria-live="polite"></div>
+  <div class="rakshak-attachment">
+    <div class="rakshak-photo" hidden>
+      <img><span></span><button type="button" class="remove-photo" title="Remove photo" aria-label="Remove photo">✕</button>
+    </div>
+    <div class="rakshak-tools" hidden>
+      <button type="button" class="add-photo-btn"></button>
+    </div>
+    <input type="file" class="photo-input" accept="image/jpeg,image/png,image/webp" hidden>
+    <small class="photo-notice" hidden></small>
+  </div>
+  <form class="rakshak-form">
+    <div class="rakshak-input-box">
+      <button type="button" class="add-photo" title="Add crop photo" aria-label="Add crop photo">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+      </button>
+      <input maxlength="4000" autocomplete="off">
+      <button type="submit" class="rakshak-send" title="Send message" aria-label="Send">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+      </button>
+    </div>
+  </form>
+</section>`;
+document.body.append(root);
+
 const q=s=>root.querySelector(s),panel=q('section'),input=q('form input'),messages=q('.rakshak-messages'),fileInput=q('.photo-input');
-function refresh(){q('.rakshak-launch').textContent=L()[0];q('b').textContent=L()[0];q('.rakshak-head small').textContent=L()[1];input.placeholder=L()[2];input.setAttribute('aria-label',L()[2]);q('form button').textContent=L()[3];q('.rakshak-close').setAttribute('aria-label',L()[4]);q('.rakshak-status').textContent=ready?L()[6]:L()[7];q('.add-photo').textContent=L()[11];q('.remove-photo').textContent=L()[12];q('.new-chat').textContent=L()[13];q('.photo-notice').textContent=L()[16];q('.rakshak-photo img').alt=L()[20];q('.rakshak-photo span').textContent=L()[21];fileInput.setAttribute('aria-label',L()[11]);}
+
+function formatMarkdown(text){
+  if(!text)return '';
+  let h=text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  h=h.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
+  h=h.replace(/(?<!\*)\*([^*]+?)\*(?!\*)/g,'<em>$1</em>');
+  h=h.replace(/`([^`]+?)`/g,'<code>$1</code>');
+  const lines=h.split('\n');
+  let inUl=false,inOl=false,res=[];
+  for(let line of lines){
+    const bMatch=line.match(/^(\s*)[*•-]\s+(.+)/);
+    const nMatch=line.match(/^(\s*)\d+\.\s+(.+)/);
+    if(bMatch){
+      if(inOl){res.push('</ol>');inOl=false;}
+      if(!inUl){res.push('<ul class="msg-list">');inUl=true;}
+      res.push(`<li>${bMatch[2]}</li>`);
+    }else if(nMatch){
+      if(inUl){res.push('</ul>');inUl=false;}
+      if(!inOl){res.push('<ol class="msg-list">');inOl=true;}
+      res.push(`<li>${nMatch[2]}</li>`);
+    }else{
+      if(inUl){res.push('</ul>');inUl=false;}
+      if(inOl){res.push('</ol>');inOl=false;}
+      if(line.trim().length>0){
+        res.push(`<p>${line}</p>`);
+      }
+    }
+  }
+  if(inUl)res.push('</ul>');
+  if(inOl)res.push('</ol>');
+  return res.join('');
+}
+
+function showWelcome(){
+  if(history.length||messages.children.length)return;
+  const w=document.createElement('div');
+  w.className='rakshak-welcome';
+  const welcomeTitles={en:'Namaste! I am Rakshak',hi:'नमस्ते! मैं कृषिरक्षक हूँ',mr:'नमस्ते! मी कृषिरक्षक आहे'};
+  const welcomeSubs={
+    en:'Your AI agriculture assistant for Maharashtra. Ask about crops, pests, soil, weather, or attach a leaf photo for visual diagnosis.',
+    hi:'महाराष्ट्र के किसानों के लिए AI फसल सहायक। फसल, कीट, रोग, मौसम या पत्ती की फोटो भेजकर सलाह लें।',
+    mr:'महाराष्ट्रातील शेतकऱ्यांसाठी AI पीक सहाय्यक. पीक, कीड, खते किंवा पानाचा फोटो पाठवून सल्ला मिळवा.'
+  };
+  const chips={
+    en:['🌾 Rabi crops for winter','🐛 Cotton bollworm check','💧 Soybean irrigation schedule'],
+    hi:['🌾 रबी मौसम की मुख्य फसलें','🐛 कपास की इल्ली के लक्षण','💧 सोयाबीन सिंचाई सलाह'],
+    mr:['🌾 हिवाळ्यातील रब्बी पिके','🐛 कपाशीवरील बोंडअळी उपाय','💧 सोयाबीन पाणी नियोजन']
+  }[lang()]||chips.en;
+
+  w.innerHTML=`
+    <div class="rakshak-welcome-avatar">🌱</div>
+    <h3>${welcomeTitles[lang()]||welcomeTitles.en}</h3>
+    <p>${welcomeSubs[lang()]||welcomeSubs.en}</p>
+    <div class="rakshak-chips">
+      ${chips.map(c=>`<button type="button" class="rakshak-chip">${c}</button>`).join('')}
+    </div>
+  `;
+  w.querySelectorAll('.rakshak-chip').forEach(btn=>{
+    btn.onclick=()=>{
+      input.value=btn.textContent.replace(/^[^\w\s\u0900-\u097F]+/, '').trim();
+      q('form').requestSubmit();
+    };
+  });
+  messages.append(w);
+}
+
+function refresh(){
+  q('.rakshak-launch-text').textContent=L()[0];
+  q('b').textContent=L()[0];
+  q('.rakshak-status-pill').textContent=ready?L()[6]:L()[7];
+  input.placeholder=L()[2];
+  input.setAttribute('aria-label',L()[2]);
+  q('.rakshak-close').setAttribute('aria-label',L()[4]);
+  q('.new-chat').setAttribute('title',L()[13]);
+  q('.new-chat').setAttribute('aria-label',L()[13]);
+  q('.add-photo').setAttribute('title',L()[11]);
+  q('.add-photo').setAttribute('aria-label',L()[11]);
+  q('.remove-photo').setAttribute('title',L()[12]);
+  q('.photo-notice').textContent=L()[16];
+  q('.rakshak-photo img').alt=L()[20];
+  q('.rakshak-photo span').textContent=L()[21];
+  fileInput.setAttribute('aria-label',L()[11]);
+  if(!messages.children.length)showWelcome();
+}
+
 function lock(){for(const s of ['form button','form input','.add-photo','.remove-photo','.new-chat'])q(s).disabled=busy||preparing;}
-async function status(){q('.rakshak-status').textContent=L()[5];try{const r=await window.KrishiAPI.request('/api/status',{signal:AbortSignal.timeout(8000)}),d=await r.json();ready=r.ok&&d.configured;q('.rakshak-status').textContent=ready?L()[6]:window.KrishiAPI.message(d.code||'NOT_CONFIGURED');}catch{ready=false;q('.rakshak-status').textContent=L()[8];}}
-q('.rakshak-launch').onclick=()=>{panel.hidden=!panel.hidden;if(!panel.hidden){input.focus();status();}};q('.rakshak-close').onclick=()=>panel.hidden=true;
-function message(text,role){const p=document.createElement('div');p.className='rakshak-message '+role;p.textContent=text;messages.append(p);messages.scrollTop=messages.scrollHeight;return p;}
-function clearPhoto(){photoVersion++;photo=null;fileInput.value='';q('.rakshak-photo').hidden=true;q('.rakshak-photo img').removeAttribute('src');}
-q('.remove-photo').onclick=()=>{if(!busy)clearPhoto();};q('.add-photo').onclick=()=>fileInput.click();
-fileInput.onchange=async()=>{const file=fileInput.files?.[0];if(!file)return;fileInput.value='';if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>12*1024*1024){message(L()[14],'assistant error');return;}
-const version=++photoVersion;preparing=true;lock();const url=URL.createObjectURL(file);
-try{const img=await new Promise((resolve,reject)=>{const i=new Image();i.onload=()=>resolve(i);i.onerror=reject;i.src=url;});
-if(version!==photoVersion)return;if(!img.width||!img.height)throw Error();const scale=Math.min(1,1200/Math.max(img.width,img.height)),canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(img.width*scale));canvas.height=Math.max(1,Math.round(img.height*scale));canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);const dataUrl=canvas.toDataURL('image/jpeg',.8);const data=dataUrl.split(',')[1];if(!data||data.length>4000000)throw Error();
-photo={mimeType:'image/jpeg',data};q('.rakshak-photo img').src=dataUrl;q('.rakshak-photo').hidden=false;
-}catch{message(L()[15],'assistant error');}finally{URL.revokeObjectURL(url);preparing=false;lock();}};
-q('.new-chat').onclick=()=>{if(busy)return;clearPhoto();history=[];messages.replaceChildren();input.value='';};
-function context(){try{if(typeof state!=='undefined'&&state.lastResult)return JSON.stringify({crop:state.lastResult.crop,finding:state.lastResult.disease});const d=JSON.parse(localStorage.getItem('sentinel-v5')||'{}'),o=d.observations?.at(-1);return o?JSON.stringify({crop:o.crop,stage:o.stage,sampled:o.sampled,affected:o.affected}):'';}catch{return '';}}
-function showAnswer(node,d){node.replaceChildren();const answer=String(d.answer||'');let offset=0;
-for(const c of (d.citations||[]).sort((a,b)=>a.start-b.start)){if(!/^https?:\/\//.test(c.url)||!Number.isInteger(c.start)||!Number.isInteger(c.end)||c.start<offset||c.end<=c.start||c.end>answer.length)continue;node.append(document.createTextNode(answer.slice(offset,c.start)));const a=document.createElement('a');a.href=c.url;a.target='_blank';a.rel='noopener noreferrer';a.textContent=answer.slice(c.start,c.end)||c.title;a.title=c.title;node.append(a);offset=c.end;}
-node.append(document.createTextNode(answer.slice(offset)));if(d.searchSuggestions){const frame=document.createElement('iframe');frame.title='Google Search';frame.setAttribute('sandbox','allow-popups allow-popups-to-escape-sandbox');frame.setAttribute('referrerpolicy','no-referrer');frame.srcdoc=String(d.searchSuggestions);frame.style.cssText='width:100%;height:160px;border:0';node.append(frame);}if(!d.verifiedSources){const note=document.createElement('small');note.textContent=L()[18];node.append(document.createElement('br'),note);}}
-async function send(text,attached,retry=false){if(busy||preparing)return;busy=true;lock();if(!retry){const p=message(text,'user');if(attached){const img=document.createElement('img');img.className='rakshak-sent-photo';img.alt=L()[20];img.src=`data:${attached.mimeType};base64,${attached.data}`;p.append(img);}}const pending=message(L()[9],'assistant');
-try{const r=await window.KrishiAPI.request('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},signal:AbortSignal.timeout(55000),body:JSON.stringify({message:text,language:lang(),history,context:context(),...(attached?{image:attached}:{})})}),d=await r.json();if(!r.ok||!d.answer)throw Error(window.KrishiAPI.message(d.code));showAnswer(pending,d);history.push({role:'user',text},{role:'model',text:d.answer});history=history.slice(-6);ready=true;q('.rakshak-status').textContent=L()[6];
-}catch(e){ready=false;q('.rakshak-status').textContent=L()[8];pending.textContent=e.name==='TimeoutError'?L()[8]:e.message;pending.classList.add('error');const b=document.createElement('button');b.type='button';b.textContent=L()[10];b.onclick=()=>{if(busy)return;b.remove();send(text,attached,true);};pending.append(document.createElement('br'),b);}finally{busy=false;lock();input.focus();messages.scrollTop=messages.scrollHeight;}}
-q('form').onsubmit=e=>{e.preventDefault();if(busy||preparing)return;const text=input.value.trim()||(photo?L()[17]:'');if(!text)return;input.value='';send(text,photo);};
-window.addEventListener('krishi-language',refresh);root.addEventListener('keydown',e=>{if(e.key==='Escape')panel.hidden=true});refresh();
+
+async function status(){
+  q('.rakshak-status-pill').textContent=L()[5];
+  try{
+    const r=await window.KrishiAPI.request('/api/status',{signal:AbortSignal.timeout(8000)}),d=await r.json();
+    ready=r.ok&&d.configured;
+    q('.rakshak-status-pill').textContent=ready?L()[6]:window.KrishiAPI.message(d.code||'NOT_CONFIGURED');
+    if(!ready){
+      q('.rakshak-status').textContent=window.KrishiAPI.message(d.code||'NOT_CONFIGURED');
+      q('.rakshak-status').hidden=false;
+    }else{
+      q('.rakshak-status').hidden=true;
+    }
+  }catch{
+    ready=false;
+    q('.rakshak-status-pill').textContent=L()[8];
+    q('.rakshak-status').textContent=L()[8];
+    q('.rakshak-status').hidden=false;
+  }
+}
+
+q('.rakshak-launch').onclick=()=>{
+  panel.hidden=!panel.hidden;
+  if(!panel.hidden){
+    input.focus();
+    status();
+    if(!messages.children.length)showWelcome();
+  }
+};
+q('.rakshak-close').onclick=()=>panel.hidden=true;
+
+function message(text,role){
+  const welcome=messages.querySelector('.rakshak-welcome');
+  if(welcome)welcome.remove();
+  const p=document.createElement('div');
+  p.className='rakshak-message '+role;
+  if(text)p.textContent=text;
+  messages.append(p);
+  messages.scrollTop=messages.scrollHeight;
+  return p;
+}
+
+function clearPhoto(){
+  photoVersion++;photo=null;fileInput.value='';
+  q('.rakshak-photo').hidden=true;
+  q('.rakshak-photo img').removeAttribute('src');
+}
+
+q('.remove-photo').onclick=()=>{if(!busy)clearPhoto();};
+q('.add-photo').onclick=()=>fileInput.click();
+
+fileInput.onchange=async()=>{
+  const file=fileInput.files?.[0];if(!file)return;fileInput.value='';
+  if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>12*1024*1024){message(L()[14],'assistant error');return;}
+  const version=++photoVersion;preparing=true;lock();const url=URL.createObjectURL(file);
+  try{
+    const img=await new Promise((resolve,reject)=>{const i=new Image();i.onload=()=>resolve(i);i.onerror=reject;i.src=url;});
+    if(version!==photoVersion)return;if(!img.width||!img.height)throw Error();
+    const scale=Math.min(1,1200/Math.max(img.width,img.height)),canvas=document.createElement('canvas');
+    canvas.width=Math.max(1,Math.round(img.width*scale));
+    canvas.height=Math.max(1,Math.round(img.height*scale));
+    canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
+    const dataUrl=canvas.toDataURL('image/jpeg',.8);
+    const data=dataUrl.split(',')[1];if(!data||data.length>4000000)throw Error();
+    photo={mimeType:'image/jpeg',data};
+    q('.rakshak-photo img').src=dataUrl;
+    q('.rakshak-photo').hidden=false;
+    input.focus();
+  }catch{
+    message(L()[15],'assistant error');
+  }finally{
+    URL.revokeObjectURL(url);preparing=false;lock();
+  }
+};
+
+q('.new-chat').onclick=()=>{
+  if(busy)return;
+  clearPhoto();history=[];
+  messages.replaceChildren();
+  input.value='';
+  showWelcome();
+};
+
+function context(){
+  try{
+    if(typeof state!=='undefined'&&state.lastResult)return JSON.stringify({crop:state.lastResult.crop,finding:state.lastResult.disease});
+    const d=JSON.parse(localStorage.getItem('sentinel-v5')||'{}'),o=d.observations?.at(-1);
+    return o?JSON.stringify({crop:o.crop,stage:o.stage,sampled:o.sampled,affected:o.affected}):'';
+  }catch{return '';}
+}
+
+function showAnswer(node,d){
+  node.replaceChildren();
+  let answer=String(d.answer||'');
+  answer=answer.replace(/^\s*(?:Please note that )?(?:live )?(?:web )?search is (?:currently )?unavailable[^\n]*\n*/i,'').replace(/^\s*Sources were not verified[^\n]*\n*/i,'').trim();
+  node.innerHTML=formatMarkdown(answer);
+
+  if(Array.isArray(d.citations)&&d.citations.length>0){
+    const sourcesDiv=document.createElement('div');
+    sourcesDiv.className='rakshak-sources';
+    sourcesDiv.innerHTML='<span class="rakshak-sources-title">Verified sources:</span>';
+    const seen=new Set();
+    for(const c of d.citations){
+      if(!/^https?:\/\//.test(c.url)||seen.has(c.url))continue;
+      seen.add(c.url);
+      const a=document.createElement('a');
+      a.href=c.url;a.target='_blank';a.rel='noopener noreferrer';
+      a.className='rakshak-source-pill';
+      a.textContent=c.title||(new URL(c.url)).hostname;
+      sourcesDiv.append(a);
+    }
+    if(seen.size>0)node.append(sourcesDiv);
+  }
+
+  if(d.searchSuggestions){
+    const frame=document.createElement('iframe');
+    frame.title='Google Search';
+    frame.setAttribute('sandbox','allow-popups allow-popups-to-escape-sandbox');
+    frame.setAttribute('referrerpolicy','no-referrer');
+    frame.srcdoc=String(d.searchSuggestions);
+    frame.style.cssText='width:100%;height:160px;border:0;margin-top:8px;border-radius:8px';
+    node.append(frame);
+  }
+}
+
+async function send(text,attached,retry=false){
+  if(busy||preparing)return;
+  busy=true;lock();
+  if(!retry){
+    const p=message(text,'user');
+    if(attached){
+      const img=document.createElement('img');
+      img.className='rakshak-sent-photo';
+      img.alt=L()[20];
+      img.src=`data:${attached.mimeType};base64,${attached.data}`;
+      p.append(img);
+    }
+  }
+  const pending=message('','assistant');
+  pending.innerHTML='<div class="rakshak-typing"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>';
+
+  try{
+    const r=await window.KrishiAPI.request('/api/chat',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      signal:AbortSignal.timeout(55000),
+      body:JSON.stringify({message:text,language:lang(),history,context:context(),...(attached?{image:attached}:{})})
+    }),d=await r.json();
+    if(!r.ok||!d.answer)throw Error(window.KrishiAPI.message(d.code));
+    showAnswer(pending,d);
+    history.push({role:'user',text},{role:'model',text:d.answer});
+    history=history.slice(-6);
+    ready=true;
+    q('.rakshak-status-pill').textContent=L()[6];
+    q('.rakshak-status').hidden=true;
+  }catch(e){
+    ready=false;
+    q('.rakshak-status-pill').textContent=L()[8];
+    pending.textContent=e.name==='TimeoutError'?L()[8]:e.message;
+    pending.classList.add('error');
+    const b=document.createElement('button');
+    b.type='button';
+    b.className='rakshak-retry-btn';
+    b.textContent=L()[10];
+    b.onclick=()=>{if(busy)return;b.remove();send(text,attached,true);};
+    pending.append(document.createElement('br'),b);
+  }finally{
+    busy=false;lock();input.focus();
+    messages.scrollTop=messages.scrollHeight;
+  }
+}
+
+q('form').onsubmit=e=>{
+  e.preventDefault();
+  if(busy||preparing)return;
+  const text=input.value.trim()||(photo?L()[17]:'');
+  if(!text)return;
+  input.value='';
+  send(text,photo);
+};
+
+window.addEventListener('krishi-language',refresh);
+root.addEventListener('keydown',e=>{if(e.key==='Escape')panel.hidden=true});
+refresh();
 })();

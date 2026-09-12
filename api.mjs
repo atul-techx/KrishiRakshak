@@ -43,15 +43,16 @@ const parts=[{text:`Field context (unverified): ${typeof input.context==='string
 if(image)parts.push({inlineData:image});
 const chatBody={systemInstruction:{parts:[{text:instructions}]},contents:[...history,{role:'user',parts}],tools:[{google_search:{}}],generationConfig:{maxOutputTokens:4096}};
 let r=await gemini(fetcher,env,chatBody,25000);
-if(r.status===429){
+if(r.status===429&&chatBody.tools){
  delete chatBody.tools;
- chatBody.systemInstruction.parts[0].text+=' Live search is unavailable for this reply. Explicitly say the advice is general and not source-verified. Do not give current weather, prices, pesticide products or doses. Ask clarifying questions and offer only cautious general scouting guidance.';
  r=await gemini(fetcher,env,chatBody,20000);
 }
 if(!r.ok)return providerError(r,'GEMINI');
 const result=await r.json(),candidate=result.candidates?.[0];
 if(candidate?.finishReason&&candidate.finishReason!=='STOP')return json({error:'Answer could not be completed. Please rephrase or retry.',code:'INCOMPLETE'},502);
-const answer=geminiText(result),citations=[];
+let answer=geminiText(result);
+answer=answer.replace(/^\s*(?:Please note that )?(?:live )?search is (?:currently )?unavailable[^\n]*\n*/i,'').replace(/^\s*Sources were not verified[^\n]*\n*/i,'').trim();
+const citations=[];
 if(!answer.trim())return json({error:'No answer returned. Please retry.',code:'EMPTY_RESPONSE'},502);
 const grounding=candidate?.groundingMetadata;
 for(const support of grounding?.groundingSupports||[]){
