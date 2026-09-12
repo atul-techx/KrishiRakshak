@@ -51,7 +51,8 @@ function speakText(text,btn){
   if(!clean)return;
 
   const u=new SpeechSynthesisUtterance(clean);
-  const langCode={en:'en-IN',hi:'hi-IN',mr:'mr-IN'}[lang()]||'en-IN';
+  const hasDevanagari=/[\u0900-\u097F]/.test(clean);
+  const langCode=hasDevanagari?(lang()==='mr'?'mr-IN':'hi-IN'):({en:'en-IN',hi:'hi-IN',mr:'mr-IN'}[lang()]||'hi-IN');
   u.lang=langCode;
   u.rate=0.92;
 
@@ -97,6 +98,11 @@ root.innerHTML=`
       </div>
     </div>
     <div class="rakshak-head-actions">
+      <select class="rakshak-lang-select" title="भाषा चुनें / Select Language" aria-label="भाषा चुनें / Select Language">
+        <option value="hi">हिन्दी</option>
+        <option value="mr">मराठी</option>
+        <option value="en">English</option>
+      </select>
       <button type="button" class="new-chat" title="New conversation" aria-label="New conversation">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
       </button>
@@ -212,6 +218,10 @@ function refresh(){
   q('.rakshak-photo img').alt=L()[20];
   q('.rakshak-photo span').textContent=L()[21];
   fileInput.setAttribute('aria-label',L()[11]);
+  const langSelect=q('.rakshak-lang-select');
+  if(langSelect&&langSelect.value!==lang()){
+    langSelect.value=lang();
+  }
   if(!messages.children.length)showWelcome();
 }
 
@@ -249,6 +259,22 @@ q('.rakshak-close').onclick=()=>{
   panel.hidden=true;
   stopSpeaking();
 };
+
+const chatLangSelect=q('.rakshak-lang-select');
+if(chatLangSelect){
+  chatLangSelect.value=lang();
+  chatLangSelect.onchange=e=>{
+    const selected=e.target.value;
+    try{
+      localStorage.setItem('krishiLanguage',selected);
+      localStorage.setItem('sentinel-language',selected);
+      window.KrishiI18n?.setLanguage(selected);
+    }catch{}
+    const mainLang=document.querySelector('#lang');
+    if(mainLang)mainLang.value=selected;
+    refresh();
+  };
+}
 
 function message(text,role){
   const welcome=messages.querySelector('.rakshak-welcome');

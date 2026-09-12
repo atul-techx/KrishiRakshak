@@ -20,6 +20,9 @@ body{font-family:'DM Sans','Noto Sans Devanagari',system-ui,sans-serif}.shell h1
 .rakshak-head-tag{background:rgba(255,255,255,0.2);color:#fdf0dd;font-size:10px;font-weight:700;padding:2px 6px;border-radius:6px;text-transform:uppercase;letter-spacing:0.5px}
 .rakshak-status-pill{display:block;font-size:11.5px;color:#e8d5bf;margin-top:2px;font-weight:500}
 .rakshak-head-actions{display:flex;align-items:center;gap:6px}
+.rakshak-lang-select{background:rgba(255,255,255,0.18);color:#fffaf3;border:1px solid rgba(255,255,255,0.28);border-radius:12px;padding:3px 8px;font-size:11.5px;font-weight:600;cursor:pointer;outline:none;transition:all 0.15s;font-family:inherit}
+.rakshak-lang-select:hover{background:rgba(255,255,255,0.28);border-color:rgba(255,255,255,0.45)}
+.rakshak-lang-select option{background:#463122;color:#fffaf3;font-weight:500}
 .new-chat,.rakshak-close{border:0;background:rgba(255,255,255,0.12);color:#fffaf3;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background 0.15s;font-size:18px;line-height:1}
 .new-chat:hover,.rakshak-close:hover{background:rgba(255,255,255,0.25)}
 .rakshak-status{padding:8px 14px;margin:0;background:#faecd9;color:#874b21;font-size:12px;border-bottom:1px solid #ebd3b6;text-align:center}
