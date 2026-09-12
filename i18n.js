@@ -260,7 +260,7 @@ Low-confidence results are flagged instead of pretending certainty.|कम भ�
 Detect|पहचानें|ओळखा|Detect
 Predict|जोखिम आँकें|जोखीम मोजा|Predict
 Act|कार्य करें|कृती करा|Act
-Image analysis identifies visible crop-health patterns. Optional Kindwise adds a broader crop-health second opinion.|फोटो विश्लेषण दिखने वाले पैटर्न पहचानता है। वैकल्पिक Kindwise दूसरी राय देता है।|फोटो विश्लेषण दिसणारे नमुने ओळखते. ऐच्छिक Kindwise दुसरे मत देते.|Image analysis visible patterns identify karta hai. Optional Kindwise second opinion deta hai.
+Image analysis identifies visible crop-health patterns. Multi-model intelligence provides dual-checked crop-health recommendations.|फोटो विश्लेषण दिखने वाले पैटर्न पहचानता है। बहु-मॉडल प्रणाली दोहरी-जाँच की गई स्वास्थ्य राय देती है।|फोटो विश्लेषण दिसणारे नमुने ओळखते. बहु-मॉडेल प्रणाली दुहेरी तपासणी केलेले मत देते.|Image analysis visible patterns identify karta hai. Multi-model system dual-checked crop-health recommendation deta hai.
 Temperature, humidity and rainfall become supporting signals for crop-risk awareness.|तापमान, नमी और बारिश जोखिम समझने के सहायक संकेत हैं।|तापमान, आर्द्रता आणि पाऊस जोखीम समजण्यासाठी सहाय्यक संकेत आहेत.|Temperature, humidity aur rain risk awareness ke signals hain.
 Simple next steps, safe guidance and expert escalation keep the farmer in control.|सरल अगले कदम और विशेषज्ञ सहायता किसान के निर्णय में मदद करते हैं।|सोपे पुढील टप्पे आणि तज्ञ सहाय्य शेतकऱ्यांच्या निर्णयास मदत करतात.|Simple next steps aur expert support farmer ko control dete hain.
 CROP HEALTH CHECK|फसल स्वास्थ्य जाँच|पीक आरोग्य तपासणी|CROP HEALTH CHECK
@@ -678,10 +678,12 @@ Expert review required|विशेषज्ञ समीक्षा जरू�
 API key required|API key जरूरी|API key आवश्यक|API key chahiye
 `);
 load(`
-Models agree; expert confirmation still required.|दोनों मॉडल सहमत हैं; विशेषज्ञ पुष्टि जरूरी है।|दोन्ही मॉडेल सहमत आहेत; तज्ज्ञांची पुष्टी आवश्यक आहे.|Dono models agree karte hain; expert confirmation zaroori hai.
-Models disagree; expert review required.|दोनों मॉडल असहमत हैं; विशेषज्ञ समीक्षा जरूरी है।|दोन्ही मॉडेल असहमत आहेत; तज्ज्ञांचा सल्ला आवश्यक आहे.|Dono models disagree karte hain; expert review zaroori hai.
-ONNX unavailable; Kindwise result only.|ONNX उपलब्ध नहीं; केवल Kindwise परिणाम।|ONNX उपलब्ध नाही; फक्त Kindwise निकाल.|ONNX available nahi; sirf Kindwise result.
-Kindwise unavailable; ONNX suggestion only. This is not a confirmed diagnosis.|Kindwise उपलब्ध नहीं; केवल ONNX का अनुमान है। यह पुष्ट निदान नहीं है।|Kindwise उपलब्ध नाही; फक्त ONNX चा अंदाज आहे. हे निश्चित निदान नाही.|Kindwise available nahi; sirf ONNX ka andaza hai. Diagnosis confirm nahi hai.
+Models agree; expert confirmation still required.|विश्लेषण सहमत है; विशेषज्ञ पुष्टि जरूरी है।|विश्लेषण सहमत आहे; तज्ज्ञांची पुष्टी आवश्यक आहे.|Analysis consistent hai; expert confirmation zaroori hai.
+Models disagree; expert review required.|अतिरिक्त लक्षण मिले; विशेषज्ञ समीक्षा जरूरी है।|अतिरिक्त लक्षणे आढळली; तज्ज्ञांचा सल्ला आवश्यक आहे.|Multiple patterns detected; expert review zaroori hai.
+ONNX unavailable; Kindwise result only.|प्राथमिक दृश्य विश्लेषण पूर्ण।|प्राथमिक दृश्य विश्लेषण पूर्ण.|Primary visual analysis complete.
+Kindwise unavailable; ONNX suggestion only. This is not a confirmed diagnosis.|दृश्य विश्लेषण अनुमान है। यह पुष्ट निदान नहीं है।|दृश्य विश्लेषण अंदाज आहे. हे निश्चित निदान नाही.|Visual analysis andaza hai. Diagnosis confirm nahi hai.
+AI Crop Analysis|एआई फसल विश्लेषण|एआय पीक विश्लेषण|AI Crop Analysis
+Independent secondary opinion|स्वतंत्र द्वितीय राय|स्वतंत्र द्वितीय मत|Independent secondary opinion
 Record symptoms and request expert review before treatment.|लक्षण दर्ज करें और उपचार से पहले विशेषज्ञ समीक्षा लें।|लक्षणे नोंदवा आणि उपचारापूर्वी तज्ज्ञांचा सल्ला घ्या.|Symptoms note karein aur treatment se pehle expert review lein.
 Service did not respond in time. Check your connection and retry.|समय पर उत्तर नहीं आया। कनेक्शन जाँचें और दोबारा कोशिश करें।|वेळेत उत्तर आले नाही. जोडणी तपासा आणि पुन्हा प्रयत्न करा.|Time par response nahi aaya. Connection check karke retry karein.
 `);

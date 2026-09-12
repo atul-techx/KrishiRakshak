@@ -154,21 +154,37 @@ async function fileBase64(file){return new Promise((res,rej)=>{const r=new FileR
 
 async function runKindwise(file){
  const r=await window.KrishiAPI.request('/api/diagnose',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image:{mimeType:file.type,data:await fileBase64(file)},language:state.language})});
- if(!r.ok)throw Error('Kindwise unavailable');const {assessment:a}=await r.json();return {crop:a.crop,disease:a.finding,description:a.reason,treatment:a.nextSteps,confidence:null,source:'Kindwise crop.health'};
+ if(!r.ok)throw Error('Secondary assessment unavailable');const {assessment:a}=await r.json();return {crop:a.crop,disease:a.finding,description:a.reason,treatment:a.nextSteps,confidence:null,source:'Secondary assessment'};
 }
 
 function combineResults(onnx,kind){
   if(!onnx&&!kind)throw new Error("No assessment result.");
   if(!kind)return {...onnx,agreement:"Primary assessment"};
-  if(!onnx)return {className:null,confidence:kind.confidence,crop:kind.crop,disease:kind.disease,problem:kind.description,action:kind.treatment,source:"Second opinion"};
+  if(!onnx)return {className:null,confidence:kind.confidence,crop:kind.crop,disease:kind.disease,problem:kind.description,action:kind.treatment,source:"Secondary opinion"};
   const local=diseaseInfo[onnx.className]||[onnx.className?.split("___")[0]||"Unknown",onnx.className?.split("___")[1]||"Unknown","A visual crop-health pattern was detected.","Consult an agriculture expert before treatment."];
   const localDisease=local[1].toLowerCase(),kw=kind.disease.toLowerCase();
   const same=kw.includes(localDisease.split(" ")[0])||localDisease.includes(kw.split(" ")[0]);
   const conf=same?Math.max(onnx.confidence,kind.confidence):Math.min(onnx.confidence,kind.confidence)*.8;
-  return {className:onnx.className,confidence:conf,crop:kind.crop||local[0],disease:kind.disease||local[1],problem:kind.description||local[2],action:kind.treatment||local[3],source:same?"Image analysis + second opinion":"Image analysis + review recommended",agreement:same?"Agreement":"Review recommended",local,kind};
+  return {className:onnx.className,confidence:conf,crop:kind.crop||local[0],disease:kind.disease||local[1],problem:kind.description||local[2],action:kind.treatment||local[3],source:same?"Dual-check assessment":"Dual-check review recommended",agreement:same?"Agreement":"Review recommended",local,kind};
 }
 
 function displayDiagnosis(result){
+  if(result){
+    if(result.source){
+      result.source = result.source.replace(/Google Gemini|Gemini|ONNX|Kindwise/gi, '').replace(/^\s*\+\s*|\s*\+\s*$/g, '').replace(/\s*\+\s*/g, ' + ').trim();
+      if(!result.source || result.source === '+') result.source = typeof tr === 'function' ? tr('AI Crop Analysis') : 'AI Crop Analysis';
+    } else {
+      result.source = typeof tr === 'function' ? tr('AI Crop Analysis') : 'AI Crop Analysis';
+    }
+    if(result.problem){
+      result.problem = result.problem
+        .replace(/\bONNX\s*:\s*[^.]*(\.|$)/gi, '')
+        .replace(/Models disagree;?\s*/gi, '')
+        .replace(/\b(Google Gemini|Gemini|ONNX|Kindwise)\b/gi, '')
+        .replace(/\s{2,}/g, ' ')
+        .trim();
+    }
+  }
   const box=$("#diagnosisResult"), low=result.confidence<.55||result.agreement==="Review recommended";
   box.className="diagnosis-result"+(low?" warn":"");
   const conf=(result.confidence*100).toFixed(1);
