@@ -731,6 +731,11 @@ Normal|सामान्य|सामान्य|Normal
 Issue detected|लक्षण पाए गए|लक्षणे आढळली|Issue mila
 API key required|एपीआई कुंजी आवश्यक|API की आवश्यक|API key chahiye
 Ready for leaf scan|पत्ती स्कैन के लिए तैयार|पानाच्या स्कॅनसाठी तयार|Leaf scan ke liye ready
+Voice Advisory|बोलकर पूछें|बोलून विचारा|Voice Advisory
+Listening… speak now|सुन रहा हूँ… बोलिए|ऐकत आहे… आता बोला|Sun raha hoon… boliye
+Voice recognition not supported|इस ब्राउज़र में वॉइस सपोर्ट नहीं है|या ब्राउझरमध्ये व्हॉइस सपोर्ट नाही|Voice support nahi mila
+Tap to speak|बोलने के लिए दबाएँ|बोलण्यासाठी दाबा|Bolne ke liye dabayein
+Stop listening|सुनना बंद करें|ऐकणे थांबवा|Stop listening
 `);
 let pattern;
 function compile(){pattern=new RegExp(Object.keys(entries).sort((a,b)=>b.length-a.length).map(s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|'),'g');}

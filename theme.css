@@ -83,6 +83,17 @@ body{font-family:'DM Sans','Noto Sans Devanagari',system-ui,sans-serif}.shell h1
 .rakshak-send{width:34px;height:34px;border-radius:50%;border:0;background:#5c412d;color:#fffaf3;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;flex-shrink:0}
 .rakshak-send:hover:not(:disabled){background:#443022;transform:scale(1.05)}
 .rakshak-send:disabled{opacity:0.4;cursor:not-allowed}
+.rakshak-mic-btn{border:0;background:transparent;color:#765d49;padding:6px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s cubic-bezier(0.16,1,0.3,1);flex-shrink:0;position:relative}
+.rakshak-mic-btn:hover{color:#443022;background:#ebdccb}
+.rakshak-mic-btn.listening{background:#d94826;color:#ffffff;box-shadow:0 0 0 4px rgba(217,72,38,0.22);animation:rakshakMicPulse 1.2s infinite alternate}
+@keyframes rakshakMicPulse{0%{transform:scale(1);box-shadow:0 0 0 2px rgba(217,72,38,0.3)}100%{transform:scale(1.1);box-shadow:0 0 0 8px rgba(217,72,38,0.1)}}
+.rakshak-listening-banner{padding:7px 14px;background:linear-gradient(135deg,#faece4,#fdf4ef);border-bottom:1px solid #ebd3c5;color:#b3381a;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.rakshak-listening-dot{width:8px;height:8px;border-radius:50%;background:#d94826;display:inline-block;animation:rakshakBlink 0.9s infinite alternate}
+@keyframes rakshakBlink{0%{opacity:0.3}100%{opacity:1}}
+.rakshak-chip.voice-chip{background:#fdf2e9;border-color:#e8ba99;color:#874218;font-weight:600}
+.rakshak-chip.voice-chip:hover{background:#fae5d4;border-color:#d4976c}
+.btn-voice{background:#8c532b!important;color:#fffaf2!important;display:inline-flex;align-items:center;gap:7px;border-radius:10px;padding:12px 18px;font-weight:600;border:0;cursor:pointer;transition:all 0.2s}
+.btn-voice:hover{background:#754320!important;transform:translateY(-1px);box-shadow:0 6px 18px rgba(117,67,32,0.25)}
 @keyframes rakshakOpen{from{opacity:0;transform:translateY(14px) scale(0.97)}to{opacity:1;transform:translateY(0) scale(1)}}
 @keyframes rakshakBounce{0%,80%,100%{transform:scale(0);opacity:0.3}40%{transform:scale(1);opacity:1}}
 

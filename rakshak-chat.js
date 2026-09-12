@@ -3,9 +3,9 @@ let busy=false,history=[],ready=false,photo=null,photoVersion=0,preparing=false;
 let currentSpeakingBtn=null;
 
 const labels={
-en:['Ask Rakshak','Crop questions & photo review','Ask about your crop…','Send','Close','Connecting…','● Online · AI Assistant','Assistant setup required','Unable to connect. Retry.','Thinking…','Retry','Add photo','Remove','New conversation','Choose a JPEG, PNG or WebP photo under 12 MB.','Photo could not be opened.','Photo attached for visual analysis','Describe this crop photo. What should I check next?','','Service unavailable or quota reached. Retry later.','Crop photo','Photo ready','No photo attached','Listen','Stop'],
-hi:['रक्षक से पूछें','फसल समाधान एवं फोटो समीक्षा','फसल के बारे में पूछें…','भेजें','बंद करें','जुड़ रहा है…','● ऑनलाइन · कृषक AI','सहायक का सेटअप जरूरी है','कनेक्शन नहीं हुआ। दोबारा कोशिश करें।','सोच रहा है…','दोबारा भेजें','फोटो जोड़ें','हटाएँ','नई बातचीत','12 MB से छोटा JPEG, PNG या WebP फोटो चुनें।','फोटो नहीं खुल सका।','फोटो जुड़ा हुआ है','इस फसल के फोटो को समझाएँ। आगे क्या जाँचें?','','सेवा अनुपलब्ध है या सीमा पूरी है। बाद में कोशिश करें।','फसल का फोटो','फोटो तैयार है','कोई फोटो नहीं जुड़ा','बोलकर सुनें','रोकें'],
-mr:['रक्षकला विचारा','पीक सल्ला आणि फोटो परीक्षण','पिकाबद्दल विचारा…','पाठवा','बंद करा','जोडत आहे…','● ऑनलाइन · शेती AI','सहाय्यकाचे सेटअप आवश्यक आहे','जोडणी झाली नाही. पुन्हा प्रयत्न करा.','विचार करत आहे…','पुन्हा पाठवा','फोटो जोडा','काढा','नवीन संभाषण','12 MB पेक्षा लहान JPEG, PNG किंवा WebP फोटो निवडा.','फोटो उघडता आला नाही.','फोटो जोडला आहे','या पिकाचा फोटो समजावून सांगा. पुढे काय तपासावे?','','सेवा अनुपलब्ध आहे किंवा मर्यादा संपली आहे. नंतर प्रयत्न करा.','पिकाचा फोटो','फोटो तयार आहे','फोटो जोडलेला नाही','ऐका','थांबवा'],
+en:['Ask Rakshak','Crop questions & photo review','Ask about your crop…','Send','Close','Connecting…','● Online · AI Assistant','Assistant setup required','Unable to connect. Retry.','Thinking…','Retry','Add photo','Remove','New conversation','Choose a JPEG, PNG or WebP photo under 12 MB.','Photo could not be opened.','Photo attached for visual analysis','Describe this crop photo. What should I check next?','','Service unavailable or quota reached. Retry later.','Crop photo','Photo ready','No photo attached','Listen','Stop','Voice Advisory','Listening… speak now','Voice recognition is not supported in this browser. Please use Chrome or Edge.','Tap to speak','Stop listening'],
+hi:['रक्षक से पूछें','फसल समाधान एवं फोटो समीक्षा','फसल के बारे में पूछें…','भेजें','बंद करें','जुड़ रहा है…','● ऑनलाइन · कृषक AI','सहायक का सेटअप जरूरी है','कनेक्शन नहीं हुआ। दोबारा कोशिश करें।','सोच रहा है…','दोबारा भेजें','फोटो जोड़ें','हटाएँ','नई बातचीत','12 MB से छोटा JPEG, PNG या WebP फोटो चुनें।','फोटो नहीं खुल सका।','फोटो जुड़ा हुआ है','इस फसल के फोटो को समझाएँ। आगे क्या जाँचें?','','सेवा अनुपलब्ध है या सीमा पूरी है। बाद में कोशिश करें।','फसल का फोटो','फोटो तैयार है','कोई फोटो नहीं जुड़ा','बोलकर सुनें','रोकें','बोलकर पूछें','सुन रहा हूँ… बोलिए','इस ब्राउज़र में वॉइस सपोर्ट नहीं है। कृपया Chrome या Edge का उपयोग करें।','बोलने के लिए दबाएँ','सुनना बंद करें'],
+mr:['रक्षकला विचारा','पीक सल्ला आणि फोटो परीक्षण','पिकाबद्दल विचारा…','पाठवा','बंद करा','जोडत आहे…','● ऑनलाइन · शेती AI','सहाय्यकाचे सेटअप आवश्यक आहे','जोडणी झाली नाही. पुन्हा प्रयत्न करा.','विचार करत आहे…','पुन्हा पाठवा','फोटो जोडा','काढा','नवीन संभाषण','12 MB पेक्षा लहान JPEG, PNG किंवा WebP फोटो निवडा.','फोटो उघडता आला नाही.','फोटो जोडला आहे','या पिकाचा फोटो समजावून सांगा. पुढे काय तपासावे?','','सेवा अनुपलब्ध आहे किंवा मर्यादा संपली आहे. नंतर प्रयत्न करा.','पिकाचा फोटो','फोटो तयार आहे','फोटो जोडलेला नाही','ऐका','थांबवा','बोलून विचारा','ऐकत आहे… आता बोला','या ब्राउझरमध्ये व्हॉइस सपोर्ट नाही. कृपया Chrome किंवा Edge वापरा.','बोलण्यासाठी दाबा','ऐकणे थांबवा'],
 };
 const lang=()=>window.KrishiI18n?.getLanguage()||(['en','hi','mr'].includes(localStorage.getItem('krishiLanguage'))?localStorage.getItem('krishiLanguage'):'en'),L=()=>labels[lang()]||labels.en;
 
@@ -76,6 +76,84 @@ function speakText(text,btn){
   speechSynthesis.speak(u);
 }
 
+let recognition=null,isListening=false,autoSpeakNextAnswer=false;
+const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+
+function stopListening(){
+  if(recognition&&isListening){
+    try{recognition.stop();}catch{}
+  }
+  isListening=false;
+  const micBtn=q('.rakshak-mic-btn');
+  if(micBtn)micBtn.classList.remove('listening');
+  const banner=q('.rakshak-listening-banner');
+  if(banner)banner.hidden=true;
+  if(input)input.placeholder=L()[2];
+}
+
+function startListening(){
+  if(busy||preparing)return;
+  if(!SpeechRecognition){
+    alert(L()[27]||'Voice recognition is not supported in this browser. Please use Chrome or Edge.');
+    return;
+  }
+  if(isListening){
+    stopListening();
+    return;
+  }
+  stopSpeaking();
+  try{
+    recognition=new SpeechRecognition();
+    recognition.continuous=false;
+    recognition.interimResults=true;
+    recognition.maxAlternatives=1;
+    const curLang=lang();
+    recognition.lang=curLang==='mr'?'mr-IN':(curLang==='hi'?'hi-IN':'en-IN');
+    const micBtn=q('.rakshak-mic-btn');
+    const banner=q('.rakshak-listening-banner');
+    let finalTranscript='';
+    recognition.onstart=()=>{
+      isListening=true;
+      if(micBtn)micBtn.classList.add('listening');
+      if(banner){
+        banner.hidden=false;
+        const textSpan=banner.querySelector('.rakshak-listening-text span:last-child');
+        if(textSpan)textSpan.textContent=L()[26]||'Listening… speak now';
+      }
+      input.placeholder=L()[26]||'Listening… speak now';
+      input.focus();
+    };
+    recognition.onresult=(e)=>{
+      let interim='';
+      for(let i=e.resultIndex;i<e.results.length;++i){
+        if(e.results[i].isFinal)finalTranscript+=e.results[i][0].transcript;
+        else interim+=e.results[i][0].transcript;
+      }
+      input.value=finalTranscript||interim;
+    };
+    recognition.onerror=(e)=>{
+      console.warn('SpeechRecognition error:',e.error);
+      stopListening();
+      if(e.error==='not-allowed'){
+        alert('Microphone access was denied. Please allow microphone permissions in browser.');
+      }
+    };
+    recognition.onend=()=>{
+      stopListening();
+      const spokenText=input.value.trim();
+      if(spokenText){
+        autoSpeakNextAnswer=true;
+        send(spokenText,photo);
+        input.value='';
+      }
+    };
+    recognition.start();
+  }catch(e){
+    console.error('Speech recognition failed to start:',e);
+    stopListening();
+  }
+}
+
 const root=document.createElement('div');
 root.id='rakshak-widget';
 root.dataset.noTranslate='';
@@ -121,10 +199,19 @@ root.innerHTML=`
     <input type="file" class="photo-input" accept="image/jpeg,image/png,image/webp" hidden>
     <small class="photo-notice" hidden></small>
   </div>
+  <div class="rakshak-listening-banner" hidden>
+    <span class="rakshak-listening-text"><span class="rakshak-listening-dot"></span> <span>Listening… speak now</span></span>
+    <button type="button" class="rakshak-stop-listen-btn" title="Stop listening" aria-label="Stop listening" style="border:0;background:transparent;color:#b3381a;cursor:pointer;font-weight:700;font-size:13px;padding:2px 6px">✕ Stop</button>
+  </div>
   <form class="rakshak-form">
     <div class="rakshak-input-box">
       <button type="button" class="add-photo" title="Add crop photo" aria-label="Add crop photo">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+      </button>
+      <button type="button" class="rakshak-mic-btn" title="बोलकर पूछें / Voice Advisory" aria-label="बोलकर पूछें / Voice Advisory">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+          <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/>
+        </svg>
       </button>
       <input maxlength="4000" autocomplete="off">
       <button type="submit" class="rakshak-send" title="Send message" aria-label="Send">
@@ -170,7 +257,9 @@ function formatMarkdown(text){
 }
 
 function showWelcome(){
-  if(history.length||messages.children.length)return;
+  if(history.length)return;
+  const existing=messages.querySelector('.rakshak-welcome');
+  if(existing)existing.remove();
   const w=document.createElement('div');
   w.className='rakshak-welcome';
   const welcomeTitles={en:'Namaste! I am Rakshak',hi:'नमस्ते! मैं कृषिरक्षक हूँ',mr:'नमस्ते! मी कृषिरक्षक आहे'};
@@ -179,6 +268,11 @@ function showWelcome(){
     hi:'महाराष्ट्र के किसानों के लिए AI फसल सहायक। फसल, कीट, रोग, मौसम या पत्ती की फोटो भेजकर सलाह लें।',
     mr:'महाराष्ट्रातील शेतकऱ्यांसाठी AI पीक सहाय्यक. पीक, कीड, खते किंवा पानाचा फोटो पाठवून सल्ला मिळवा.'
   };
+  const voiceAdvisoryText={
+    en:'🎙️ Voice Advisory · Tap to speak',
+    hi:'🎙️ बोलकर पूछें · बोलने के लिए दबाएँ',
+    mr:'🎙️ बोलून विचारा · बोलण्यासाठी दाबा'
+  }[lang()]||'🎙️ Voice Advisory · Tap to speak';
   const chips={
     en:['🌾 Rabi crops for winter','🐛 Cotton bollworm check','💧 Soybean irrigation schedule'],
     hi:['🌾 रबी मौसम की मुख्य फसलें','🐛 कपास की इल्ली के लक्षण','💧 सोयाबीन सिंचाई सलाह'],
@@ -190,10 +284,13 @@ function showWelcome(){
     <h3>${welcomeTitles[lang()]||welcomeTitles.en}</h3>
     <p>${welcomeSubs[lang()]||welcomeSubs.en}</p>
     <div class="rakshak-chips">
+      <button type="button" class="rakshak-chip voice-chip">${voiceAdvisoryText}</button>
       ${chips.map(c=>`<button type="button" class="rakshak-chip">${c}</button>`).join('')}
     </div>
   `;
-  w.querySelectorAll('.rakshak-chip').forEach(btn=>{
+  const voiceBtn=w.querySelector('.voice-chip');
+  if(voiceBtn)voiceBtn.onclick=()=>startListening();
+  w.querySelectorAll('.rakshak-chip:not(.voice-chip)').forEach(btn=>{
     btn.onclick=()=>{
       input.value=btn.textContent.replace(/^[^\w\s\u0900-\u097F]+/, '').trim();
       q('form').requestSubmit();
@@ -213,6 +310,11 @@ function refresh(){
   q('.new-chat').setAttribute('aria-label',L()[13]);
   q('.add-photo').setAttribute('title',L()[11]);
   q('.add-photo').setAttribute('aria-label',L()[11]);
+  const micBtn=q('.rakshak-mic-btn');
+  if(micBtn){
+    micBtn.setAttribute('title',L()[25]||'Voice Advisory');
+    micBtn.setAttribute('aria-label',L()[25]||'Voice Advisory');
+  }
   q('.remove-photo').setAttribute('title',L()[12]);
   q('.photo-notice').textContent=L()[16];
   q('.rakshak-photo img').alt=L()[20];
@@ -225,7 +327,7 @@ function refresh(){
   if(!messages.children.length)showWelcome();
 }
 
-function lock(){for(const s of ['form button','form input','.add-photo','.remove-photo','.new-chat'])q(s).disabled=busy||preparing;}
+function lock(){for(const s of ['form button','form input','.add-photo','.rakshak-mic-btn','.remove-photo','.new-chat'])q(s).disabled=busy||preparing;}
 
 async function status(){
   q('.rakshak-status-pill').textContent=L()[5];
@@ -258,7 +360,11 @@ q('.rakshak-launch').onclick=()=>{
 q('.rakshak-close').onclick=()=>{
   panel.hidden=true;
   stopSpeaking();
+  stopListening();
 };
+q('.rakshak-mic-btn').onclick=()=>startListening();
+const stopListenBtn=q('.rakshak-stop-listen-btn');
+if(stopListenBtn)stopListenBtn.onclick=()=>stopListening();
 
 const chatLangSelect=q('.rakshak-lang-select');
 if(chatLangSelect){
@@ -406,6 +512,13 @@ function showAnswer(node,d){
     speakBtn.onclick=()=>speakText(answer,speakBtn);
     actions.append(speakBtn);
     node.append(actions);
+
+    if(autoSpeakNextAnswer){
+      autoSpeakNextAnswer=false;
+      setTimeout(()=>{
+        try{speakText(answer,speakBtn);}catch{}
+      },350);
+    }
   }
 }
 
@@ -472,7 +585,29 @@ root.addEventListener('keydown',e=>{
   if(e.key==='Escape'){
     panel.hidden=true;
     stopSpeaking();
+    stopListening();
   }
 });
+
+window.KrishiRakshakVoice={
+  openVoiceAdvisory:()=>{
+    panel.hidden=false;
+    input.focus();
+    status();
+    if(!messages.children.length)showWelcome();
+    setTimeout(()=>startListening(),250);
+  },
+  startListening,
+  stopListening
+};
+
+document.addEventListener('click',e=>{
+  if(e.target.closest('#heroVoiceAdvisoryBtn')){
+    if(window.KrishiRakshakVoice){
+      window.KrishiRakshakVoice.openVoiceAdvisory();
+    }
+  }
+});
+
 refresh();
 })();
