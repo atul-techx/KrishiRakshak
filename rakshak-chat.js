@@ -81,13 +81,13 @@ root.dataset.noTranslate='';
 
 root.innerHTML=`
 <button class="rakshak-launch" type="button">
-  <span class="rakshak-launch-icon">🌱</span>
+  <img class="rakshak-launch-logo" src="rakshak-logo.png" alt="Rakshak Logo" width="28" height="28">
   <span class="rakshak-launch-text"></span>
 </button>
 <section class="rakshak-panel" hidden aria-label="Rakshak">
   <div class="rakshak-head">
     <div class="rakshak-head-info">
-      <div class="rakshak-avatar">🌱</div>
+      <div class="rakshak-avatar"><img class="rakshak-avatar-img" src="rakshak-logo.png" alt="Rakshak Logo" width="38" height="38"></div>
       <div>
         <div class="rakshak-head-title-row">
           <b></b>
@@ -180,7 +180,7 @@ function showWelcome(){
   }[lang()]||chips.en;
 
   w.innerHTML=`
-    <div class="rakshak-welcome-avatar">🌱</div>
+    <div class="rakshak-welcome-avatar"><img class="rakshak-welcome-logo" src="rakshak-logo.png" alt="Rakshak Logo" width="56" height="56"></div>
     <h3>${welcomeTitles[lang()]||welcomeTitles.en}</h3>
     <p>${welcomeSubs[lang()]||welcomeSubs.en}</p>
     <div class="rakshak-chips">
@@ -255,7 +255,17 @@ function message(text,role){
   if(welcome)welcome.remove();
   const p=document.createElement('div');
   p.className='rakshak-message '+role;
-  if(text)p.textContent=text;
+  if(role.includes('assistant')&&!role.includes('typing')){
+    const sender=document.createElement('div');
+    sender.className='rakshak-msg-sender';
+    sender.innerHTML='<img src="rakshak-logo.png" class="rakshak-msg-avatar" alt="Rakshak" width="18" height="18"><span>Rakshak AI</span>';
+    p.append(sender);
+  }
+  if(text){
+    const span=document.createElement('span');
+    span.textContent=text;
+    p.append(span);
+  }
   messages.append(p);
   messages.scrollTop=messages.scrollHeight;
   return p;
@@ -313,6 +323,10 @@ function context(){
 
 function showAnswer(node,d){
   node.replaceChildren();
+  const sender=document.createElement('div');
+  sender.className='rakshak-msg-sender';
+  sender.innerHTML='<img src="rakshak-logo.png" class="rakshak-msg-avatar" alt="Rakshak" width="18" height="18"><span>Rakshak AI</span>';
+  node.append(sender);
   let answer=String(d.answer||'');
   answer=answer.replace(/^\s*(?:Please note that )?(?:live )?(?:web )?search is (?:currently )?unavailable[^\n]*\n*/i,'').replace(/^\s*Sources were not verified[^\n]*\n*/i,'').trim();
   
