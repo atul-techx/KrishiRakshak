@@ -1,4 +1,4 @@
-import { stateMap, transformAgmarkRecord, benchmarkRecords, isRealCrop } from './crop-intelligence.mjs';
+import { stateMap, transformAgmarkRecord, isRealCrop } from './crop-intelligence.mjs';
 const marketCache = new Map();
 const json=(body,status=200)=>new Response(JSON.stringify(body),{status,headers:{'Content-Type':'application/json','Cache-Control':'no-store'}});
 const windows=new Map();
@@ -128,51 +128,47 @@ async function handleMarketPrices(request, env, fetcher) {
 
   const apiKey = env.DATA_GOV_IN_API_KEY || '579b464db66ec23bdd000001e82d0e5ec95d4f0a521bfdf023d235bc';
 
-  // Fallback benchmarks used ONLY if government server is temporarily down
-  const fallbackRecords = (stateQuery && stateQuery !== 'all')
-    ? benchmarkRecords.filter(r => r.state.toLowerCase().includes(stateQuery))
-    : benchmarkRecords;
-
-  let records = fallbackRecords;
+  let records = [];
   let isLive = false;
 
-  if (apiKey) {
+  const cacheKey = stateQuery || 'all';
+  const now = Date.now();
+  const cached = marketCache.get(cacheKey);
+
+  if (cached && (now - cached.timestamp < 300000)) { // 5-minute cache
+    records = cached.records;
+    isLive = true;
+  } else if (apiKey) {
     try {
-      const cacheKey = stateQuery || 'all';
-      const now = Date.now();
-      const cached = marketCache.get(cacheKey);
-
-      if (cached && (now - cached.timestamp < 300000)) { // 5-minute fresh cache
-        records = cached.records;
-        isLive = true;
+      let apiUrl = '';
+      if (stateQuery && stateQuery !== 'all') {
+        const targetState = stateMap[stateQuery] || (stateQuery.charAt(0).toUpperCase() + stateQuery.slice(1));
+        apiUrl = `https://api.data.gov.in/resource/35985678-0d79-46b4-9ed6-6f13308a1d24?api-key=${encodeURIComponent(apiKey)}&format=json&limit=350&sort%5BArrival_Date%5D=desc&filters%5BState%5D=${encodeURIComponent(targetState)}`;
       } else {
-        let apiUrl = '';
-        if (stateQuery && stateQuery !== 'all') {
-          const targetState = stateMap[stateQuery] || (stateQuery.charAt(0).toUpperCase() + stateQuery.slice(1));
-          apiUrl = `https://api.data.gov.in/resource/35985678-0d79-46b4-9ed6-6f13308a1d24?api-key=${encodeURIComponent(apiKey)}&format=json&limit=150&sort%5BArrival_Date%5D=desc&filters%5BState%5D=${encodeURIComponent(targetState)}`;
-        } else {
-          apiUrl = `https://api.data.gov.in/resource/35985678-0d79-46b4-9ed6-6f13308a1d24?api-key=${encodeURIComponent(apiKey)}&format=json&limit=150&sort%5BArrival_Date%5D=desc`;
-        }
+        apiUrl = `https://api.data.gov.in/resource/35985678-0d79-46b4-9ed6-6f13308a1d24?api-key=${encodeURIComponent(apiKey)}&format=json&limit=350&sort%5BArrival_Date%5D=desc`;
+      }
 
-        const res = await fetcher(apiUrl, { signal: AbortSignal.timeout(8000) });
-        if (res.ok) {
-          const data = await res.json();
-          if (Array.isArray(data?.records) && data.records.length > 0) {
-            const validLive = data.records
-              .filter(r => isRealCrop(r.Commodity || r.commodity || ''))
-              .map((r, idx) => transformAgmarkRecord(r, idx));
+      const res = await fetcher(apiUrl, { signal: AbortSignal.timeout(15000) });
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data?.records) && data.records.length > 0) {
+          const validLive = data.records
+            .filter(r => isRealCrop(r.Commodity || r.commodity || ''))
+            .map((r, idx) => transformAgmarkRecord(r, idx));
 
-            // Pure 100% Live Government API Data
-            if (validLive.length > 0) {
-              records = validLive;
-              isLive = true;
-              marketCache.set(cacheKey, { timestamp: now, records });
-            }
+          if (validLive.length > 0) {
+            records = validLive;
+            isLive = true;
+            marketCache.set(cacheKey, { timestamp: now, records });
           }
         }
       }
     } catch (e) {
-      console.warn('Live Agmarknet fetch failed, using fallback:', e);
+      console.warn('Live Agmarknet fetch error:', e);
+      if (cached && cached.records?.length > 0) {
+        records = cached.records;
+        isLive = true;
+      }
     }
   }
 

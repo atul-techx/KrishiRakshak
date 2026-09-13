@@ -426,11 +426,7 @@
 
   window.KrishiMarket = {
     loadPrices: () => {
-      if (state.records.length === 0) {
-        fetchMarketPrices();
-      } else {
-        render();
-      }
+      fetchMarketPrices();
     },
     refresh: () => fetchMarketPrices(true)
   };
