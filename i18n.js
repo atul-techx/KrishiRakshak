@@ -290,12 +290,9 @@ Harvest|कटाई|काढणी|Harvest
 Variety|किस्म|वाण|Variety
 Photo tip|फोटो सुझाव|फोटो सूचना|Photo tip
 Use daylight, keep one leaf sharp, and include the full symptom area.|दिन के उजाले में एक पत्ती की साफ फोटो लें, पूरा लक्षण क्षेत्र दिखाएँ।|दिवसा एका पानाचा स्पष्ट फोटो घ्या आणि पूर्ण लक्षण भाग समाविष्ट करा.|Daylight mein ek leaf sharp rakhein aur full symptom area include karein.
-Upload clear photo|साफ़ फोटो अपलोड करें|स्पष्ट फोटो अपलोड करा|Clear photo upload karein
-Upload a sharp, clear photo focused closely on the affected leaf or crop.|प्रभावित पत्ती या फसल की साफ़ और केंद्रित फोटो अपलोड करें।|बाधित पान किंवा पिकाचा स्पष्ट व केंद्रित फोटो अपलोड करा.|Prabhavit patti ya fasal ki clear photo upload karein.
-Proper lighting & focus|उचित प्रकाश और फोकस|योग्य प्रकाश आणि फोकस|Proper lighting aur focus
-Ensure adequate lighting and steady focus while capturing the image for accurate output.|सटीक परिणाम के लिए अच्छी रोशनी और स्थिर फोकस के साथ फोटो खींचें।|अचूक परिणामासाठी चांगल्या प्रकाशात आणि स्थिर फोकससह फोटो काढा.|Accurate output ke liye achhi lighting aur steady focus ke saath photo lein.
-Re-upload if needed|ज़रूरत पड़ने पर दोबारा अपलोड करें|गरज भासल्यास पुन्हा अपलोड करा|Zaroorat padne par re-upload karein
-If any issue or error occurs, recapture and re-upload the photo.|यदि कोई समस्या या त्रुटि आती है, तो फोटो दोबारा खींचकर अपलोड करें।|काही अडचण किंवा त्रुटी आल्यास, पुन्हा फोटो काढून अपलोड करा.|Agar koi issue ya error aaye, toh photo dobara lekar re-upload karein.
+Upload a clear image of the affected crop for accurate analysis.|सटीक विश्लेषण के लिए प्रभावित फसल की स्पष्ट फोटो अपलोड करें।|अचूक विश्लेषणासाठी बाधित पिकाचा स्पष्ट फोटो अपलोड करा.|Accurate analysis ke liye affected crop ki clear image upload karein.
+Capture the crop image in proper natural lighting, avoiding shadows and blur.|परछाईं और धुंधलेपन से बचते हुए, अच्छी प्राकृतिक रोशनी में फसल की फोटो खींचें।|सावल्या आणि अस्पष्टता टाळून, योग्य नैसर्गिक प्रकाशात पिकाचा फोटो काढा.|Shadows aur blur se bachkar, achhi natural light mein crop image capture karein.
+If the image is unclear or the result is uncertain, re-try or re-upload a clearer image.|यदि फोटो अस्पष्ट हो या परिणाम अनिश्चित हो, तो पुनः प्रयास करें या साफ फोटो अपलोड करें।|फोटो अस्पष्ट असल्यास किंवा निकाल अनिश्चित असल्यास, पुन्हा प्रयत्न करा किंवा स्पष्ट फोटो अपलोड करा.|Agar image clear na ho ya result uncertain ho, toh re-try ya clear image re-upload karein.
 Your photo is analysed in the browser first. External second-opinion services are optional and proxied server-side.|फोटो पहले ब्राउज़र में जाँची जाती है। बाहरी दूसरी राय वैकल्पिक है और सर्वर से जाती है।|फोटो प्रथम ब्राउझरमध्ये तपासला जातो. बाह्य दुसरे मत ऐच्छिक असून सर्व्हरमार्फत जाते.|Photo pehle browser mein analyse hoti hai. External second opinion optional hai.
 FARMER WORKSPACE|किसान कार्यक्षेत्र|शेतकरी कार्यक्षेत्र|FARMER WORKSPACE
 Good morning|सुप्रभात|सुप्रभात|Good morning
@@ -367,6 +364,29 @@ Save profile|प्रोफाइल सहेजें|प्रोफाइ�
 MY CROPS|मेरी फसलें|माझी पिके|MERI CROPS
 Add a crop|फसल जोड़ें|पीक जोडा|Crop add karein
 Area|क्षेत्रफल|क्षेत्रफळ|Area
+Rent Machinery|यंत्र किराया|यंत्र भाडेतत्त्वावर|Rent Machinery
+COMMUNITY MACHINERY & TOOL SHARING|सामुदायिक कृषि यंत्र व उपकरण शेयरिंग|सामुदायिक कृषी यंत्र व अवजारे देवाणघेवाण|COMMUNITY MACHINERY SHARING
+Rent Farm Machinery.|कृषि यंत्र किराए पर लें।|शेती अवजारे भाड्याने घ्या.|Rent Farm Machinery.
+Connect directly with nearby fleet owners and fellow farmers to rent tractors, rotavators, sprayers, drones, and harvesters at transparent rates.|पास के फ्लीट मालिकों और साथी किसानों से सीधे जुड़कर ट्रैक्टर, रोटावेटर, स्प्रेयर, ड्रोन और हार्वेस्टर उचित दरों पर किराए पर लें।|जवळच्या फ्लीट मालकांशी आणि सहकारी शेतकऱ्यांशी थेट संपर्क साधून ट्रॅक्टर, रोटाव्हेटर, फवारणी यंत्र, ड्रोन आणि कापणी यंत्र पारदर्शक दराने भाड्याने घ्या.|Nearby fleet owners aur fellow farmers se connect karke tractors, rotavators, sprayers, drones aur harvesters rent karein.
+List My Equipment|अपना यंत्र लिस्ट करें|आपले यंत्र नोंदवा|List My Equipment
+List Equipment for Rent|किराए के लिए यंत्र जोड़ें|भाड्यासाठी यंत्र जोडा|List Equipment for Rent
+Direct WhatsApp Connect|सीधा व्हाट्सएप संपर्क|थेट व्हॉट्सॲप संपर्क|Direct WhatsApp Connect
+All Machinery|सभी कृषि यंत्र|सर्व कृषी यंत्रे|All Machinery
+Tractors & Tillage|ट्रैक्टर और जुताई|ट्रॅक्टर व नांगरणी|Tractors & Tillage
+Sprayers & Drones|स्प्रेयर और ड्रोन|फवारणी व ड्रोन|Sprayers & Drones
+Harvest & Threshers|कटाई और थ्रेशर|कापणी व मळणी|Harvest & Threshers
+Seeding & Planting|बुवाई और प्लांटिंग|पेरणी व लागवड|Seeding & Planting
+Pumps & Irrigation|पंप और सिंचाई|पंप व सिंचन|Pumps & Irrigation
+Trolley & Haulage|ट्रॉली और ढुलाई|ट्रॉली व वाहतूक|Trolley & Haulage
+Fellow Farmer (P2P)|साथी किसान (P2P शेयर)|सहकारी शेतकरी (P2P)|Fellow Farmer (P2P)
+Fleet Owner|फ्लीट / सेवा केंद्र|फ्लीट / सेवा केंद्र|Fleet Owner
+Available|उपलब्ध|उपलब्ध|Available
+In Use|किराए पर है|वापरात आहे|In Use
+Operator Included|ऑपरेटर सहित|चालकासह|Operator Included
+Self Operated|स्व-संचालित|स्वतः चालवा|Self Operated
+Chat on WhatsApp|व्हाट्सएप पर बात करें|व्हॉट्सॲपवर संपर्क करा|WhatsApp pe baat karein
+Call|कॉल करें|कॉल करा|Call
+Publish Equipment Listing|यंत्र प्रकाशित करें|यंत्र प्रसिद्ध करा|Listing publish karein
 KrishiRakshak · Farmer-first crop health platform|कृषिरक्षक · किसान-केंद्रित फसल स्वास्थ्य मंच|कृषिरक्षक · शेतकरी-केंद्रित पीक आरोग्य मंच|KrishiRakshak · Farmer-first crop health platform
 `);
 load(`
