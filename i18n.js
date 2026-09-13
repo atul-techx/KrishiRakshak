@@ -290,12 +290,12 @@ Harvest|कटाई|काढणी|Harvest
 Variety|किस्म|वाण|Variety
 Photo tip|फोटो सुझाव|फोटो सूचना|Photo tip
 Use daylight, keep one leaf sharp, and include the full symptom area.|दिन के उजाले में एक पत्ती की साफ फोटो लें, पूरा लक्षण क्षेत्र दिखाएँ।|दिवसा एका पानाचा स्पष्ट फोटो घ्या आणि पूर्ण लक्षण भाग समाविष्ट करा.|Daylight mein ek leaf sharp rakhein aur full symptom area include karein.
-Fast image analysis|त्वरित फोटो विश्लेषण|जलद फोटो विश्लेषण|Fast image analysis
-The crop image is analysed first so the initial result is not blocked by external APIs.|बाहरी सेवा के इंतजार से पहले फोटो का स्थानीय विश्लेषण होता है।|बाह्य सेवेची वाट पाहण्यापूर्वी फोटोचे स्थानिक विश्लेषण होते.|External service se pehle image ka local analysis hota hai.
-Risk forecast|जोखिम पूर्वानुमान|जोखीम अंदाज|Risk forecast
-Weather + crop stage + recent field history produce a scouting risk signal.|मौसम, फसल अवस्था और हाल के रिकॉर्ड जाँच का जोखिम संकेत देते हैं।|हवामान, पीक अवस्था आणि अलीकडील नोंदी पाहणीचा जोखीम संकेत देतात.|Weather, crop stage aur history scouting risk signal dete hain.
-Human validation|विशेषज्ञ सत्यापन|तज्ञ पडताळणी|Human validation
-Low confidence, disagreement or serious cases can be routed to an expert.|कम भरोसा, असहमति या गंभीर मामलों पर विशेषज्ञ समीक्षा लें।|कमी विश्वास, मतभेद किंवा गंभीर प्रकरणांवर तज्ञ समीक्षा घ्या.|Low confidence, disagreement ya serious cases expert ko dein.
+Upload clear photo|साफ़ फोटो अपलोड करें|स्पष्ट फोटो अपलोड करा|Clear photo upload karein
+Upload a sharp, clear photo focused closely on the affected leaf or crop.|प्रभावित पत्ती या फसल की साफ़ और केंद्रित फोटो अपलोड करें।|बाधित पान किंवा पिकाचा स्पष्ट व केंद्रित फोटो अपलोड करा.|Prabhavit patti ya fasal ki clear photo upload karein.
+Proper lighting & focus|उचित प्रकाश और फोकस|योग्य प्रकाश आणि फोकस|Proper lighting aur focus
+Ensure adequate lighting and steady focus while capturing the image for accurate output.|सटीक परिणाम के लिए अच्छी रोशनी और स्थिर फोकस के साथ फोटो खींचें।|अचूक परिणामासाठी चांगल्या प्रकाशात आणि स्थिर फोकससह फोटो काढा.|Accurate output ke liye achhi lighting aur steady focus ke saath photo lein.
+Re-upload if needed|ज़रूरत पड़ने पर दोबारा अपलोड करें|गरज भासल्यास पुन्हा अपलोड करा|Zaroorat padne par re-upload karein
+If any issue or error occurs, recapture and re-upload the photo.|यदि कोई समस्या या त्रुटि आती है, तो फोटो दोबारा खींचकर अपलोड करें।|काही अडचण किंवा त्रुटी आल्यास, पुन्हा फोटो काढून अपलोड करा.|Agar koi issue ya error aaye, toh photo dobara lekar re-upload karein.
 Your photo is analysed in the browser first. External second-opinion services are optional and proxied server-side.|फोटो पहले ब्राउज़र में जाँची जाती है। बाहरी दूसरी राय वैकल्पिक है और सर्वर से जाती है।|फोटो प्रथम ब्राउझरमध्ये तपासला जातो. बाह्य दुसरे मत ऐच्छिक असून सर्व्हरमार्फत जाते.|Photo pehle browser mein analyse hoti hai. External second opinion optional hai.
 FARMER WORKSPACE|किसान कार्यक्षेत्र|शेतकरी कार्यक्षेत्र|FARMER WORKSPACE
 Good morning|सुप्रभात|सुप्रभात|Good morning
