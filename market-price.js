@@ -201,7 +201,16 @@
         }
       }
 
-      const mandiLocation = `${r.market} · ${r.district} (${r.state})`;
+      const cleanMandi = (r.market || 'APMC').trim();
+      const cleanDist = (r.district || '').trim();
+      const cleanState = (r.state || '').trim();
+      let mandiLocation = cleanMandi;
+      if (cleanDist && !cleanMandi.toLowerCase().includes(cleanDist.toLowerCase())) {
+        mandiLocation += ` · ${cleanDist}`;
+      }
+      if (cleanState) {
+        mandiLocation += ` (${cleanState})`;
+      }
 
       return `
         <article class="farmer-mandi-card" data-crop="${r.commodity}" data-rate="${r.modalPrice}">
