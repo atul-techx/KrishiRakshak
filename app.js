@@ -95,6 +95,7 @@ function showPage(page){
   if(page==="dashboard")renderDashboard();
   if(page==="expert")renderCases();if(page==="official")setTimeout(()=>{renderOfficialDashboard();state.map?.invalidateSize(true)},120);
   if(page==="market")window.KrishiMarket?.loadPrices();
+  if(page==="machinery")window.KrishiMachinery?.init();
   window.scrollTo({top:0,behavior:"smooth"});
 }
 function userFromStore(){try{const s=localStorage.getItem("krishi_session");return s?JSON.parse(s):null}catch{return null}}
