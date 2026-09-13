@@ -9,7 +9,110 @@ mr:['रक्षकला विचारा','पीक सल्ला आण
 };
 const lang=()=>window.KrishiI18n?.getLanguage()||(['en','hi','mr'].includes(localStorage.getItem('krishiLanguage'))?localStorage.getItem('krishiLanguage'):'en'),L=()=>labels[lang()]||labels.en;
 
+let speechVoices=[];
+function refreshVoices(){
+  if('speechSynthesis' in window){
+    const v=speechSynthesis.getVoices();
+    if(v&&v.length)speechVoices=v;
+  }
+}
+if(typeof window!=='undefined'&&'speechSynthesis' in window){
+  refreshVoices();
+  if(speechSynthesis.onvoiceschanged!==undefined){
+    speechSynthesis.onvoiceschanged=refreshVoices;
+  }
+}
+
+function getBestVoice(targetLang){
+  refreshVoices();
+  const vs=speechVoices;
+  if(!vs.length)return null;
+
+  if(targetLang==='mr'){
+    const mrVoice=vs.find(v=>/mr[-_]in|marathi/i.test(v.lang)||/marathi|मराठी|aarohi/i.test(v.name));
+    if(mrVoice)return mrVoice;
+    return vs.find(v=>/hi[-_]in|hindi/i.test(v.lang)||/hindi|हिन्दी|swara|madhur|kalpana|hemant/i.test(v.name))||null;
+  }
+
+  if(targetLang==='hi'){
+    return vs.find(v=>/hi[-_]in/i.test(v.lang)||/hindi|हिन्दी|swara|madhur|kalpana|hemant/i.test(v.name))||
+           vs.find(v=>v.lang&&v.lang.toLowerCase().startsWith('hi'))||null;
+  }
+
+  return vs.find(v=>/en[-_]in/i.test(v.lang)||/india|heera|ravi|veena|neerja/i.test(v.name))||
+         vs.find(v=>v.lang&&v.lang.toLowerCase().startsWith('en'))||
+         vs[0]||null;
+}
+
+function devanagariToRoman(text){
+  if(!text||typeof text!=='string')return '';
+  const consonants={
+    'क':'k','ख':'kh','ग':'g','घ':'gh','ङ':'ng',
+    'च':'ch','छ':'chh','ज':'j','झ':'jh','ञ':'ny',
+    'ट':'t','ठ':'th','ड':'d','ढ':'dh','ण':'n',
+    'त':'t','थ':'th','द':'d','ध':'dh','न':'n',
+    'प':'p','फ':'ph','ब':'b','भ':'bh','म':'m',
+    'य':'y','र':'r','ल':'l','व':'v','श':'sh',
+    'ष':'sh','स':'s','ह':'h','ळ':'l','क्ष':'ksh',
+    'त्र':'tr','ज्ञ':'gya','श्र':'shr',
+    'ड़':'d','ढ़':'dh','फ़':'f','ज़':'z','क़':'q','ख़':'kh','ग़':'gh'
+  };
+  const vowels={
+    'अ':'a','आ':'aa','इ':'i','ई':'ee','उ':'u','ऊ':'oo',
+    'ऋ':'ri','ए':'e','ऐ':'ai','ओ':'o','औ':'au'
+  };
+  const matras={
+    'ा':'aa','ि':'i','ी':'ee','ु':'u','ू':'oo',
+    'ृ':'ri','े':'e','ै':'ai','ो':'o','ौ':'au'
+  };
+
+  let out='';
+  for(let i=0;i<text.length;i++){
+    const c=text[i],next=text[i+1];
+    if(c==='्'){
+      if(out.endsWith('a'))out=out.slice(0,-1);
+      continue;
+    }
+    if(c==='ं'||c==='ँ'){out+='n';continue;}
+    if(c==='ः'){out+='h';continue;}
+    if(c==='।'||c==='॥'){out+='. ';continue;}
+    if(matras[c]){
+      if(out.endsWith('a'))out=out.slice(0,-1);
+      out+=matras[c];
+      continue;
+    }
+    if(vowels[c]){out+=vowels[c];continue;}
+    if(consonants[c]){
+      const hasNextMatraOrHalant=next&&(matras[next]||next==='्');
+      out+=consonants[c]+(hasNextMatraOrHalant?'':'a');
+      continue;
+    }
+    out+=c;
+  }
+  return out.replace(/([bcdfghjklmnpqrstvwxyz])a\b/gi,'$1');
+}
+
+let speechTimer=null;
+function startSpeechKeepAlive(){
+  stopSpeechKeepAlive();
+  speechTimer=setInterval(()=>{
+    if(!window.speechSynthesis||!speechSynthesis.speaking){
+      stopSpeechKeepAlive();
+      return;
+    }
+    speechSynthesis.pause();
+    speechSynthesis.resume();
+  },10000);
+}
+function stopSpeechKeepAlive(){
+  if(speechTimer){
+    clearInterval(speechTimer);
+    speechTimer=null;
+  }
+}
+
 function stopSpeaking(){
+  stopSpeechKeepAlive();
   if('speechSynthesis' in window){
     try{speechSynthesis.cancel();}catch{}
   }
@@ -24,17 +127,80 @@ function stopSpeaking(){
 }
 
 function cleanForSpeech(text){
-  return text
-    .replace(/\*\*(.*?)\*\*/g,'$1')
-    .replace(/(?<!\*)\*([^*]+?)\*(?!\*)/g,'$1')
-    .replace(/`.*?`/g,'')
-    .replace(/^[-*•]\s+/gm,'')
-    .replace(/^\d+\.\s+/gm,'')
-    .replace(/https?:\/\/\S+/g,'')
-    .replace(/[#_~]/g,'')
-    .replace(/\n+/g,'. ')
-    .replace(/\s+/g,' ')
-    .trim();
+  if(!text||typeof text!=='string')return '';
+  let s=text;
+
+  // 1. Remove code blocks and inline code
+  s=s.replace(/```[\s\S]*?```/g,' ');
+  s=s.replace(/`.*?`/g,' ');
+
+  // 2. Remove markdown images, links, and bracket citations
+  s=s.replace(/!\[.*?\]\(.*?\)/g,' ');
+  s=s.replace(/\[(.*?)\]\(.*?\)/g,'$1');
+  s=s.replace(/https?:\/\/\S+/g,' ');
+  s=s.replace(/\[\d+\]/g,' ');
+
+  // 3. Remove markdown headers, blockquotes, tables
+  s=s.replace(/^#{1,6}\s+/gm,'');
+  s=s.replace(/^>\s*/gm,'');
+  s=s.replace(/\|/g,' ');
+  s=s.replace(/[-=]{3,}/g,' ');
+
+  // 4. Remove bold, italic, strikethrough markdown
+  s=s.replace(/\*\*(.*?)\*\*/g,'$1');
+  s=s.replace(/(?<!\*)\*([^*]+?)\*(?!\*)/g,'$1');
+  s=s.replace(/__(.*?)__/g,'$1');
+  s=s.replace(/(?<!_)_([^_]+?)_(?!_)/g,'$1');
+  s=s.replace(/~~.*?~~/g,' ');
+
+  // 5. Remove bullet list markers and numbered list markers
+  s=s.replace(/^[\s*•▪▫‣\-–—+]+(?=\S)/gm,'');
+  s=s.replace(/^\s*\d+[\.\)\-]\s*/gm,'');
+
+  // 6. Natural symbol replacements so TTS doesn't speak symbol names
+  const isHindi=/[\u0900-\u097F]/.test(s)||(typeof lang==='function'&&lang()!=='en');
+  s=s.replace(/(\d+)\s*[-–—]\s*(\d+)/g,isHindi?'$1 से $2':'$1 to $2');
+  s=s.replace(/%/g,isHindi?' प्रतिशत ':' percent ');
+  s=s.replace(/(\w+)\s*[/]\s*(\w+)/g,isHindi?'$1 प्रति $2':'$1 per $2');
+  s=s.replace(/[/\\~^#<>+=_]/g,' ');
+
+  // 7. Colons, semicolons, brackets -> convert to comma pause instead of pronouncing "colon"
+  s=s.replace(/[:;]/g,', ');
+  s=s.replace(/[()\[\]{}]/g,', ');
+  s=s.replace(/["'“”‘’«»]/g,' ');
+
+  // 8. Remove emojis and decorative unicode symbols
+  s=s.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{1F000}-\u{1F251}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}]/gu,' ');
+  s=s.replace(/[•●▪▫★☆✓✔✕✖✗⚠️👉➔→]/g,' ');
+
+  // 9. Convert newlines to sentence pauses
+  s=s.replace(/\n+/g,'. ');
+
+  // 10. Clean and normalize punctuation to prevent "comma comma dot dot"
+  s=s.replace(/\.{2,}/g,'.');
+  s=s.replace(/(\.\s*)+/g,'. ');
+  s=s.replace(/,{2,}/g,',');
+  s=s.replace(/(,\s*)+/g,', ');
+  s=s.replace(/,\s*\./g,'. ');
+  s=s.replace(/\.\s*,/g,'. ');
+  s=s.replace(/।\s*\./g,'। ');
+  s=s.replace(/\.\s*।/g,'। ');
+  s=s.replace(/।{2,}/g,'।');
+  s=s.replace(/(।\s*)+/g,'। ');
+
+  // Remove leading and repeated punctuation
+  s=s.replace(/^[,\.\s;:]+/g,'');
+  s=s.replace(/\.\s*[,;:]+/g,'. ');
+  s=s.replace(/।\s*[,;:]+/g,'। ');
+
+  // Collapse whitespace
+  s=s.replace(/\s+/g,' ').trim();
+
+  // Remove dangling punctuation at end
+  s=s.replace(/[,\s;:]+$/g,'');
+  if(s&&!/[.!?।]$/.test(s))s+='.';
+
+  return s;
 }
 
 function speakText(text,btn){
@@ -50,30 +216,53 @@ function speakText(text,btn){
   const clean=cleanForSpeech(text);
   if(!clean)return;
 
-  const u=new SpeechSynthesisUtterance(clean);
   const hasDevanagari=/[\u0900-\u097F]/.test(clean);
-  const langCode=hasDevanagari?(lang()==='mr'?'mr-IN':'hi-IN'):({en:'en-IN',hi:'hi-IN',mr:'mr-IN'}[lang()]||'hi-IN');
-  u.lang=langCode;
-  u.rate=0.92;
+  const targetLang=hasDevanagari?(lang()==='mr'?'mr':'hi'):lang();
 
-  try{
-    const voices=speechSynthesis.getVoices();
-    const voice=voices.find(v=>v.lang===langCode)||
-                voices.find(v=>v.lang&&v.lang.startsWith(langCode.slice(0,2)))||
-                voices.find(v=>v.lang&&v.lang.includes('IN'));
-    if(voice)u.voice=voice;
-  }catch{}
+  let chosenVoice=null;
+  let textToSpeak=clean;
+  let voiceLang='en-IN';
+
+  if(targetLang==='mr'||targetLang==='hi'){
+    chosenVoice=getBestVoice(targetLang);
+    if(chosenVoice){
+      voiceLang=targetLang==='mr'?'mr-IN':'hi-IN';
+    }else{
+      // No native Hindi/Marathi voice in system - transliterate so English TTS can pronounce the words!
+      textToSpeak=devanagariToRoman(clean);
+      voiceLang='en-IN';
+      chosenVoice=getBestVoice('en');
+    }
+  }else{
+    voiceLang='en-IN';
+    chosenVoice=getBestVoice('en');
+  }
+
+  const u=new SpeechSynthesisUtterance(textToSpeak);
+  u.lang=voiceLang;
+  u.rate=0.92;
+  if(chosenVoice)u.voice=chosenVoice;
 
   currentSpeakingBtn=btn;
-  btn.classList.add('speaking');
-  const label=btn.querySelector('.speak-label');
-  if(label)label.textContent=L()[24]||'Stop';
-  const icon=btn.querySelector('.speak-icon');
-  if(icon)icon.innerHTML='<rect x="6" y="6" width="12" height="12" rx="2"/>';
+  if(btn){
+    btn.classList.add('speaking');
+    const label=btn.querySelector('.speak-label');
+    if(label)label.textContent=L()[24]||'Stop';
+    const icon=btn.querySelector('.speak-icon');
+    if(icon)icon.innerHTML='<rect x="6" y="6" width="12" height="12" rx="2"/>';
+  }
 
   u.onend=()=>stopSpeaking();
   u.onerror=()=>stopSpeaking();
-  speechSynthesis.speak(u);
+
+  setTimeout(()=>{
+    try{
+      startSpeechKeepAlive();
+      speechSynthesis.speak(u);
+    }catch{
+      stopSpeaking();
+    }
+  },60);
 }
 
 let recognition=null,isListening=false,autoSpeakNextAnswer=false;
