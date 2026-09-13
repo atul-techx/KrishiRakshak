@@ -149,4 +149,7 @@ footer{text-align:center;color:var(--muted);font-size:10px;padding:20px 20px 28p
 .detail-spec-list{display:flex;flex-direction:column;gap:10px;font-size:13px}
 .detail-spec-item{display:grid;grid-template-columns:130px 1fr;gap:12px;padding:6px 0;border-bottom:1px solid #eee4d4}
 .detail-spec-item:last-child{border-bottom:none}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-grid .full{grid-column:1/-1}
+@media(max-width:600px){.form-grid{grid-template-columns:1fr}}
 
