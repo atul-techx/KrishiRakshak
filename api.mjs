@@ -126,82 +126,53 @@ async function handleMarketPrices(request, env, fetcher) {
   const categoryQuery = (url.searchParams.get('category') || '').trim().toLowerCase();
   const searchQuery = (url.searchParams.get('search') || '').trim().toLowerCase();
 
-  // Base benchmarks filtered by state if specified
-  const relevantBenchmarks = (stateQuery && stateQuery !== 'all')
+  const apiKey = env.DATA_GOV_IN_API_KEY || '579b464db66ec23bdd000001e82d0e5ec95d4f0a521bfdf023d235bc';
+
+  // Fallback benchmarks used ONLY if government server is temporarily down
+  const fallbackRecords = (stateQuery && stateQuery !== 'all')
     ? benchmarkRecords.filter(r => r.state.toLowerCase().includes(stateQuery))
     : benchmarkRecords;
 
-  let records = [...relevantBenchmarks];
+  let records = fallbackRecords;
+  let isLive = false;
 
-  if (env.DATA_GOV_IN_API_KEY) {
+  if (apiKey) {
     try {
       const cacheKey = stateQuery || 'all';
       const now = Date.now();
       const cached = marketCache.get(cacheKey);
 
-      if (cached && (now - cached.timestamp < 600000)) {
+      if (cached && (now - cached.timestamp < 300000)) { // 5-minute fresh cache
         records = cached.records;
+        isLive = true;
       } else {
-        let liveRecords = [];
+        let apiUrl = '';
         if (stateQuery && stateQuery !== 'all') {
           const targetState = stateMap[stateQuery] || (stateQuery.charAt(0).toUpperCase() + stateQuery.slice(1));
-          const apiUrl = `https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070?api-key=${encodeURIComponent(env.DATA_GOV_IN_API_KEY)}&format=json&limit=150&filters%5Bstate%5D=${encodeURIComponent(targetState)}`;
-          const res = await fetcher(apiUrl, { signal: AbortSignal.timeout(6000) });
-          if (res.ok) {
-            const data = await res.json();
-            if (Array.isArray(data?.records) && data.records.length > 0) {
-              liveRecords = data.records;
-            }
-          }
+          apiUrl = `https://api.data.gov.in/resource/35985678-0d79-46b4-9ed6-6f13308a1d24?api-key=${encodeURIComponent(apiKey)}&format=json&limit=150&sort%5BArrival_Date%5D=desc&filters%5BState%5D=${encodeURIComponent(targetState)}`;
         } else {
-          // Query major agricultural hubs in parallel: Maharashtra, Uttar Pradesh, Madhya Pradesh, Gujarat, Punjab, Rajasthan
-          const topStates = ['Maharashtra', 'Uttar Pradesh', 'Madhya Pradesh', 'Gujarat', 'Punjab', 'Rajasthan'];
-          const fetchPromises = topStates.map(st =>
-            fetcher(
-              `https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070?api-key=${encodeURIComponent(env.DATA_GOV_IN_API_KEY)}&format=json&limit=35&filters%5Bstate%5D=${encodeURIComponent(st)}`,
-              { signal: AbortSignal.timeout(6000) }
-            ).then(r => r.ok ? r.json() : null).catch(() => null)
-          );
-          const results = await Promise.allSettled(fetchPromises);
-          for (const res of results) {
-            if (res.status === 'fulfilled' && Array.isArray(res.value?.records)) {
-              liveRecords.push(...res.value.records);
-            }
-          }
+          apiUrl = `https://api.data.gov.in/resource/35985678-0d79-46b4-9ed6-6f13308a1d24?api-key=${encodeURIComponent(apiKey)}&format=json&limit=150&sort%5BArrival_Date%5D=desc`;
         }
 
-        if (liveRecords.length > 0) {
-          // Filter out junk/non-crops like wood, cowdung, etc.
-          const validLive = liveRecords
-            .filter(r => r && r.commodity && isRealCrop(r.commodity))
-            .map((r, idx) => transformAgmarkRecord(r, idx));
+        const res = await fetcher(apiUrl, { signal: AbortSignal.timeout(8000) });
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data?.records) && data.records.length > 0) {
+            const validLive = data.records
+              .filter(r => isRealCrop(r.Commodity || r.commodity || ''))
+              .map((r, idx) => transformAgmarkRecord(r, idx));
 
-          // Combine benchmarks at top + live records, deduplicated by commodity + market
-          const seenKeys = new Set();
-          const merged = [];
-
-          // Add benchmarks first
-          for (const b of relevantBenchmarks) {
-            const key = `${b.commodity.toLowerCase()}__${b.market.toLowerCase()}`;
-            seenKeys.add(key);
-            merged.push(b);
-          }
-
-          // Add live records that are not duplicates
-          for (const lr of validLive) {
-            const key = `${lr.commodity.toLowerCase()}__${lr.market.toLowerCase()}`;
-            if (!seenKeys.has(key)) {
-              seenKeys.add(key);
-              merged.push(lr);
+            // Pure 100% Live Government API Data
+            if (validLive.length > 0) {
+              records = validLive;
+              isLive = true;
+              marketCache.set(cacheKey, { timestamp: now, records });
             }
           }
-
-          records = merged;
-          marketCache.set(cacheKey, { timestamp: now, records });
         }
       }
     } catch (e) {
-      console.warn('Market prices live fetch failed, using benchmark records:', e);
+      console.warn('Live Agmarknet fetch failed, using fallback:', e);
     }
   }
 
@@ -223,10 +194,12 @@ async function handleMarketPrices(request, env, fetcher) {
     );
   }
 
+  const latestDate = records[0]?.updatedAt || '12/09/2026';
+
   return json({
     ok: true,
-    source: env.DATA_GOV_IN_API_KEY ? 'Agmarknet Live API (data.gov.in)' : 'Agmarknet APMC Daily Intelligence (Ministry of Agriculture)',
-    updatedAt: "13 Sep 2026",
+    source: isLive ? 'Agmarknet Live API (data.gov.in)' : 'Agmarknet APMC Daily Intelligence (Ministry of Agriculture)',
+    updatedAt: latestDate,
     total: filtered.length,
     states: [
       "All",

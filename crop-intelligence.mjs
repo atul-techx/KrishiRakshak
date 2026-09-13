@@ -143,15 +143,27 @@ export const stateMap = {
   'tamil nadu': 'Tamil Nadu',
   'west bengal': 'West Bengal',
   'odisha': 'Odisha',
-  'kerala': 'Keralam'
+  'kerala': 'Keralam',
+  'keralam': 'Keralam',
+  'uttarakhand': 'Uttarakhand',
+  'himachal pradesh': 'Himachal Pradesh',
+  'assam': 'Assam',
+  'jammu and kashmir': 'Jammu and Kashmir',
+  'tripura': 'Tripura'
 };
 
 export function transformAgmarkRecord(r, idx) {
-  const meta = getCropMeta(r.commodity || '');
-  const min = Math.round(Number(r.min_price) || 0);
-  const max = Math.round(Number(r.max_price) || 0);
-  const rawModal = Number(r.modal_price) || (min > 0 ? min : 0);
+  const rawCommodity = (r.Commodity || r.commodity || '').trim();
+  const rawMarket = (r.Market || r.market || 'APMC').trim();
+  const district = (r.District || r.district || '').trim();
+  const state = (r.State || r.state || '').trim();
+  const min = Math.round(Number(r.Min_Price ?? r.min_price) || 0);
+  const max = Math.round(Number(r.Max_Price ?? r.max_price) || 0);
+  const rawModal = Number(r.Modal_Price ?? r.modal_price) || (min > 0 ? min : 0);
   const modal = Math.round(rawModal);
+  const arrivalDate = (r.Arrival_Date || r.arrival_date || '').trim();
+
+  const meta = getCropMeta(rawCommodity);
 
   let trend = 'stable';
   let change = 0;
@@ -172,10 +184,7 @@ export function transformAgmarkRecord(r, idx) {
   }
 
   const msp = meta.msp;
-  const rawMarket = (r.market || 'APMC').trim();
   const cleanMarket = rawMarket.replace(/\s+/g, ' ').replace(/\s*\([^)]*\)\s*$/, '').trim() || rawMarket;
-  const district = (r.district || '').trim();
-  const state = (r.state || '').trim();
 
   const advisoryEn = msp && modal >= msp
     ? `Trading ₹${modal - msp} above MSP (₹${msp}). Favourable auction return.`
@@ -209,12 +218,12 @@ export function transformAgmarkRecord(r, idx) {
     change,
     changePct,
     trend,
-    arrival: r.arrival_date ? `APMC दर्ज (${r.arrival_date})` : 'APMC आवक',
+    arrival: arrivalDate ? `APMC दर्ज (${arrivalDate})` : 'APMC आवक',
     msp,
     advisoryEn,
     advisoryHi,
     advisoryMr,
-    updatedAt: r.arrival_date || '13 Sep 2026'
+    updatedAt: arrivalDate || '13 Sep 2026'
   };
 }
 
