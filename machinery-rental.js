@@ -224,6 +224,114 @@
       specs: 'Double tyre rear axle · High-side removable panels for grain & sugarcane',
       isAvailable: true,
       createdAt: Date.now() - 86400000 * 8
+    },
+    {
+      id: 'eq-9',
+      name: 'Preet 987 Self-Propelled Combine Harvester (14 Ft Cutter Bar)',
+      category: 'harvesting',
+      categoryName: 'Harvesting & Threshing',
+      icon: '🌾',
+      pricePerDay: 4500,
+      pricePerHour: 900,
+      ownerName: 'Gurpreet Singh Dhillon',
+      ownerType: 'fleet',
+      ownerBadge: 'Progressive Fleet Owner',
+      village: 'Karnal Rural',
+      district: 'Karnal',
+      state: 'Haryana',
+      lat: 29.685,
+      lng: 76.990,
+      distanceKm: 5.8,
+      phone: '9812045678',
+      whatsapp: '9812045678',
+      operatorIncluded: true,
+      operatorNotes: '2 experienced operators included · Clears 4-5 acres per hour · Paddy & wheat attachments',
+      condition: 'Excellent',
+      securityDeposit: 'advance booking token ₹1000',
+      specs: '101 HP Ashok Leyland Turbo engine · 14-ft heavy cutter bar · High grain tank recovery · AC cabin',
+      isAvailable: true,
+      createdAt: Date.now() - 86400000 * 1
+    },
+    {
+      id: 'eq-10',
+      name: 'Spectra Precision Laser Land Leveler + 7-Foot Scraper Bucket',
+      category: 'tractors',
+      categoryName: 'Tractors & Tillage',
+      icon: '📐',
+      pricePerDay: 1800,
+      pricePerHour: 350,
+      ownerName: 'Jagdish Chandra Verma',
+      ownerType: 'farmer',
+      ownerBadge: 'Fellow Farmer (P2P Share)',
+      village: 'Barabanki Sadar',
+      district: 'Barabanki',
+      state: 'Uttar Pradesh',
+      lat: 26.927,
+      lng: 81.183,
+      distanceKm: 4.1,
+      phone: '9450123890',
+      whatsapp: '9450123890',
+      operatorIncluded: true,
+      operatorNotes: 'Laser transmitter, receiver mast & trained operator included · Saves 30% water',
+      condition: 'Like New',
+      securityDeposit: 'Aadhaar copy / Mutual farmer agreement',
+      specs: 'Dual-slope laser control box · 7-foot heavy grade box scraper · Requires 50+ HP tractor',
+      isAvailable: true,
+      createdAt: Date.now() - 86400000 * 2
+    },
+    {
+      id: 'eq-11',
+      name: 'Shakti 7.5 HP Trolley-Mounted Solar Water Pump Set',
+      category: 'irrigation',
+      categoryName: 'Pumps & Irrigation',
+      icon: '☀️',
+      pricePerDay: 650,
+      pricePerHour: 110,
+      ownerName: 'Santosh Shingare',
+      ownerType: 'farmer',
+      ownerBadge: 'Fellow Farmer (P2P Share)',
+      village: 'Sangamner',
+      district: 'Ahmednagar',
+      state: 'Maharashtra',
+      lat: 19.576,
+      lng: 74.207,
+      distanceKm: 6.9,
+      phone: '9850234190',
+      whatsapp: '9850234190',
+      operatorIncluded: false,
+      operatorNotes: 'Zero fuel or electricity needed · 8 movable solar PV panels on towable farm trolley',
+      condition: 'Good Condition',
+      securityDeposit: 'ID Card / Local guarantor',
+      specs: '7.5 HP AC submersible pump · 1200 LPM discharge · Includes 150ft flexible delivery hose pipe',
+      isAvailable: true,
+      createdAt: Date.now() - 86400000 * 3
+    },
+    {
+      id: 'eq-12',
+      name: 'VST Shakti 130 DI Power Tiller (13 HP Diesel + Rotary Weeder)',
+      category: 'tractors',
+      categoryName: 'Tractors & Tillage',
+      icon: '🌱',
+      pricePerDay: 500,
+      pricePerHour: 95,
+      ownerName: 'Anand Rao Patil',
+      ownerType: 'farmer',
+      ownerBadge: 'Fellow Farmer (P2P Share)',
+      village: 'Shirol',
+      district: 'Kolhapur',
+      state: 'Maharashtra',
+      lat: 16.738,
+      lng: 74.601,
+      distanceKm: 8.5,
+      phone: '9764512389',
+      whatsapp: '9764512389',
+      operatorIncluded: false,
+      operatorNotes: 'Lightweight and agile · Comes with rotary tines, ridger, and cage wheels for wet paddy puddling',
+      condition: 'Excellent',
+      securityDeposit: 'Village farmer ID proof',
+      specs: '13 HP direct-injection diesel engine · 600 mm tilling width · Multi-speed PTO · Very low diesel consumption',
+      isAvailable: true,
+      createdAt: Date.now() - 86400000 * 4
     }
   ];
 
@@ -242,7 +350,11 @@
       if (stored) {
         const parsed = JSON.parse(stored);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          state.listings = parsed;
+          // Merge missing default listings so newly added machinery always shows up
+          const existingIds = new Set(parsed.map(item => item.id));
+          const missingDefaults = DEFAULT_LISTINGS.filter(d => !existingIds.has(d.id));
+          state.listings = [...parsed, ...missingDefaults];
+          saveListings();
           return;
         }
       }
@@ -264,6 +376,21 @@
 
   function getLang() {
     return window.KrishiI18n?.getLanguage() || localStorage.getItem('krishiLanguage') || 'en';
+  }
+
+  function showToast(msg) {
+    if (typeof window.toast === 'function') {
+      window.toast(msg);
+    } else if (typeof toast === 'function') {
+      toast(msg);
+    } else {
+      const el = document.getElementById('toast');
+      if (el) {
+        el.textContent = msg;
+        el.classList.remove('hidden');
+        setTimeout(() => el.classList.add('hidden'), 3000);
+      }
+    }
   }
 
   function formatPrice(num) {
@@ -311,9 +438,11 @@
         if (!hay.includes(q)) return false;
       }
 
-      // Category filter
+      // Category filter (tractors also encompasses tillage attachments)
       if (state.selectedCategory !== 'all') {
-        if (item.category !== state.selectedCategory) return false;
+        const cat = item.category;
+        const sel = state.selectedCategory;
+        if (cat !== sel && !(sel === 'tractors' && cat === 'tillage')) return false;
       }
 
       // Radius filter
@@ -556,9 +685,7 @@
     saveListings();
     renderMetrics();
     renderListings();
-    if (window.toast) {
-      window.toast(item.isAvailable ? 'Marked as Available.' : 'Marked as In Use.');
-    }
+    showToast(item.isAvailable ? 'Marked as Available.' : 'Marked as In Use.');
   }
 
   function deleteListing(id) {
@@ -570,7 +697,7 @@
     saveListings();
     renderMetrics();
     renderListings();
-    if (window.toast) window.toast('Listing removed.');
+    showToast('Listing removed.');
   }
 
   function openDetailModal(id) {
@@ -649,7 +776,7 @@
     const securityDeposit = document.getElementById('listDeposit')?.value.trim() || 'Aadhaar / Voter ID proof';
 
     if (!name || !phone) {
-      if (window.toast) window.toast('Please provide equipment name and phone number.');
+      showToast('Please provide equipment name and phone number.');
       return;
     }
 
@@ -709,9 +836,7 @@
     renderMetrics();
     renderListings();
 
-    if (window.toast) {
-      window.toast('🎉 Equipment listed successfully! Neighbors can now contact you on WhatsApp.');
-    }
+    showToast('🎉 Equipment listed successfully! Neighbors can now contact you on WhatsApp.');
   }
 
   function setupEvents() {
@@ -760,6 +885,29 @@
     const closeList = document.getElementById('closeListModal');
     if (closeList) closeList.onclick = closeListModal;
 
+    // Modal background clicks to dismiss
+    const listModal = document.getElementById('listEquipmentModal');
+    if (listModal) {
+      listModal.onclick = (e) => {
+        if (e.target === listModal) closeListModal();
+      };
+    }
+
+    const detailModal = document.getElementById('equipmentDetailModal');
+    if (detailModal) {
+      detailModal.onclick = (e) => {
+        if (e.target === detailModal) closeDetailModal();
+      };
+    }
+
+    // Dismiss with escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeListModal();
+        closeDetailModal();
+      }
+    });
+
     // Form submit
     const form = document.getElementById('addEquipmentForm');
     if (form) form.onsubmit = handleListingSubmit;
@@ -782,5 +930,11 @@
     openDetailModal,
     closeDetailModal
   };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 
 })(window);

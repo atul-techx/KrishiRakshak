@@ -15,6 +15,7 @@ const files = [
   "sentinel.css",
   "rakshak-chat.js",
   "market-price.js",
+  "machinery-rental.js",
   "crop-app.html",
   "workflow.js",
   "api-client.js",

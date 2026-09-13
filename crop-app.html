@@ -439,7 +439,7 @@
           </div>
           <div class="head-actions">
             <span class="status-pill ok">● Direct WhatsApp Connect</span>
-            <button id="openAddMachineryBtn" class="btn btn-primary" type="button">
+            <button id="openAddMachineryBtn" class="btn btn-primary" type="button" onclick="window.KrishiMachinery?.openListModal()">
               <span>🚜</span> <span data-i18n="listEquipmentBtn">＋ List My Equipment</span>
             </button>
           </div>
@@ -526,7 +526,7 @@
   <!-- LIST EQUIPMENT MODAL -->
   <div id="listEquipmentModal" class="modal hidden">
     <div class="modal-card modal-wide">
-      <button id="closeListModal" class="modal-close" type="button">×</button>
+      <button id="closeListModal" class="modal-close" type="button" onclick="window.KrishiMachinery?.closeListModal()">×</button>
       <p class="eyebrow">EQUIPMENT SHARING</p>
       <h2>List Equipment for Rent</h2>
       <p class="muted" style="margin:-8px 0 16px; font-size:13px;">Help local farmers access machinery while earning rental returns on idle tools.</p>
@@ -610,7 +610,7 @@
         </div>
 
         <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:18px;">
-          <button type="button" class="btn btn-light" data-close="listEquipmentModal">Cancel</button>
+          <button type="button" class="btn btn-light" data-close="listEquipmentModal" onclick="window.KrishiMachinery?.closeListModal()">Cancel</button>
           <button type="submit" class="btn btn-primary">Publish Equipment Listing →</button>
         </div>
       </form>
@@ -620,7 +620,7 @@
   <!-- EQUIPMENT DETAIL MODAL -->
   <div id="equipmentDetailModal" class="modal hidden">
     <div class="modal-card">
-      <button id="closeDetailModal" class="modal-close" type="button">×</button>
+      <button id="closeDetailModal" class="modal-close" type="button" onclick="window.KrishiMachinery?.closeDetailModal()">×</button>
       <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
         <div id="detailIcon" style="font-size:36px; width:52px; height:52px; background:var(--amber2); border-radius:14px; display:grid; place-items:center;">🚜</div>
         <div>
