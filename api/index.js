@@ -10,7 +10,11 @@ module.exports = async function handler(req, res) {
   try {
     const protocol = req.headers['x-forwarded-proto'] || 'https';
     const host = req.headers['x-forwarded-host'] || req.headers.host || 'localhost';
-    const url = new URL(req.url, `${protocol}://${host}`);
+    const matched = req.headers['x-matched-path'] || req.url || '/api/status';
+    const cleanPath = matched.startsWith('http') ? new URL(matched).pathname : matched.split('?')[0];
+    const fullPath = cleanPath.startsWith('/api') ? cleanPath : ('/api' + (cleanPath.startsWith('/') ? cleanPath : '/' + cleanPath));
+    const search = req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : '';
+    const url = new URL(fullPath + search, `${protocol}://${host}`);
 
     let body = undefined;
     if (!['GET', 'HEAD'].includes(req.method)) {
