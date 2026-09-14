@@ -250,18 +250,55 @@ function logout(){
 let registering=false;
 function setAuthMode(mode){
   registering=mode==="register";
-  $("#loginTab").classList.toggle("active",!registering);$("#registerTab").classList.toggle("active",registering);
-  $("#authTitle").textContent=registering?(window.KrishiI18n?.t("Create your farmer account")||"Create your farmer account"):(window.KrishiI18n?.t("Welcome back")||"Welcome back");
+  window.__currentAuthMode=mode;
+  if($("#loginTab")) $("#loginTab").classList.toggle("active",!registering);
+  if($("#registerTab")) $("#registerTab").classList.toggle("active",registering);
+  if($("#authTitle")){
+    $("#authTitle").textContent=registering?(window.KrishiI18n?.t("Create your farmer account")||"Create your farmer account"):(window.KrishiI18n?.t("Welcome back")||"Welcome back");
+  }
   if($("#authSubtitle")){
     $("#authSubtitle").textContent=registering
       ?(window.KrishiI18n?.t("Register your farm profile to get personalized advisories and disease tracking.")||"Register your farm profile to get personalized advisories and disease tracking.")
       :(window.KrishiI18n?.t("Login with your mobile/email to access your farm workspace.")||"Login with your mobile/email to access your farm workspace.");
   }
-  $("#authSubmit").textContent=registering?(window.KrishiI18n?.t("Create account →")||"Create account →"):(window.KrishiI18n?.t("Login →")||"Login →");
-  $("#authScreen").classList.toggle("registering",registering);
+  if($("#authSubmit")){
+    $("#authSubmit").textContent=registering?(window.KrishiI18n?.t("Create account →")||"Create account →"):(window.KrishiI18n?.t("Login →")||"Login →");
+  }
+  if($("#authSwitchPrompt")){
+    $("#authSwitchPrompt").textContent=registering?(window.KrishiI18n?.t("Already have an account?")||"Already have an account?"):(window.KrishiI18n?.t("Don't have an account?")||"Don't have an account?");
+  }
+  if($("#authSwitchBtn")){
+    $("#authSwitchBtn").textContent=registering?(window.KrishiI18n?.t("Login here")||"Login here"):(window.KrishiI18n?.t("Create account")||"Create account");
+  }
+  if($("#authScreen")) $("#authScreen").classList.toggle("registering",registering);
   renderSavedProfilesOnAuth();
 }
-$("#loginTab").onclick=()=>setAuthMode("login");$("#registerTab").onclick=()=>setAuthMode("register");
+window.setAuthMode=setAuthMode;
+
+if($("#loginTab")) $("#loginTab").onclick=()=>setAuthMode("login");
+if($("#registerTab")) $("#registerTab").onclick=()=>setAuthMode("register");
+if($("#authSwitchBtn")) $("#authSwitchBtn").onclick=()=>setAuthMode(registering?"login":"register");
+
+// Global event delegation to guarantee click handling in all conditions
+document.addEventListener("click",e=>{
+  const regBtn=e.target.closest("#registerTab, [data-auth-mode='register']");
+  if(regBtn){
+    e.preventDefault();
+    setAuthMode("register");
+    return;
+  }
+  const loginBtn=e.target.closest("#loginTab, [data-auth-mode='login']");
+  if(loginBtn){
+    e.preventDefault();
+    setAuthMode("login");
+    return;
+  }
+  const switchBtn=e.target.closest("#authSwitchBtn");
+  if(switchBtn){
+    e.preventDefault();
+    setAuthMode(registering?"login":"register");
+  }
+});
 
 $("#authForm").addEventListener("submit",async e=>{
   e.preventDefault();
@@ -652,6 +689,7 @@ function renderDashboard(){
   const watch=[];if(state.weather?.relative_humidity_2m>=80)watch.push(["","High humidity","Scout leaves for fungal symptoms and keep foliage dry where practical."]);if(state.weather?.precipitation>0)watch.push(["","Rain signal","Avoid unnecessary overhead irrigation and re-check affected areas after rain."]);if(!watch.length)watch.push(["","Regular scouting","Take a weekly leaf photo from the same plot to catch changes early."]);$("#fieldWatch").innerHTML=watch.map(x=>`<div class="watch-item"><span>${x[0]}</span><div><b>${x[1]}</b><p>${x[2]}</p></div></div>`).join("");
   renderRiskForecast();renderWeatherForecast();renderScanTrend();renderOfficialDashboard();
   $("#myCrops").innerHTML=(crops.length?crops:[{name:state.user.crop||"Add your crop",area:"Use profile or add a plot"}]).map(c=>`<div class="crop-item"><div class="crop-icon"></div><h4>${safeText(c.name)}</h4><p>${safeText(c.area)}</p></div>`).join("");
+}
 $("#addCropBtn").onclick=()=>$("#cropModal").classList.remove("hidden");
 $("#saveCropBtn").onclick=()=>{
   const name=$("#cropNameInput").value.trim();
