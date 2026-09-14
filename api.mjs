@@ -1,4 +1,5 @@
 import { stateMap, transformAgmarkRecord, isRealCrop } from './crop-intelligence.mjs';
+import { query, isDbConfigured } from './db.mjs';
 const marketCache = new Map();
 const json=(body,status=200)=>new Response(JSON.stringify(body),{status,headers:{'Content-Type':'application/json','Cache-Control':'no-store'}});
 const windows=new Map();
@@ -6,8 +7,9 @@ const textOf=value=>typeof value==='string'?value:JSON.stringify(value||'');
 const notes={en:['Possible condition; photo alone cannot confirm it.','Inspect both leaf surfaces and nearby plants. Record spread, crop stage and recent inputs. Seek local agricultural expert confirmation before treatment.'],hi:['संभावित समस्या; केवल फोटो से पुष्टि नहीं होती।','पत्तियों की दोनों सतह और पास के पौधे देखें। फैलाव, फसल अवस्था और हाल के उपयोग दर्ज करें। उपचार से पहले कृषि विशेषज्ञ से पुष्टि लें।'],mr:['संभाव्य समस्या; केवळ फोटोवरून खात्री होत नाही.','पानांच्या दोन्ही बाजू आणि जवळची झाडे तपासा. प्रसार, पीक अवस्था आणि अलीकडील निविष्ठांची नोंद करा. उपचारापूर्वी कृषी तज्ज्ञांचा सल्ला घ्या.'],hinglish:['Yeh sambhavit problem hai; sirf photo se confirm nahi hoti.','Patte ki dono sides aur aas-paas ke plants dekhein. Spread, crop stage aur recent inputs note karein. Treatment se pehle agriculture expert se confirm karein.']};
 async function coreAPI(request,env={},fetcher=fetch){
 const path=new URL(request.url).pathname;
-if(['/api/status','/api/health'].includes(path))return json({ok:true,apiVersion:'2026-09-12.2',provider:'Google Gemini',configured:Boolean(env.GEMINI_API_KEY),imageAssessment:Boolean(env.GEMINI_API_KEY),secondOpinionConfigured:Boolean(env.KINDWISE_API_KEY),mandiApiConfigured:Boolean(env.DATA_GOV_IN_API_KEY),imageProvider:'Kindwise crop.health'});
+if(['/api/status','/api/health'].includes(path))return json({ok:true,apiVersion:'2026-09-12.2',provider:'Google Gemini',configured:Boolean(env.GEMINI_API_KEY),imageAssessment:Boolean(env.GEMINI_API_KEY),secondOpinionConfigured:Boolean(env.KINDWISE_API_KEY),mandiApiConfigured:Boolean(env.DATA_GOV_IN_API_KEY),dbConfigured:isDbConfigured(),imageProvider:'Kindwise crop.health'});
 if(path==='/api/market-prices')return handleMarketPrices(request,env,fetcher);
+if(path.startsWith('/api/db/') || path.startsWith('/api/auth/') || path.startsWith('/api/scans') || path.startsWith('/api/crops') || path.startsWith('/api/machinery'))return handleDatabaseRoutes(request,env,path);
 if(!['/api/chat','/api/diagnose'].includes(path))return json({error:'API route not found.'},404);
 if(request.method!=='POST')return json({error:'Use POST.'},405);
 const diagnose=path==='/api/diagnose',key=env.GEMINI_API_KEY;
@@ -234,4 +236,150 @@ async function handleMarketPrices(request, env, fetcher) {
     ],
     records: filtered
   });
+}
+
+async function handleDatabaseRoutes(request, env, path) {
+  const method = request.method;
+
+  if (path === '/api/db/status') {
+    if (!isDbConfigured()) {
+      return json({ ok: false, configured: false, connected: false, message: 'DATABASE_URL is not configured.' });
+    }
+    try {
+      await query('SELECT 1');
+      return json({ ok: true, configured: true, connected: true, provider: 'PostgreSQL (Neon)' });
+    } catch (err) {
+      return json({ ok: false, configured: true, connected: false, error: err.message }, 500);
+    }
+  }
+
+  // If database is not configured, inform client cleanly for fallback
+  if (!isDbConfigured()) {
+    return json({ ok: false, fallback: true, message: 'Database not configured. Using local storage.' }, 503);
+  }
+
+  try {
+    // Auth: Register or update profile
+    if (path === '/api/auth/register' && method === 'POST') {
+      const data = await request.json();
+      const { id, name, password, role = 'farmer', location = '', crop = '', landSize = 0, language = 'en' } = data || {};
+      if (!id || !name) return json({ error: 'User ID and name are required' }, 400);
+
+      const q = `
+        INSERT INTO users (id, name, password_hash, role, location, crop, land_size, language, updated_at)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())
+        ON CONFLICT (id) DO UPDATE SET
+          name = EXCLUDED.name,
+          password_hash = COALESCE(NULLIF(EXCLUDED.password_hash, ''), users.password_hash),
+          role = EXCLUDED.role,
+          location = EXCLUDED.location,
+          crop = EXCLUDED.crop,
+          land_size = EXCLUDED.land_size,
+          language = EXCLUDED.language,
+          updated_at = NOW()
+        RETURNING id, name, role, location, crop, land_size, language, created_at;
+      `;
+      const res = await query(q, [id, name, password || '', role, location, crop, Number(landSize) || 0, language]);
+      return json({ ok: true, user: res.rows[0] });
+    }
+
+    // Auth: Login
+    if (path === '/api/auth/login' && method === 'POST') {
+      const { id, password } = (await request.json()) || {};
+      if (!id) return json({ error: 'User ID is required' }, 400);
+      const res = await query('SELECT id, name, password_hash, role, location, crop, land_size, language FROM users WHERE id = $1', [id]);
+      if (res.rows.length === 0) return json({ error: 'User not found' }, 404);
+      const user = res.rows[0];
+      if (user.password_hash && user.password_hash !== password) {
+        return json({ error: 'Invalid password' }, 401);
+      }
+      delete user.password_hash;
+      return json({ ok: true, user });
+    }
+
+    // Crop Scans history
+    if (path === '/api/scans') {
+      if (method === 'GET') {
+        const url = new URL(request.url);
+        const userId = url.searchParams.get('userId');
+        if (!userId) return json({ error: 'userId parameter is required' }, 400);
+        const res = await query('SELECT * FROM scans WHERE user_id = $1 ORDER BY created_at DESC LIMIT 50', [userId]);
+        return json({ ok: true, scans: res.rows });
+      }
+      if (method === 'POST') {
+        const data = await request.json();
+        const { userId, crop, finding, confidence, severity, details } = data || {};
+        if (!userId) return json({ error: 'userId is required' }, 400);
+        const q = `
+          INSERT INTO scans (user_id, crop, finding, confidence, severity, details)
+          VALUES ($1, $2, $3, $4, $5, $6)
+          RETURNING *;
+        `;
+        const res = await query(q, [userId, crop || 'Unknown', finding || '', Number(confidence) || 0, severity || 'normal', JSON.stringify(details || {})]);
+        return json({ ok: true, scan: res.rows[0] });
+      }
+    }
+
+    // Registered Crops
+    if (path === '/api/crops') {
+      if (method === 'GET') {
+        const url = new URL(request.url);
+        const userId = url.searchParams.get('userId');
+        if (!userId) return json({ error: 'userId parameter is required' }, 400);
+        const res = await query('SELECT * FROM crops WHERE user_id = $1 ORDER BY created_at DESC', [userId]);
+        return json({ ok: true, crops: res.rows });
+      }
+      if (method === 'POST') {
+        const data = await request.json();
+        const { userId, name, variety, area, sowingDate, stage } = data || {};
+        if (!userId || !name) return json({ error: 'userId and name are required' }, 400);
+        const q = `
+          INSERT INTO crops (user_id, name, variety, area, sowing_date, stage)
+          VALUES ($1, $2, $3, $4, $5, $6)
+          RETURNING *;
+        `;
+        const res = await query(q, [userId, name, variety || '', Number(area) || 0, sowingDate || null, stage || 'Vegetative']);
+        return json({ ok: true, crop: res.rows[0] });
+      }
+      if (method === 'DELETE') {
+        const url = new URL(request.url);
+        const id = url.searchParams.get('id');
+        if (!id) return json({ error: 'Crop id is required' }, 400);
+        await query('DELETE FROM crops WHERE id = $1', [id]);
+        return json({ ok: true });
+      }
+    }
+
+    // Machinery Rentals
+    if (path === '/api/machinery') {
+      if (method === 'GET') {
+        const res = await query('SELECT * FROM machinery ORDER BY created_at DESC');
+        return json({ ok: true, listings: res.rows });
+      }
+      if (method === 'POST') {
+        const data = await request.json();
+        const { id, userId, title, type, rate, location, contact, available } = data || {};
+        if (!id || !title) return json({ error: 'Listing ID and title are required' }, 400);
+        const q = `
+          INSERT INTO machinery (id, user_id, title, type, rate, location, contact, available)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+          ON CONFLICT (id) DO UPDATE SET
+            title = EXCLUDED.title,
+            type = EXCLUDED.type,
+            rate = EXCLUDED.rate,
+            location = EXCLUDED.location,
+            contact = EXCLUDED.contact,
+            available = EXCLUDED.available
+          RETURNING *;
+        `;
+        const res = await query(q, [id, userId || 'anonymous', title, type || 'Tractor', Number(rate) || 0, location || '', contact || '', available !== false]);
+        return json({ ok: true, listing: res.rows[0] });
+      }
+    }
+
+    return json({ error: 'Database API endpoint not found.' }, 404);
+  } catch (err) {
+    console.error('Database API error:', err);
+    return json({ error: err.message }, 500);
+  }
 }

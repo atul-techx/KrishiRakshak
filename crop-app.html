@@ -35,15 +35,23 @@
       <button id="registerTab" class="auth-tab">Create account</button>
     </div>
     <h2 id="authTitle">Welcome back</h2>
-    <p id="authSubtitle">Sign in to your farmer workspace.</p>
+    <div id="authSavedProfiles" class="auth-saved-profiles hidden">
+      <div class="saved-profiles-header">
+        <span>👨‍🌾 Saved Farmer Accounts</span>
+        <small>Select to login quickly</small>
+      </div>
+      <div id="authProfilesList" class="auth-profiles-list"></div>
+    </div>
     <form id="authForm">
-      <label class="field"><span>Full name</span><input id="authName" autocomplete="name" placeholder="e.g. Vijay Kumar" /></label>
-      <label class="field"><span>Mobile / Email</span><input id="authId" required autocomplete="username" placeholder="Your mobile or email" /></label>
-      <label class="field"><span>Password</span><input id="authPassword" required type="password" autocomplete="current-password" placeholder="At least 4 characters" /></label>
+      <label id="authNameField" class="field optional-field"><span>Full name *</span><input id="authName" autocomplete="name" placeholder="e.g. Vijay Kumar" /></label>
+      <label class="field"><span>Mobile / Email *</span><input id="authId" required autocomplete="username" placeholder="Your mobile or email" /></label>
+      <label class="field"><span>Password *</span><input id="authPassword" required type="password" autocomplete="current-password" placeholder="At least 4 characters" /></label>
       <label id="authLocationField" class="field optional-field"><span>Village / District</span><input id="authLocation" placeholder="e.g. Dindori, Maharashtra" /></label>
+      <label id="authCropField" class="field optional-field"><span>Primary Crop</span><input id="authCrop" placeholder="e.g. Tomato / Cotton / Soybean / Wheat" /></label>
+      <label id="authFarmSizeField" class="field optional-field"><span>Farm Land Size (Acres)</span><input id="authFarmSize" placeholder="e.g. 3.5 Acres" /></label>
       <button id="authSubmit" class="btn btn-primary full" type="submit">Login →</button>
     </form>
-    <p class="auth-note">Prototype accounts are stored locally in this browser. For production, connect Firebase/Supabase authentication.</p>
+    <p class="auth-note">Farmer accounts and crop records are preserved locally in this browser. Multiple farmers can register and switch profiles anytime.</p>
   </div>
 </div>
 
@@ -87,6 +95,9 @@
           <option value="hi">हिन्दी</option>
           <option value="mr">मराठी</option>
         </select>
+      </div>
+      <div id="dbStatusChip" class="db-status-chip offline" title="Checking database status...">
+        <span class="db-dot"></span> <span id="dbStatusLabel">Local Storage</span>
       </div>
       <button id="profileBtn" class="profile-btn" type="button" title="Farmer profile">
         <span class="profile-avatar">👤</span> <span id="profileName">Farmer</span>
@@ -503,13 +514,41 @@
 
   <!-- PROFILE MODAL -->
   <div id="profileModal" class="modal hidden">
-    <div class="modal-card">
+    <div class="modal-card modal-profile">
       <button class="modal-close" data-close="profileModal">×</button>
-      <p class="eyebrow">FARMER PROFILE</p><h2>Your field identity</h2>
-      <label class="field"><span>Name</span><input id="profileEditName"></label>
-      <label class="field"><span>Village / District</span><input id="profileEditLocation"></label>
-      <label class="field"><span>Primary crop</span><input id="profileEditCrop" placeholder="Tomato / Wheat / Soybean…"></label>
-      <button id="saveProfileBtn" class="btn btn-primary full">Save profile</button>
+      <div class="profile-modal-header" style="display:flex; align-items:center; gap:14px; margin-bottom:18px;">
+        <div class="profile-header-avatar" id="modalProfileAvatar" style="width:50px; height:50px; border-radius:14px; background:var(--beige2); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; font-size:24px;">👨‍🌾</div>
+        <div>
+          <p class="eyebrow" style="margin:0 0 2px;">FARMER PROFILE</p>
+          <h2 id="modalProfileHeading" style="margin:0; font-size:24px;">Farmer Profile</h2>
+          <small id="modalProfileSub" class="muted" style="font-size:12px;">Active identity for scans &amp; records</small>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <label class="field"><span>Name</span><input id="profileEditName" placeholder="Farmer Name"></label>
+        <label class="field"><span>Mobile / ID</span><input id="profileEditId" readonly style="opacity:0.75; cursor:not-allowed; background:#f5eee4;"></label>
+        <label class="field"><span>Village / District</span><input id="profileEditLocation" placeholder="e.g. Dindori, Nashik"></label>
+        <label class="field"><span>Primary Crop</span><input id="profileEditCrop" placeholder="Tomato / Wheat / Soybean…"></label>
+        <label class="field full"><span>Farm Land Size (Acres)</span><input id="profileEditFarmSize" placeholder="e.g. 3.5 Acres"></label>
+      </div>
+      <div style="display:flex; gap:10px; margin-top:14px;">
+        <button id="saveProfileBtn" class="btn btn-primary full" type="button">Save Profile Changes</button>
+      </div>
+
+      <hr class="modal-divider" style="margin:22px 0 16px; border:none; border-top:1px solid var(--line);">
+
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <span style="font-size:13px; font-weight:800; color:var(--brown); text-transform:uppercase; letter-spacing:0.05em;">👨‍🌾 Farmer Profiles on this Device</span>
+        <button id="addNewFarmerBtn" type="button" class="btn btn-light" style="padding:6px 12px; font-size:12px; font-weight:700;">＋ New Farmer Profile</button>
+      </div>
+      <p class="muted" style="font-size:12px; margin:0 0 12px;">Different farmers can maintain separate crop records, scans, and expert cases on this device.</p>
+      <div id="allProfilesList" class="all-profiles-list" style="display:flex; flex-direction:column; gap:8px; max-height:220px; overflow-y:auto; padding-right:4px;"></div>
+
+      <div style="margin-top:18px; padding-top:14px; border-top:1px solid var(--line); display:flex; justify-content:space-between; align-items:center;">
+        <button id="modalLogoutBtn" type="button" class="btn btn-light danger-btn" style="padding:8px 14px; font-size:13px;">🚪 Logout</button>
+        <button type="button" class="btn btn-light" data-close="profileModal" style="padding:8px 14px; font-size:13px;">Close</button>
+      </div>
     </div>
   </div>
 

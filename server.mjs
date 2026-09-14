@@ -4,6 +4,10 @@ const runtime=configuration();
 import http from 'node:http';
 import {readFile} from 'node:fs/promises';
 import {handleAPI} from './api.mjs';
+import {initDb, isDbConfigured} from './db.mjs';
+if (isDbConfigured()) {
+  initDb().catch(e => console.warn('PostgreSQL database warning:', e.message));
+}
 const assets=new Set(["rakshak-logo.png", "theme.css", "index.html", "product-fixes.js", "onnx-worker.js", "sentinel-core.js", "config.js", "sentinel.css", "rakshak-chat.js", "market-price.js", "machinery-rental.js", "crop-app.html", "workflow.js", "api-client.js", "style.css", "sentinel.js", "i18n.js", "reports.js", "app.js", "sw.js", "dual-check.js", "scan-bridge.js", "repairs.js", "public/models/cropguard.onnx", "public/models/ATTRIBUTION.txt", "public/models/classes.json", "public/vendor/ort-wasm-simd-threaded.wasm", "public/vendor/ort-wasm-simd-threaded.mjs", "public/vendor/ort.min.js", "public/vendor/LICENSE.txt"]);
 const mime={html:'text/html',js:'text/javascript',mjs:'text/javascript',wasm:'application/wasm',css:'text/css',json:'application/json',txt:'text/plain',png:'image/png'};
 http.createServer(async(req,res)=>{try{

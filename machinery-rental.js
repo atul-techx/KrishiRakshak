@@ -350,20 +350,39 @@
       if (stored) {
         const parsed = JSON.parse(stored);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          // Merge missing default listings so newly added machinery always shows up
           const existingIds = new Set(parsed.map(item => item.id));
           const missingDefaults = DEFAULT_LISTINGS.filter(d => !existingIds.has(d.id));
           state.listings = [...parsed, ...missingDefaults];
           saveListings();
-          return;
         }
       }
     } catch (e) {
       console.warn('Could not read machinery listings from localStorage', e);
     }
-    // Fallback to defaults
-    state.listings = [...DEFAULT_LISTINGS];
-    saveListings();
+    if (!state.listings || !state.listings.length) {
+      state.listings = [...DEFAULT_LISTINGS];
+      saveListings();
+    }
+    window.KrishiAPI?.dbGetMachinery().then(dbListings => {
+      if (Array.isArray(dbListings) && dbListings.length > 0) {
+        const currentIds = new Set(state.listings.map(l => l.id));
+        const newFromDb = dbListings.filter(l => !currentIds.has(l.id)).map(l => ({
+          id: l.id,
+          name: l.title,
+          category: l.type || 'tractors',
+          pricePerDay: Number(l.rate) || 1200,
+          location: l.location || '',
+          contactPhone: l.contact || '',
+          verified: true,
+          ownerType: 'farmer'
+        }));
+        if (newFromDb.length > 0) {
+          state.listings = [...state.listings, ...newFromDb];
+          saveListings();
+          renderCards();
+        }
+      }
+    }).catch(() => {});
   }
 
   function saveListings() {
