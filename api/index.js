@@ -10,11 +10,14 @@ module.exports = async function handler(req, res) {
   try {
     const protocol = req.headers['x-forwarded-proto'] || 'https';
     const host = req.headers['x-forwarded-host'] || req.headers.host || 'localhost';
-    const matched = req.headers['x-matched-path'] || req.url || '/api/status';
-    const cleanPath = matched.startsWith('http') ? new URL(matched).pathname : matched.split('?')[0];
-    const fullPath = cleanPath.startsWith('/api') ? cleanPath : ('/api' + (cleanPath.startsWith('/') ? cleanPath : '/' + cleanPath));
-    const search = req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : '';
-    const url = new URL(fullPath + search, `${protocol}://${host}`);
+    
+    // Construct standard URL from incoming req.url
+    let rawUrl = req.url || '/api/status';
+    if (!rawUrl.startsWith('http://') && !rawUrl.startsWith('https://')) {
+      if (!rawUrl.startsWith('/')) rawUrl = '/' + rawUrl;
+      rawUrl = `${protocol}://${host}${rawUrl}`;
+    }
+    const url = new URL(rawUrl);
 
     let body = undefined;
     if (!['GET', 'HEAD'].includes(req.method)) {
@@ -44,6 +47,6 @@ module.exports = async function handler(req, res) {
     return res.send(text);
   } catch (err) {
     console.error('API error:', err);
-    return res.status(500).json({ error: 'Internal Server Error' });
+    return res.status(500).json({ error: 'Internal Server Error', details: err.message });
   }
 };
