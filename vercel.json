@@ -1,6 +1,7 @@
 {
   "outputDirectory": "dist",
   "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/index.js" },
     { "source": "/scan", "destination": "/crop-app.html" },
     { "source": "/crop-app", "destination": "/crop-app.html" }
   ]

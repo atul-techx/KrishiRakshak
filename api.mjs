@@ -8,9 +8,9 @@ const notes={en:['Possible condition; photo alone cannot confirm it.','Inspect b
 async function coreAPI(request,env={},fetcher=fetch){
 const rawPath=new URL(request.url).pathname.replace(/\/+$/, '') || '/';
 const path=rawPath.startsWith('/api') ? rawPath : ('/api' + (rawPath.startsWith('/') ? rawPath : '/' + rawPath));
-if(['/api/status','/api/health'].includes(path))return json({ok:true,apiVersion:'2026-09-15.v2',provider:'Google Gemini',configured:Boolean(env.GEMINI_API_KEY),imageAssessment:Boolean(env.GEMINI_API_KEY),secondOpinionConfigured:Boolean(env.KINDWISE_API_KEY),mandiApiConfigured:Boolean(env.DATA_GOV_IN_API_KEY),dbConfigured:isDbConfigured(),imageProvider:'Kindwise crop.health'});
+if(['/api/status','/api/health','/api','/api/index.js'].includes(path) && request.method === 'GET')return json({ok:true,apiVersion:'2026-09-15.v2',provider:'Google Gemini',configured:Boolean(env.GEMINI_API_KEY),imageAssessment:Boolean(env.GEMINI_API_KEY),secondOpinionConfigured:Boolean(env.KINDWISE_API_KEY),mandiApiConfigured:Boolean(env.DATA_GOV_IN_API_KEY),dbConfigured:isDbConfigured(),imageProvider:'Kindwise crop.health'});
 if(path==='/api/market-prices')return handleMarketPrices(request,env,fetcher);
-if(path.startsWith('/api/db') || path.startsWith('/api/auth') || path.startsWith('/api/scans') || path.startsWith('/api/crops') || path.startsWith('/api/machinery') || ['/api/login','/api/register','/api/profile','/api/db-status'].includes(path))return handleDatabaseRoutes(request,env,path);
+if(path.startsWith('/api/db') || path.startsWith('/api/auth') || path.startsWith('/api/scans') || path.startsWith('/api/crops') || path.startsWith('/api/machinery') || ['/api/login','/api/register','/api/profile','/api/db-status','/api','/api/index.js'].includes(path))return handleDatabaseRoutes(request,env,path);
 if(!['/api/chat','/api/diagnose'].includes(path))return json({error:'API route not found.'},404);
 if(request.method!=='POST')return json({error:'Use POST.'},405);
 const diagnose=path==='/api/diagnose',key=env.GEMINI_API_KEY;
@@ -242,7 +242,7 @@ async function handleMarketPrices(request, env, fetcher) {
 async function handleDatabaseRoutes(request, env, path) {
   const method = request.method;
 
-  if (path === '/api/db/status' || path === '/api/db-status' || path === '/api/db') {
+  if (path === '/api/db/status' || path === '/api/db-status' || path === '/api/db' || ((path === '/api' || path === '/api/index.js') && method === 'GET')) {
     if (!isDbConfigured()) {
       return json({ ok: false, configured: false, connected: false, message: 'DATABASE_URL is not configured.' });
     }
@@ -260,8 +260,8 @@ async function handleDatabaseRoutes(request, env, path) {
   }
 
   try {
-    // Auth routes: support /api/auth, /api/auth/login, /api/auth/register, /api/auth/profile, /api/login, /api/register, /api/profile
-    if ((path.startsWith('/api/auth') || ['/api/login', '/api/register', '/api/profile'].includes(path)) && method === 'POST') {
+    // Auth routes: support /api/auth, /api/auth/login, /api/auth/register, /api/auth/profile, /api/login, /api/register, /api/profile, /api, /api/index.js
+    if ((path.startsWith('/api/auth') || ['/api/login', '/api/register', '/api/profile', '/api', '/api/index.js'].includes(path)) && method === 'POST') {
       const data = await request.json();
       const action = data?.action || (path.includes('register') ? 'register' : path.includes('profile') ? 'profile' : 'login');
 

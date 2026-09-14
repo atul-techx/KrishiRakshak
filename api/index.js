@@ -13,6 +13,12 @@ module.exports = async function handler(req, res) {
     
     // Construct standard URL from incoming req.url
     let rawUrl = req.url || '/api/status';
+    if (rawUrl === '/api/index.js' || rawUrl === '/api/index' || rawUrl === '/api' || rawUrl.endsWith('/api/index.js')) {
+      const alt = req.headers['x-forwarded-uri'] || req.headers['x-matched-path'];
+      if (alt && !alt.endsWith('/index.js') && !alt.endsWith('/index')) {
+        rawUrl = alt;
+      }
+    }
     if (!rawUrl.startsWith('http://') && !rawUrl.startsWith('https://')) {
       if (!rawUrl.startsWith('/')) rawUrl = '/' + rawUrl;
       rawUrl = `${protocol}://${host}${rawUrl}`;
