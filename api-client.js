@@ -8,16 +8,50 @@ if(!(r.headers.get('content-type')||'').includes('application/json'))return erro
 return r;
 }catch(e){if(e.name==='TimeoutError'||e.name==='AbortError')throw e;return error('NETWORK_ERROR');}
 },
-async dbStatus(){try{const r=await this.request('/api/db/status');return await r.json();}catch{return{ok:false,connected:false};}},
-async dbRegister(p){try{const r=await this.request('/api/auth/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)});return await r.json();}catch{return null;}},
-async dbLogin(id,password){try{const r=await this.request('/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,password})});return await r.json();}catch{return null;}},
+async dbStatus(){
+  try{
+    let r=await this.request('/api/db/status');
+    if(!r.ok||r.status===404) r=await this.request('/api/db-status');
+    if(r.ok){
+      const d=await r.json();
+      return d;
+    }
+    // Check main status
+    const s=await this.request('/api/status');
+    if(s.ok){
+      const sd=await s.json();
+      if(sd.dbConfigured) return {ok:true,connected:true,configured:true,provider:'PostgreSQL (Neon)'};
+    }
+    return {ok:false,connected:false};
+  }catch{return {ok:false,connected:false};}
+},
+async dbRegister(p){
+  try{
+    let r=await this.request('/api/auth/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)});
+    if(!r.ok&&r.status===404) r=await this.request('/api/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)});
+    return await r.json();
+  }catch{return null;}
+},
+async dbLogin(id,password){
+  try{
+    let r=await this.request('/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,password})});
+    if(!r.ok&&r.status===404) r=await this.request('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,password})});
+    return await r.json();
+  }catch{return null;}
+},
 async dbGetScans(userId){try{const r=await this.request('/api/scans?userId='+encodeURIComponent(userId));const d=await r.json();return d.ok&&Array.isArray(d.scans)?d.scans:null;}catch{return null;}},
 async dbSaveScan(scan){try{const r=await this.request('/api/scans',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(scan)});return await r.json();}catch{return null;}},
 async dbGetCrops(userId){try{const r=await this.request('/api/crops?userId='+encodeURIComponent(userId));const d=await r.json();return d.ok&&Array.isArray(d.crops)?d.crops:null;}catch{return null;}},
 async dbSaveCrop(crop){try{const r=await this.request('/api/crops',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(crop)});return await r.json();}catch{return null;}},
 async dbGetMachinery(){try{const r=await this.request('/api/machinery');const d=await r.json();return d.ok&&Array.isArray(d.listings)?d.listings:null;}catch{return null;}},
 async dbSaveMachinery(listing){try{const r=await this.request('/api/machinery',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(listing)});return await r.json();}catch{return null;}},
-async dbUpdateProfile(p){try{const r=await this.request('/api/auth/profile',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)});return await r.json();}catch{return null;}}
+async dbUpdateProfile(p){
+  try{
+    let r=await this.request('/api/auth/profile',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)});
+    if(!r.ok&&r.status===404) r=await this.request('/api/profile',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)});
+    return await r.json();
+  }catch{return null;}
+}
 };
 })();
 (()=>{

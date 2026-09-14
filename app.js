@@ -367,18 +367,6 @@ $("#authForm").addEventListener("submit",async e=>{
       try{
         const res=await window.KrishiAPI?.dbLogin(id,pass);
         if(res){
-          if(!res.ok){
-            if(res.code==='USER_NOT_FOUND'){
-              submitBtn.disabled=false;
-              submitBtn.textContent=window.KrishiI18n?.t("Login →")||"Login →";
-              return toast(window.KrishiI18n?.t("No account found with this mobile/email. Please create an account first.")||"No account found with this mobile/email. Please create an account first.");
-            }
-            if(res.code==='INVALID_CREDENTIALS'||res.code==='INVALID_PASSWORD'){
-              submitBtn.disabled=false;
-              submitBtn.textContent=window.KrishiI18n?.t("Login →")||"Login →";
-              return toast(window.KrishiI18n?.t("Incorrect password. Please check and try again.")||"Incorrect password. Please check and try again.");
-            }
-          }
           if(res.ok&&res.user){
             loggedUser={
               id:res.user.id,
@@ -391,30 +379,37 @@ $("#authForm").addEventListener("submit",async e=>{
             const users=allUsers().filter(u=>u.id!==id);
             users.push({...loggedUser,password:pass});
             saveUsers(users);
+
+            enterApp(loggedUser);
+            updateDbStatusBadge();
+            toast(`${window.KrishiI18n?.t("Welcome back")||"Welcome back"}, ${loggedUser.name||"Farmer"}!`);
+            return;
+          }
+          if(!res.ok){
+            if(res.code==='USER_NOT_FOUND'){
+              return toast(window.KrishiI18n?.t("No account found with this mobile/email in PostgreSQL database. Please create an account first.")||"No account found with this mobile/email in PostgreSQL database. Please create an account first.");
+            }
+            if(res.code==='INVALID_CREDENTIALS'||res.code==='INVALID_PASSWORD'){
+              return toast(window.KrishiI18n?.t("Incorrect password. Please check and try again.")||"Incorrect password. Please check and try again.");
+            }
+            return toast(res.error||"Login failed. Please retry.");
           }
         }
       }catch(dbErr){
-        console.warn("DB login fallback check:",dbErr);
+        console.warn("DB login error:",dbErr);
       }
 
-      if(!loggedUser){
-        const local=allUsers().find(x=>x.id===id);
-        if(!local){
-          submitBtn.disabled=false;
-          submitBtn.textContent=window.KrishiI18n?.t("Login →")||"Login →";
-          return toast(window.KrishiI18n?.t("No account found with this mobile/email. Please create an account first.")||"No account found with this mobile/email. Please create an account first.");
-        }
-        if(local.password!==pass){
-          submitBtn.disabled=false;
-          submitBtn.textContent=window.KrishiI18n?.t("Login →")||"Login →";
-          return toast(window.KrishiI18n?.t("Incorrect password. Please check and try again.")||"Incorrect password. Please check and try again.");
-        }
-        const {password,...safe}=local;
-        loggedUser=safe;
+      // Offline fallback only if server was totally unreachable
+      const local=allUsers().find(x=>x.id===id);
+      if(!local){
+        return toast(window.KrishiI18n?.t("No account found with this mobile/email. Please create an account first.")||"No account found with this mobile/email. Please create an account first.");
       }
-
-      enterApp(loggedUser);
-      toast(`${window.KrishiI18n?.t("Welcome back")||"Welcome back"}, ${loggedUser.name||"Farmer"}!`);
+      if(local.password!==pass){
+        return toast(window.KrishiI18n?.t("Incorrect password. Please check and try again.")||"Incorrect password. Please check and try again.");
+      }
+      const {password,...safe}=local;
+      enterApp(safe);
+      toast(`${window.KrishiI18n?.t("Welcome back")||"Welcome back"}, ${safe.name||"Farmer"}!`);
     }catch(err){
       toast(err.message||"Login failed. Please retry.");
     }finally{

@@ -9,7 +9,7 @@ async function coreAPI(request,env={},fetcher=fetch){
 const path=new URL(request.url).pathname;
 if(['/api/status','/api/health'].includes(path))return json({ok:true,apiVersion:'2026-09-12.2',provider:'Google Gemini',configured:Boolean(env.GEMINI_API_KEY),imageAssessment:Boolean(env.GEMINI_API_KEY),secondOpinionConfigured:Boolean(env.KINDWISE_API_KEY),mandiApiConfigured:Boolean(env.DATA_GOV_IN_API_KEY),dbConfigured:isDbConfigured(),imageProvider:'Kindwise crop.health'});
 if(path==='/api/market-prices')return handleMarketPrices(request,env,fetcher);
-if(path.startsWith('/api/db/') || path.startsWith('/api/auth/') || path.startsWith('/api/scans') || path.startsWith('/api/crops') || path.startsWith('/api/machinery'))return handleDatabaseRoutes(request,env,path);
+if(path.startsWith('/api/db/') || path.startsWith('/api/auth/') || path.startsWith('/api/scans') || path.startsWith('/api/crops') || path.startsWith('/api/machinery') || ['/api/login','/api/register','/api/profile','/api/db-status'].includes(path))return handleDatabaseRoutes(request,env,path);
 if(!['/api/chat','/api/diagnose'].includes(path))return json({error:'API route not found.'},404);
 if(request.method!=='POST')return json({error:'Use POST.'},405);
 const diagnose=path==='/api/diagnose',key=env.GEMINI_API_KEY;
@@ -241,7 +241,7 @@ async function handleMarketPrices(request, env, fetcher) {
 async function handleDatabaseRoutes(request, env, path) {
   const method = request.method;
 
-  if (path === '/api/db/status') {
+  if (path === '/api/db/status' || path === '/api/db-status') {
     if (!isDbConfigured()) {
       return json({ ok: false, configured: false, connected: false, message: 'DATABASE_URL is not configured.' });
     }
@@ -260,7 +260,7 @@ async function handleDatabaseRoutes(request, env, path) {
 
   try {
     // Auth: Register (strict check for duplicates)
-    if (path === '/api/auth/register' && method === 'POST') {
+    if ((path === '/api/auth/register' || path === '/api/register') && method === 'POST') {
       const data = await request.json();
       const { id, name, password, role = 'farmer', location = '', crop = '', landSize = 0, language = 'en' } = data || {};
       const cleanId = String(id || '').trim().toLowerCase();
@@ -287,7 +287,7 @@ async function handleDatabaseRoutes(request, env, path) {
     }
 
     // Auth: Login (strict authentication)
-    if (path === '/api/auth/login' && method === 'POST') {
+    if ((path === '/api/auth/login' || path === '/api/login') && method === 'POST') {
       const { id, password } = (await request.json()) || {};
       const cleanId = String(id || '').trim().toLowerCase();
       const cleanPass = String(password || '');
@@ -308,7 +308,7 @@ async function handleDatabaseRoutes(request, env, path) {
     }
 
     // Auth: Update Profile
-    if (path === '/api/auth/profile' && method === 'POST') {
+    if ((path === '/api/auth/profile' || path === '/api/profile') && method === 'POST') {
       const { id, name, location, crop, landSize } = (await request.json()) || {};
       const cleanId = String(id || '').trim().toLowerCase();
       if (!cleanId) return json({ error: 'User ID is required', code: 'INVALID_ID' }, 400);

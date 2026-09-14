@@ -1,6 +1,10 @@
 {
   "outputDirectory": "dist",
   "rewrites": [
+    { "source": "/api/auth/:action", "destination": "/api/auth/:action" },
+    { "source": "/api/db/:action", "destination": "/api/db/:action" },
+    { "source": "/api/:route", "destination": "/api/:route" },
+    { "source": "/api/(.*)", "destination": "/api/[...route].js" },
     { "source": "/scan", "destination": "/crop-app.html" },
     { "source": "/crop-app", "destination": "/crop-app.html" }
   ]
