@@ -1904,4 +1904,160 @@ aside nav .active {
   }
 }
 
+/* Multi-Farmer Profiles & Auth Enhancement */
+.auth-saved-profiles {
+  background: #fdfaf4;
+  border: 1px solid #ebdccb;
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin-bottom: 18px;
+}
+
+.saved-profiles-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--brown);
+}
+
+.saved-profiles-header small {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.auth-profiles-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 160px;
+  overflow-y: auto;
+}
+
+.auth-profile-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #ffffff;
+  border: 1px solid #dfd2c1;
+  padding: 7px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.auth-profile-chip:hover {
+  background: #fcf4e8;
+  border-color: var(--brown);
+  transform: translateY(-1px);
+}
+
+.auth-chip-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #6b4f3a;
+  color: #fffaf2;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.auth-chip-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.auth-chip-info strong {
+  font-size: 13px;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.auth-chip-info small {
+  font-size: 11px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.modal-profile {
+  max-width: 540px !important;
+  width: 92% !important;
+}
+
+.profile-card-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #fbf6ee;
+  border: 1px solid #e5d5c3;
+  border-radius: 12px;
+  padding: 10px 12px;
+  transition: all 0.15s ease;
+}
+
+.profile-card-item.active {
+  background: #f5ede0;
+  border-color: #6b4f3a;
+  box-shadow: 0 2px 6px rgba(107, 79, 58, 0.08);
+}
+
+.profile-item-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #6b4f3a;
+  color: #fffaf2;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+.profile-item-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.profile-item-body strong {
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.pill-active {
+  display: inline-block;
+  background: #2e7d32;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 99px;
+  letter-spacing: 0.03em;
+}
+
+.switch-farmer-btn {
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  padding: 6px 12px !important;
+  background: #ffffff !important;
+  border-color: #c9b7a4 !important;
+  color: #6b4f3a !important;
+}
+
+.switch-farmer-btn:hover {
+  background: #6b4f3a !important;
+  color: #ffffff !important;
+}
+
+
 

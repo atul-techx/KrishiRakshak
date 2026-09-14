@@ -14,7 +14,5 @@ const originalCase=createExpertCase;createExpertCase=function(result){originalCa
 const originalCases=saveCases;saveCases=function(cases){originalCases(cases);try{const d=KrishiWorkflow.read();let changed=false;for(const c of cases){const a=d.actions.find(a=>a.id===c.sentinelActionId);if(a&&c.response&&a.review!==c.response){a.review=c.response;if(a.status!=='Closed')a.status='Reviewed';d.audit.push({at:Date.now(),text:'Local expert response linked to '+a.id});changed=true;}}if(changed)KrishiWorkflow.write(d);}catch{toast('Field review could not be synchronised.')}};
 const originalGetCases=getCases;getCases=function(){const cases=originalGetCases();try{const d=KrishiWorkflow.read();return cases.map(c=>{const a=d.actions.find(a=>a.id===c.sentinelActionId);return a?.review?{...c,response:a.review,status:c.status==="Reviewed"?"Reviewed":"Responded"}:c;});}catch{return cases;}};
 renderContext();
-// An explicit local-workspace entry avoids pretending a browser password is secure authentication.
-const entry=document.createElement('button');entry.className='btn btn-light full';entry.textContent='Continue in local workspace';entry.onclick=()=>{enterApp({id:'field-workspace',name:'Farmer',location:'',crop:''});showPage('scan');};document.querySelector('.auth-card').append(entry);
 document.addEventListener('DOMContentLoaded',()=>{if(state.user&&new URLSearchParams(location.search).get('page')==='scan')showPage('scan');});
 })();

@@ -101,36 +101,205 @@ function showPage(page){
 function userFromStore(){try{const s=localStorage.getItem("krishi_session");return s?JSON.parse(s):null}catch{return null}}
 function allUsers(){try{return JSON.parse(localStorage.getItem("krishi_users")||"[]")}catch{return[]}}
 function saveUsers(x){localStorage.setItem("krishi_users",JSON.stringify(x))}
+
+function renderSavedProfilesOnAuth(){
+  const container=$("#authSavedProfiles"), list=$("#authProfilesList");
+  if(!container||!list) return;
+  const users=allUsers();
+  if(!users||users.length===0||registering){
+    container.classList.add("hidden");
+    return;
+  }
+  container.classList.remove("hidden");
+  list.innerHTML=users.map(u=>{
+    const initial=(u.name||"F").charAt(0).toUpperCase();
+    const loc=u.location?safeText(u.location):"";
+    const crop=u.crop?safeText(u.crop):"";
+    const meta=[crop,loc].filter(Boolean).join(" · ");
+    return `<div class="auth-profile-chip" data-user-id="${safeText(u.id)}" title="Select ${safeText(u.name)}">
+      <div class="auth-chip-avatar">${initial}</div>
+      <div class="auth-chip-info">
+        <strong>${safeText(u.name||"Farmer")}</strong>
+        <small>${meta||safeText(u.id)}</small>
+      </div>
+    </div>`;
+  }).join("");
+  list.querySelectorAll(".auth-profile-chip").forEach(chip=>{
+    chip.onclick=()=>{
+      const uid=chip.dataset.userId;
+      const input=$("#authId");
+      if(input){
+        input.value=uid;
+        const pass=$("#authPassword");
+        if(pass){
+          pass.value="";
+          pass.focus();
+        }
+      }
+    };
+  });
+}
+
+function renderFarmerProfilesList(){
+  const list=$("#allProfilesList");
+  if(!list) return;
+  const users=allUsers();
+  if(!users.length){
+    list.innerHTML=`<p class="muted" style="font-size:12px; margin:4px 0;">No profiles registered yet.</p>`;
+    return;
+  }
+  list.innerHTML=users.map(u=>{
+    const isActive=state.user&&state.user.id===u.id;
+    const initial=(u.name||"F").charAt(0).toUpperCase();
+    const meta=[u.crop,u.location,u.farmSize].filter(Boolean).map(safeText).join(" · ");
+    return `<div class="profile-card-item ${isActive?'active':''}">
+      <div class="profile-item-avatar">${initial}</div>
+      <div class="profile-item-body">
+        <div style="display:flex; align-items:center; gap:6px;">
+          <strong>${safeText(u.name||"Farmer")}</strong>
+          ${isActive?'<span class="pill-active">✓ Active</span>':''}
+        </div>
+        <small class="muted">${meta||safeText(u.id)}</small>
+      </div>
+      ${!isActive?`<button type="button" class="btn btn-light small switch-farmer-btn" data-switch-id="${safeText(u.id)}">Switch</button>`:''}
+    </div>`;
+  }).join("");
+
+  list.querySelectorAll("[data-switch-id]").forEach(btn=>{
+    btn.onclick=()=>switchFarmer(btn.dataset.switchId);
+  });
+}
+
+function switchFarmer(userId){
+  const u=allUsers().find(x=>x.id===userId);
+  if(!u) return toast("Farmer profile not found.");
+  const {password,...safe}=u;
+  enterApp(safe);
+  $("#profileModal").classList.add("hidden");
+  toast(`Switched to ${safe.name||"Farmer"}'s workspace.`);
+}
+
 function enterApp(user){
   state.user=user;localStorage.setItem("krishi_session",JSON.stringify(user));
   $("#authScreen").classList.add("hidden");$("#app").classList.remove("hidden");
   $("#profileName").textContent=user.name?.split(" ")[0]||"Farmer";$("#dashName").textContent=user.name||"Farmer";
   $("#dashLocation").textContent=user.location||"Add your village/district in profile.";
+  renderFarmerProfilesList();
   renderDashboard();loadWeather();
+  syncUserDataFromDb(user.id);
 }
-function logout(){localStorage.removeItem("krishi_session");location.reload()}
+
+async function syncUserDataFromDb(userId){
+  if(!userId||!window.KrishiAPI)return;
+  try{
+    const dbScans=await window.KrishiAPI.dbGetScans(userId);
+    if(Array.isArray(dbScans)&&dbScans.length>0){
+      const local=getScans(),localIds=new Set(local.map(s=>s.id));
+      const formatted=dbScans.map(s=>({
+        id:'db-'+s.id,
+        crop:s.crop,
+        disease:s.finding,
+        confidence:Number(s.confidence),
+        source:'Neon DB',
+        agreement:'Synced',
+        timestamp:new Date(s.created_at).getTime(),
+        problem:s.details?.problem||'',
+        action:s.details?.action||'',
+        stage:s.details?.stage||'Vegetative',
+        ...(s.details||{})
+      })).filter(s=>!localIds.has(s.id));
+      if(formatted.length>0){
+        saveScans([...formatted,...local].slice(0,30));
+        renderDashboard();
+      }
+    }
+    const dbCrops=await window.KrishiAPI.dbGetCrops(userId);
+    if(Array.isArray(dbCrops)&&dbCrops.length>0){
+      const localCrops=getCrops(),localNames=new Set(localCrops.map(c=>c.name.toLowerCase()));
+      const newCrops=dbCrops.filter(c=>!localNames.has(c.name.toLowerCase())).map(c=>({name:c.name,area:c.area?`${c.area} Acres`:'Area not set'}));
+      if(newCrops.length>0){
+        saveCrops([...localCrops,...newCrops]);
+        renderDashboard();
+      }
+    }
+  }catch(e){console.warn('DB sync note:',e.message||e);}
+}
+
+function logout(){
+  localStorage.removeItem("krishi_session");
+  state.user=null;
+  $("#app").classList.add("hidden");
+  $("#authScreen").classList.remove("hidden");
+  $$(".modal").forEach(m=>m.classList.add("hidden"));
+  $("#authId").value="";
+  $("#authPassword").value="";
+  if($("#authName")) $("#authName").value="";
+  if($("#authLocation")) $("#authLocation").value="";
+  if($("#authCrop")) $("#authCrop").value="";
+  if($("#authFarmSize")) $("#authFarmSize").value="";
+  setAuthMode("login");
+  renderSavedProfilesOnAuth();
+  toast("Logged out successfully.");
+}
 
 let registering=false;
 function setAuthMode(mode){
   registering=mode==="register";
   $("#loginTab").classList.toggle("active",!registering);$("#registerTab").classList.toggle("active",registering);
   $("#authTitle").textContent=registering?"Create your farmer account":"Welcome back";
-  $("#authSubtitle").textContent=registering?"Save scans, crops and expert cases to this browser.":"Sign in to your farmer workspace.";
   $("#authSubmit").textContent=registering?"Create account →":"Login →";
   $("#authScreen").classList.toggle("registering",registering);
   $("#authName").required=registering;
+  renderSavedProfilesOnAuth();
 }
 $("#loginTab").onclick=()=>setAuthMode("login");$("#registerTab").onclick=()=>setAuthMode("register");
-$("#authForm").addEventListener("submit",e=>{
+$("#authForm").addEventListener("submit",async e=>{
   e.preventDefault();const id=$("#authId").value.trim().toLowerCase(),pass=$("#authPassword").value;
+  if(!id) return toast("Please enter mobile or email.");
   if(registering){
     if(pass.length<4)return toast("Password should be at least 4 characters.");
-    const users=allUsers();if(users.some(u=>u.id===id))return toast("Account already exists. Please login.");
-    const user={id,name:$("#authName").value.trim(),location:$("#authLocation").value.trim(),crop:"",createdAt:Date.now()};
-    users.push({...user,password:pass});saveUsers(users);enterApp(user);toast("Farmer account created.");
+    const users=allUsers();if(users.some(u=>u.id===id))return toast("An account with this mobile/email already exists. Please login.");
+    const user={
+      id,
+      name:$("#authName").value.trim()||"Farmer",
+      location:$("#authLocation")?.value.trim()||"",
+      crop:$("#authCrop")?.value.trim()||"",
+      farmSize:$("#authFarmSize")?.value.trim()||"",
+      createdAt:Date.now()
+    };
+    users.push({...user,password:pass});saveUsers(users);
+    window.KrishiAPI?.dbRegister({
+      id,
+      name:user.name,
+      password:pass,
+      location:user.location,
+      crop:user.crop,
+      landSize:user.farmSize,
+      language:state.language
+    }).then(r=>{if(r?.ok)console.log('Farmer profile synced with PostgreSQL database.');}).catch(()=>{});
+    enterApp(user);toast("Farmer profile created successfully.");
   }else{
-    const u=allUsers().find(x=>x.id===id&&x.password===pass);if(!u)return toast("Invalid login details.");
-    const {password,...safe}=u;enterApp(safe);
+    let u=allUsers().find(x=>x.id===id&&x.password===pass);
+    if(!u){
+      try{
+        const r=await window.KrishiAPI?.dbLogin(id,pass);
+        if(r?.ok&&r.user){
+          u={
+            id:r.user.id,
+            name:r.user.name,
+            location:r.user.location||"",
+            crop:r.user.crop||"",
+            farmSize:r.user.land_size||"",
+            password:pass,
+            createdAt:Date.now()
+          };
+          const users=allUsers();
+          if(!users.some(x=>x.id===u.id)){users.push(u);saveUsers(users);}
+        }
+      }catch(err){console.warn('DB login query error',err);}
+    }
+    if(!u)return toast("Invalid login details. Check mobile/email and password.");
+    const {password,...safe}=u;enterApp(safe);toast(`Welcome back, ${safe.name||"Farmer"}!`);
   }
 });
 $("#logoutBtn").onclick=logout;
@@ -140,14 +309,43 @@ $$("[data-go]").forEach(b=>b.onclick=()=>showPage(b.dataset.go));
 $("#languageSelector").onchange=e=>{state.language=e.target.value;localStorage.setItem("krishiLanguage",state.language);updateLanguage()};
 
 $("#profileBtn").onclick=()=>{
-  $("#profileEditName").value=state.user.name||"";$("#profileEditLocation").value=state.user.location||"";$("#profileEditCrop").value=state.user.crop||"";$("#profileModal").classList.remove("hidden")
+  if(!state.user) return;
+  $("#profileEditName").value=state.user.name||"";
+  if($("#profileEditId")) $("#profileEditId").value=state.user.id||"";
+  $("#profileEditLocation").value=state.user.location||"";
+  $("#profileEditCrop").value=state.user.crop||"";
+  if($("#profileEditFarmSize")) $("#profileEditFarmSize").value=state.user.farmSize||"";
+  if($("#modalProfileHeading")) $("#modalProfileHeading").textContent=state.user.name||"Farmer Profile";
+  renderFarmerProfilesList();
+  $("#profileModal").classList.remove("hidden");
 };
 $$("[data-close]").forEach(b=>b.onclick=()=>$("#"+b.dataset.close).classList.add("hidden"));
 $("#saveProfileBtn").onclick=()=>{
-  state.user.name=$("#profileEditName").value.trim()||"Farmer";state.user.location=$("#profileEditLocation").value.trim();state.user.crop=$("#profileEditCrop").value.trim();
+  if(!state.user) return;
+  state.user.name=$("#profileEditName").value.trim()||"Farmer";
+  state.user.location=$("#profileEditLocation").value.trim();
+  state.user.crop=$("#profileEditCrop").value.trim();
+  if($("#profileEditFarmSize")) state.user.farmSize=$("#profileEditFarmSize").value.trim();
   const users=allUsers().map(u=>u.id===state.user.id?{...u,...state.user}:u);saveUsers(users);localStorage.setItem("krishi_session",JSON.stringify(state.user));
-  $("#profileName").textContent=state.user.name.split(" ")[0];$("#dashName").textContent=state.user.name;$("#dashLocation").textContent=state.user.location||"Add your village/district in profile.";$("#profileModal").classList.add("hidden");renderDashboard();toast("Profile updated.");
+  $("#profileName").textContent=state.user.name.split(" ")[0];$("#dashName").textContent=state.user.name;$("#dashLocation").textContent=state.user.location||"Add your village/district in profile.";
+  if($("#modalProfileHeading")) $("#modalProfileHeading").textContent=state.user.name;
+  renderFarmerProfilesList();
+  $("#profileModal").classList.add("hidden");renderDashboard();toast("Profile updated.");
 };
+$("#addNewFarmerBtn")?.addEventListener("click",()=>{
+  $("#profileModal").classList.add("hidden");
+  localStorage.removeItem("krishi_session");
+  state.user=null;
+  $("#app").classList.add("hidden");
+  $("#authScreen").classList.remove("hidden");
+  setAuthMode("register");
+  $("#authId").value="";
+  $("#authPassword").value="";
+  if($("#authName")){ $("#authName").value=""; $("#authName").focus(); }
+  renderSavedProfilesOnAuth();
+  toast("Create a new farmer profile below.");
+});
+$("#modalLogoutBtn")?.addEventListener("click",logout);
 
 async function loadModel(){window.KrishiDual?.warm();}
 async function runCNN(file){return window.KrishiDual.run(file);}
@@ -282,6 +480,16 @@ function saveScan(result,onnx){
   const info=diseaseInfo[onnx.className]||[result.crop,result.disease,result.problem,result.action];
   const scan={id:crypto.randomUUID(),crop:result.crop||info[0],disease:result.disease||info[1],confidence:result.confidence,source:result.source||"Image analysis",agreement:result.agreement||"Local result",timestamp:Date.now(),image:$("#previewImage").src,weather:state.weather,lat:state.weather?.lat??null,lon:state.weather?.lon??null,stage:$("#cropStage")?.value||"Vegetative",variety:$("#cropVariety")?.value.trim()||"",problem:result.problem,action:[result.action,...(result.precautions||[]),...(result.management||[]),...(result.followUp||[])].filter(Boolean).join("\n"),precautions:result.precautions,management:result.management,followUp:result.followUp,risk:result.riskForecast,top3:result.top3||[]};
   scans.unshift(scan);saveScans(scans);state.lastScan=scan;renderDashboard();
+  if(state.user?.id){
+    window.KrishiAPI?.dbSaveScan({
+      userId:state.user.id,
+      crop:scan.crop,
+      finding:scan.disease,
+      confidence:scan.confidence,
+      severity:scan.risk?.label||'Normal',
+      details:{problem:scan.problem,action:scan.action,stage:scan.stage}
+    }).catch(()=>{});
+  }
 }
 
 async function loadWeather(force=false){
@@ -347,9 +555,27 @@ function renderDashboard(){
   const watch=[];if(state.weather?.relative_humidity_2m>=80)watch.push(["","High humidity","Scout leaves for fungal symptoms and keep foliage dry where practical."]);if(state.weather?.precipitation>0)watch.push(["","Rain signal","Avoid unnecessary overhead irrigation and re-check affected areas after rain."]);if(!watch.length)watch.push(["","Regular scouting","Take a weekly leaf photo from the same plot to catch changes early."]);$("#fieldWatch").innerHTML=watch.map(x=>`<div class="watch-item"><span>${x[0]}</span><div><b>${x[1]}</b><p>${x[2]}</p></div></div>`).join("");
   renderRiskForecast();renderWeatherForecast();renderScanTrend();renderOfficialDashboard();
   $("#myCrops").innerHTML=(crops.length?crops:[{name:state.user.crop||"Add your crop",area:"Use profile or add a plot"}]).map(c=>`<div class="crop-item"><div class="crop-icon"></div><h4>${safeText(c.name)}</h4><p>${safeText(c.area)}</p></div>`).join("");
-}
 $("#addCropBtn").onclick=()=>$("#cropModal").classList.remove("hidden");
-$("#saveCropBtn").onclick=()=>{const name=$("#cropNameInput").value.trim();if(!name)return toast("Enter a crop name.");const crops=getCrops();crops.push({name,area:$("#cropAreaInput").value.trim()||"Area not set"});saveCrops(crops);$("#cropModal").classList.add("hidden");$("#cropNameInput").value="";$("#cropAreaInput").value="";renderDashboard();toast("Crop added.")};
+$("#saveCropBtn").onclick=()=>{
+  const name=$("#cropNameInput").value.trim();
+  if(!name)return toast("Enter a crop name.");
+  const areaStr=$("#cropAreaInput").value.trim()||"Area not set";
+  const crops=getCrops();
+  crops.push({name,area:areaStr});
+  saveCrops(crops);
+  if(state.user?.id){
+    window.KrishiAPI?.dbSaveCrop({
+      userId:state.user.id,
+      name,
+      area:parseFloat(areaStr)||0
+    }).catch(()=>{});
+  }
+  $("#cropModal").classList.add("hidden");
+  $("#cropNameInput").value="";
+  $("#cropAreaInput").value="";
+  renderDashboard();
+  toast("Crop added.");
+};
 
 function createExpertCase(result){
   if(!state.lastScan&&state.selectedImage)state.lastScan={id:crypto.randomUUID(),crop:result.crop,disease:result.disease,confidence:result.confidence,image:$("#previewImage").src,timestamp:Date.now(),weather:state.weather};
@@ -690,10 +916,37 @@ function exportLearning(){
 }
 function bindFieldInputs(){const x=getFieldInputs();state.fieldInputs=x;if($("#trapCount"))$("#trapCount").value=x.trapCount??"";if($("#soilMoisture"))$("#soilMoisture").value=x.soilMoisture??"";$("#saveFieldInputs")?.addEventListener("click",saveFieldInputs);$("#exportLearning")?.addEventListener("click",exportLearning)}
 
+async function updateDbStatusBadge(){
+  const chip=$("#dbStatusChip"),label=$("#dbStatusLabel");
+  if(!chip||!label)return;
+  try{
+    const s=await window.KrishiAPI?.dbStatus();
+    if(s&&s.connected){
+      chip.className="db-status-chip online";
+      label.textContent="Neon DB";
+      chip.title="Connected to Neon PostgreSQL database";
+    }else{
+      chip.className="db-status-chip offline";
+      label.textContent="Local Storage";
+      chip.title=s?.configured?"Connecting to PostgreSQL database...":"PostgreSQL not configured; using local storage.";
+    }
+  }catch{
+    chip.className="db-status-chip offline";
+    label.textContent="Local Storage";
+  }
+}
+
 document.addEventListener("DOMContentLoaded",()=>{
   updateLanguage();
+  updateDbStatusBadge();
   const session=userFromStore();
-  if(session){enterApp(session);}else $("#authScreen").classList.remove("hidden");
+  if(session){
+    enterApp(session);
+  }else{
+    $("#authScreen").classList.remove("hidden");
+    $("#app").classList.add("hidden");
+    renderSavedProfilesOnAuth();
+  }
   bindFieldInputs();
   $("#modelStatus").textContent="Load on scan";$("#aiBadge").textContent="Image assessment on demand";
 });

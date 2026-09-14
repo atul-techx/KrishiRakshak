@@ -7,7 +7,17 @@ try{const r=await fetch(base?base+path:new URL('.'+path,document.baseURI),option
 if(!(r.headers.get('content-type')||'').includes('application/json'))return error(r.status===404?'BACKEND_MISSING':'BACKEND_RESPONSE',r.status||503);
 return r;
 }catch(e){if(e.name==='TimeoutError'||e.name==='AbortError')throw e;return error('NETWORK_ERROR');}
-}};
+},
+async dbStatus(){try{const r=await this.request('/api/db/status');return await r.json();}catch{return{ok:false,connected:false};}},
+async dbRegister(p){try{const r=await this.request('/api/auth/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)});return await r.json();}catch{return null;}},
+async dbLogin(id,password){try{const r=await this.request('/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,password})});return await r.json();}catch{return null;}},
+async dbGetScans(userId){try{const r=await this.request('/api/scans?userId='+encodeURIComponent(userId));const d=await r.json();return d.ok&&Array.isArray(d.scans)?d.scans:null;}catch{return null;}},
+async dbSaveScan(scan){try{const r=await this.request('/api/scans',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(scan)});return await r.json();}catch{return null;}},
+async dbGetCrops(userId){try{const r=await this.request('/api/crops?userId='+encodeURIComponent(userId));const d=await r.json();return d.ok&&Array.isArray(d.crops)?d.crops:null;}catch{return null;}},
+async dbSaveCrop(crop){try{const r=await this.request('/api/crops',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(crop)});return await r.json();}catch{return null;}},
+async dbGetMachinery(){try{const r=await this.request('/api/machinery');const d=await r.json();return d.ok&&Array.isArray(d.listings)?d.listings:null;}catch{return null;}},
+async dbSaveMachinery(listing){try{const r=await this.request('/api/machinery',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(listing)});return await r.json();}catch{return null;}}
+};
 })();
 (()=>{
 const messages={
