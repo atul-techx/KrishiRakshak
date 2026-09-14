@@ -16,7 +16,8 @@ async dbSaveScan(scan){try{const r=await this.request('/api/scans',{method:'POST
 async dbGetCrops(userId){try{const r=await this.request('/api/crops?userId='+encodeURIComponent(userId));const d=await r.json();return d.ok&&Array.isArray(d.crops)?d.crops:null;}catch{return null;}},
 async dbSaveCrop(crop){try{const r=await this.request('/api/crops',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(crop)});return await r.json();}catch{return null;}},
 async dbGetMachinery(){try{const r=await this.request('/api/machinery');const d=await r.json();return d.ok&&Array.isArray(d.listings)?d.listings:null;}catch{return null;}},
-async dbSaveMachinery(listing){try{const r=await this.request('/api/machinery',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(listing)});return await r.json();}catch{return null;}}
+async dbSaveMachinery(listing){try{const r=await this.request('/api/machinery',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(listing)});return await r.json();}catch{return null;}},
+async dbUpdateProfile(p){try{const r=await this.request('/api/auth/profile',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)});return await r.json();}catch{return null;}}
 };
 })();
 (()=>{

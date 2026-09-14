@@ -795,9 +795,8 @@ function apply(){if(typeof document==='undefined'||!document.body)return;observe
 function setLanguage(language){if(!languages.includes(language))return;current=language;try{localStorage.setItem('krishiLanguage',language);localStorage.setItem('sentinel-language',language);}catch{}if(typeof document!=='undefined'){window.dispatchEvent(new CustomEvent('krishi-language',{detail:language}));apply();}}
 const api={t,translate:apply,setLanguage,getLanguage:()=>current,languages,entries,add};root.KrishiI18n=api;if(typeof module!=='undefined')module.exports=api;
 if(typeof document!=='undefined'){
- document.addEventListener('change',e=>{if(['lang','languageSelector','auth-language'].includes(e.target.id))setLanguage(e.target.value)});
- window.addEventListener('storage',e=>{if(e.key==='krishiLanguage'&&languages.includes(e.newValue)){current=e.newValue;window.dispatchEvent(new CustomEvent('krishi-language',{detail:current}));apply();}});
- const auth=document.querySelector('.auth-card');if(auth){const label=document.createElement('label');label.className='field';label.innerHTML='<span>Language</span><select id="auth-language" aria-label="Language"><option value="en">English</option><option value="hi">हिन्दी</option><option value="mr">मराठी</option></select>';auth.prepend(label);}
- let pending=false;observer=new MutationObserver(()=>{if(!pending){pending=true;queueMicrotask(()=>{pending=false;apply();});}});apply();
+  document.addEventListener('change',e=>{if(['lang','languageSelector','auth-language'].includes(e.target.id))setLanguage(e.target.value)});
+  window.addEventListener('storage',e=>{if(e.key==='krishiLanguage'&&languages.includes(e.newValue)){current=e.newValue;window.dispatchEvent(new CustomEvent('krishi-language',{detail:current}));apply();}});
+  let pending=false;observer=new MutationObserver(()=>{if(!pending){pending=true;queueMicrotask(()=>{pending=false;apply();});}});apply();
 }
 })(typeof window==='undefined'?globalThis:window);

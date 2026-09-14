@@ -259,42 +259,73 @@ async function handleDatabaseRoutes(request, env, path) {
   }
 
   try {
-    // Auth: Register or update profile
+    // Auth: Register (strict check for duplicates)
     if (path === '/api/auth/register' && method === 'POST') {
       const data = await request.json();
       const { id, name, password, role = 'farmer', location = '', crop = '', landSize = 0, language = 'en' } = data || {};
-      if (!id || !name) return json({ error: 'User ID and name are required' }, 400);
+      const cleanId = String(id || '').trim().toLowerCase();
+      const cleanName = String(name || '').trim();
+      const cleanPass = String(password || '').trim();
+
+      if (!cleanId) return json({ error: 'Mobile or email is required', code: 'INVALID_ID' }, 400);
+      if (!cleanName) return json({ error: 'Full name is required', code: 'INVALID_NAME' }, 400);
+      if (cleanPass.length < 4) return json({ error: 'Password must be at least 4 characters', code: 'WEAK_PASSWORD' }, 400);
+
+      // Verify if user already exists
+      const existing = await query('SELECT id FROM users WHERE LOWER(id) = $1', [cleanId]);
+      if (existing.rows.length > 0) {
+        return json({ error: 'An account with this mobile/email already exists. Please login.', code: 'USER_EXISTS' }, 409);
+      }
 
       const q = `
-        INSERT INTO users (id, name, password_hash, role, location, crop, land_size, language, updated_at)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())
-        ON CONFLICT (id) DO UPDATE SET
-          name = EXCLUDED.name,
-          password_hash = COALESCE(NULLIF(EXCLUDED.password_hash, ''), users.password_hash),
-          role = EXCLUDED.role,
-          location = EXCLUDED.location,
-          crop = EXCLUDED.crop,
-          land_size = EXCLUDED.land_size,
-          language = EXCLUDED.language,
-          updated_at = NOW()
+        INSERT INTO users (id, name, password_hash, role, location, crop, land_size, language, created_at, updated_at)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW())
         RETURNING id, name, role, location, crop, land_size, language, created_at;
       `;
-      const res = await query(q, [id, name, password || '', role, location, crop, Number(landSize) || 0, language]);
+      const res = await query(q, [cleanId, cleanName, cleanPass, role, String(location || '').trim(), String(crop || '').trim(), Number(landSize) || 0, language]);
       return json({ ok: true, user: res.rows[0] });
     }
 
-    // Auth: Login
+    // Auth: Login (strict authentication)
     if (path === '/api/auth/login' && method === 'POST') {
       const { id, password } = (await request.json()) || {};
-      if (!id) return json({ error: 'User ID is required' }, 400);
-      const res = await query('SELECT id, name, password_hash, role, location, crop, land_size, language FROM users WHERE id = $1', [id]);
-      if (res.rows.length === 0) return json({ error: 'User not found' }, 404);
+      const cleanId = String(id || '').trim().toLowerCase();
+      const cleanPass = String(password || '');
+
+      if (!cleanId) return json({ error: 'Mobile or email is required', code: 'INVALID_ID' }, 400);
+      if (!cleanPass) return json({ error: 'Password is required', code: 'INVALID_PASSWORD' }, 400);
+
+      const res = await query('SELECT id, name, password_hash, role, location, crop, land_size, language FROM users WHERE LOWER(id) = $1', [cleanId]);
+      if (res.rows.length === 0) {
+        return json({ error: 'No account found with this mobile/email. Please create an account first.', code: 'USER_NOT_FOUND' }, 404);
+      }
       const user = res.rows[0];
-      if (user.password_hash && user.password_hash !== password) {
-        return json({ error: 'Invalid password' }, 401);
+      if (user.password_hash !== cleanPass) {
+        return json({ error: 'Incorrect password. Please try again.', code: 'INVALID_CREDENTIALS' }, 401);
       }
       delete user.password_hash;
       return json({ ok: true, user });
+    }
+
+    // Auth: Update Profile
+    if (path === '/api/auth/profile' && method === 'POST') {
+      const { id, name, location, crop, landSize } = (await request.json()) || {};
+      const cleanId = String(id || '').trim().toLowerCase();
+      if (!cleanId) return json({ error: 'User ID is required', code: 'INVALID_ID' }, 400);
+
+      const q = `
+        UPDATE users
+        SET name = COALESCE(NULLIF($2, ''), name),
+            location = $3,
+            crop = $4,
+            land_size = $5,
+            updated_at = NOW()
+        WHERE LOWER(id) = $1
+        RETURNING id, name, role, location, crop, land_size, language;
+      `;
+      const res = await query(q, [cleanId, String(name || '').trim(), String(location || '').trim(), String(crop || '').trim(), Number(landSize) || 0]);
+      if (res.rows.length === 0) return json({ error: 'User not found', code: 'USER_NOT_FOUND' }, 404);
+      return json({ ok: true, user: res.rows[0] });
     }
 
     // Crop Scans history
