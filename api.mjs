@@ -8,7 +8,7 @@ const notes={en:['Possible condition; photo alone cannot confirm it.','Inspect b
 async function coreAPI(request,env={},fetcher=fetch){
 const rawPath=new URL(request.url).pathname.replace(/\/+$/, '') || '/';
 const path=rawPath.startsWith('/api') ? rawPath : ('/api' + (rawPath.startsWith('/') ? rawPath : '/' + rawPath));
-if(['/api/status','/api/health'].includes(path))return json({ok:true,apiVersion:'2026-09-12.2',provider:'Google Gemini',configured:Boolean(env.GEMINI_API_KEY),imageAssessment:Boolean(env.GEMINI_API_KEY),secondOpinionConfigured:Boolean(env.KINDWISE_API_KEY),mandiApiConfigured:Boolean(env.DATA_GOV_IN_API_KEY),dbConfigured:isDbConfigured(),imageProvider:'Kindwise crop.health'});
+if(['/api/status','/api/health'].includes(path))return json({ok:true,apiVersion:'2026-09-15.v2',provider:'Google Gemini',configured:Boolean(env.GEMINI_API_KEY),imageAssessment:Boolean(env.GEMINI_API_KEY),secondOpinionConfigured:Boolean(env.KINDWISE_API_KEY),mandiApiConfigured:Boolean(env.DATA_GOV_IN_API_KEY),dbConfigured:isDbConfigured(),imageProvider:'Kindwise crop.health'});
 if(path==='/api/market-prices')return handleMarketPrices(request,env,fetcher);
 if(path.startsWith('/api/db') || path.startsWith('/api/auth') || path.startsWith('/api/scans') || path.startsWith('/api/crops') || path.startsWith('/api/machinery') || ['/api/login','/api/register','/api/profile','/api/db-status'].includes(path))return handleDatabaseRoutes(request,env,path);
 if(!['/api/chat','/api/diagnose'].includes(path))return json({error:'API route not found.'},404);
@@ -242,7 +242,7 @@ async function handleMarketPrices(request, env, fetcher) {
 async function handleDatabaseRoutes(request, env, path) {
   const method = request.method;
 
-  if (path === '/api/db/status' || path === '/api/db-status') {
+  if (path === '/api/db/status' || path === '/api/db-status' || path === '/api/db') {
     if (!isDbConfigured()) {
       return json({ ok: false, configured: false, connected: false, message: 'DATABASE_URL is not configured.' });
     }
@@ -260,36 +260,59 @@ async function handleDatabaseRoutes(request, env, path) {
   }
 
   try {
-    // Auth: Register (strict check for duplicates)
-    if ((path === '/api/auth/register' || path === '/api/register') && method === 'POST') {
+    // Auth routes: support /api/auth, /api/auth/login, /api/auth/register, /api/auth/profile, /api/login, /api/register, /api/profile
+    if ((path.startsWith('/api/auth') || ['/api/login', '/api/register', '/api/profile'].includes(path)) && method === 'POST') {
       const data = await request.json();
-      const { id, name, password, role = 'farmer', location = '', crop = '', landSize = 0, language = 'en' } = data || {};
-      const cleanId = String(id || '').trim().toLowerCase();
-      const cleanName = String(name || '').trim();
-      const cleanPass = String(password || '').trim();
+      const action = data?.action || (path.includes('register') ? 'register' : path.includes('profile') ? 'profile' : 'login');
 
-      if (!cleanId) return json({ error: 'Mobile or email is required', code: 'INVALID_ID' }, 400);
-      if (!cleanName) return json({ error: 'Full name is required', code: 'INVALID_NAME' }, 400);
-      if (cleanPass.length < 4) return json({ error: 'Password must be at least 4 characters', code: 'WEAK_PASSWORD' }, 400);
+      // Register
+      if (action === 'register') {
+        const { id, name, password, role = 'farmer', location = '', crop = '', landSize = 0, language = 'en' } = data || {};
+        const cleanId = String(id || '').trim().toLowerCase();
+        const cleanName = String(name || '').trim();
+        const cleanPass = String(password || '').trim();
 
-      // Verify if user already exists
-      const existing = await query('SELECT id FROM users WHERE LOWER(id) = $1', [cleanId]);
-      if (existing.rows.length > 0) {
-        return json({ error: 'An account with this mobile/email already exists. Please login.', code: 'USER_EXISTS' }, 409);
+        if (!cleanId) return json({ error: 'Mobile or email is required', code: 'INVALID_ID' }, 400);
+        if (!cleanName) return json({ error: 'Full name is required', code: 'INVALID_NAME' }, 400);
+        if (cleanPass.length < 4) return json({ error: 'Password must be at least 4 characters', code: 'WEAK_PASSWORD' }, 400);
+
+        const existing = await query('SELECT id FROM users WHERE LOWER(id) = $1', [cleanId]);
+        if (existing.rows.length > 0) {
+          return json({ error: 'An account with this mobile/email already exists. Please login.', code: 'USER_EXISTS' }, 409);
+        }
+
+        const q = `
+          INSERT INTO users (id, name, password_hash, role, location, crop, land_size, language, created_at, updated_at)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW())
+          RETURNING id, name, role, location, crop, land_size, language, created_at;
+        `;
+        const res = await query(q, [cleanId, cleanName, cleanPass, role, String(location || '').trim(), String(crop || '').trim(), Number(landSize) || 0, language]);
+        return json({ ok: true, user: res.rows[0] });
       }
 
-      const q = `
-        INSERT INTO users (id, name, password_hash, role, location, crop, land_size, language, created_at, updated_at)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW())
-        RETURNING id, name, role, location, crop, land_size, language, created_at;
-      `;
-      const res = await query(q, [cleanId, cleanName, cleanPass, role, String(location || '').trim(), String(crop || '').trim(), Number(landSize) || 0, language]);
-      return json({ ok: true, user: res.rows[0] });
-    }
+      // Profile update
+      if (action === 'profile') {
+        const { id, name, location, crop, landSize } = data || {};
+        const cleanId = String(id || '').trim().toLowerCase();
+        if (!cleanId) return json({ error: 'User ID is required', code: 'INVALID_ID' }, 400);
 
-    // Auth: Login (strict authentication)
-    if ((path === '/api/auth/login' || path === '/api/login') && method === 'POST') {
-      const { id, password } = (await request.json()) || {};
+        const q = `
+          UPDATE users
+          SET name = COALESCE(NULLIF($2, ''), name),
+              location = $3,
+              crop = $4,
+              land_size = $5,
+              updated_at = NOW()
+          WHERE LOWER(id) = $1
+          RETURNING id, name, role, location, crop, land_size, language;
+        `;
+        const res = await query(q, [cleanId, String(name || '').trim(), String(location || '').trim(), String(crop || '').trim(), Number(landSize) || 0]);
+        if (res.rows.length === 0) return json({ error: 'User not found', code: 'USER_NOT_FOUND' }, 404);
+        return json({ ok: true, user: res.rows[0] });
+      }
+
+      // Default: Login
+      const { id, password } = data || {};
       const cleanId = String(id || '').trim().toLowerCase();
       const cleanPass = String(password || '');
 
@@ -308,26 +331,6 @@ async function handleDatabaseRoutes(request, env, path) {
       return json({ ok: true, user });
     }
 
-    // Auth: Update Profile
-    if ((path === '/api/auth/profile' || path === '/api/profile') && method === 'POST') {
-      const { id, name, location, crop, landSize } = (await request.json()) || {};
-      const cleanId = String(id || '').trim().toLowerCase();
-      if (!cleanId) return json({ error: 'User ID is required', code: 'INVALID_ID' }, 400);
-
-      const q = `
-        UPDATE users
-        SET name = COALESCE(NULLIF($2, ''), name),
-            location = $3,
-            crop = $4,
-            land_size = $5,
-            updated_at = NOW()
-        WHERE LOWER(id) = $1
-        RETURNING id, name, role, location, crop, land_size, language;
-      `;
-      const res = await query(q, [cleanId, String(name || '').trim(), String(location || '').trim(), String(crop || '').trim(), Number(landSize) || 0]);
-      if (res.rows.length === 0) return json({ error: 'User not found', code: 'USER_NOT_FOUND' }, 404);
-      return json({ ok: true, user: res.rows[0] });
-    }
 
     // Crop Scans history
     if (path === '/api/scans') {

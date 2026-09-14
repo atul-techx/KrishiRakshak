@@ -10,8 +10,9 @@ return r;
 },
 async dbStatus(){
   try{
-    let r=await this.request('/api/db/status');
-    if(!r.ok||r.status===404) r=await this.request('/api/db-status');
+    let r=await this.request('/api/db-status');
+    if(!r.ok||r.status===404) r=await this.request('/api/db');
+    if(!r.ok||r.status===404) r=await this.request('/api/db/status');
     if(r.ok){
       const d=await r.json();
       return d;
@@ -27,15 +28,17 @@ async dbStatus(){
 },
 async dbRegister(p){
   try{
-    let r=await this.request('/api/auth/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)});
-    if(!r.ok&&r.status===404) r=await this.request('/api/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)});
+    let r=await this.request('/api/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...p,action:'register'})});
+    if(!r.ok&&r.status===404) r=await this.request('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...p,action:'register'})});
+    if(!r.ok&&r.status===404) r=await this.request('/api/auth/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...p,action:'register'})});
     return await r.json();
   }catch{return null;}
 },
 async dbLogin(id,password){
   try{
-    let r=await this.request('/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,password})});
-    if(!r.ok&&r.status===404) r=await this.request('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,password})});
+    let r=await this.request('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,password,action:'login'})});
+    if(!r.ok&&r.status===404) r=await this.request('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,password,action:'login'})});
+    if(!r.ok&&r.status===404) r=await this.request('/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,password,action:'login'})});
     return await r.json();
   }catch{return null;}
 },
@@ -47,8 +50,9 @@ async dbGetMachinery(){try{const r=await this.request('/api/machinery');const d=
 async dbSaveMachinery(listing){try{const r=await this.request('/api/machinery',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(listing)});return await r.json();}catch{return null;}},
 async dbUpdateProfile(p){
   try{
-    let r=await this.request('/api/auth/profile',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)});
-    if(!r.ok&&r.status===404) r=await this.request('/api/profile',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)});
+    let r=await this.request('/api/profile',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...p,action:'profile'})});
+    if(!r.ok&&r.status===404) r=await this.request('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...p,action:'profile'})});
+    if(!r.ok&&r.status===404) r=await this.request('/api/auth/profile',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...p,action:'profile'})});
     return await r.json();
   }catch{return null;}
 }
