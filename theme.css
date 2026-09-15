@@ -1020,25 +1020,11 @@ aside nav .active {
   transform: translateY(-1px) !important;
 }
 
-@media(max-width: 1160px) {
+@media(max-width: 1220px) {
   .topbar {
     gap: 8px !important;
-    padding: 8px 12px !important;
-  }
-  .nav-btn {
-    padding: 6px 8px !important;
-    font-size: 12px !important;
-    gap: 4px !important;
-  }
-  .sentinel-nav-link {
-    margin-right: 2px !important;
-  }
-}
-
-@media(max-width: 920px) {
-  .topbar {
+    padding: 8px 14px !important;
     flex-wrap: wrap !important;
-    padding: 8px 12px !important;
   }
   .brand {
     order: 1 !important;
@@ -1052,8 +1038,42 @@ aside nav .active {
     width: 100% !important;
     justify-content: flex-start !important;
     overflow-x: auto !important;
+    scrollbar-width: none !important;
     padding: 4px 0 2px !important;
-    gap: 4px !important;
+    gap: 6px !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  .nav::-webkit-scrollbar {
+    display: none !important;
+  }
+  .nav-btn {
+    padding: 6px 10px !important;
+    font-size: 13px !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+    gap: 5px !important;
+  }
+  .sentinel-nav-link {
+    margin-right: 4px !important;
+    flex-shrink: 0 !important;
+  }
+}
+
+@media(max-width: 650px) {
+  .topbar {
+    padding: 6px 10px !important;
+  }
+  .brand strong {
+    font-size: 15px !important;
+  }
+  .brand small {
+    display: none !important;
+  }
+  .top-actions {
+    gap: 6px !important;
+  }
+  .db-status-chip {
+    display: none !important;
   }
 }
 
@@ -1989,9 +2009,72 @@ aside nav .active {
   text-overflow: ellipsis;
 }
 
+.modal {
+  position: fixed !important;
+  inset: 0 !important;
+  background: rgba(35, 26, 18, 0.6) !important;
+  backdrop-filter: blur(4px) !important;
+  -webkit-backdrop-filter: blur(4px) !important;
+  z-index: 3000 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 16px !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+
+.modal.hidden {
+  display: none !important;
+}
+
+.modal-card {
+  width: min(540px, 96vw) !important;
+  max-width: 540px !important;
+  max-height: min(90vh, 90dvh) !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain !important;
+  background: var(--paper, #fffcf7) !important;
+  border: 1px solid var(--line, #e2d5c3) !important;
+  border-radius: 20px !important;
+  padding: 24px !important;
+  position: relative !important;
+  box-shadow: 0 25px 60px rgba(45, 35, 24, 0.35) !important;
+  margin: auto !important;
+  box-sizing: border-box !important;
+}
+
+.modal-card::-webkit-scrollbar {
+  width: 6px !important;
+}
+
+.modal-card::-webkit-scrollbar-thumb {
+  background: #d4c4b2 !important;
+  border-radius: 4px !important;
+}
+
 .modal-profile {
   max-width: 540px !important;
-  width: 92% !important;
+  width: 96% !important;
+  max-height: min(90vh, 90dvh) !important;
+}
+
+@media (max-width: 600px) {
+  .modal {
+    padding: 10px 8px !important;
+    align-items: center !important;
+  }
+  .modal-card {
+    width: 100% !important;
+    max-height: 92vh !important;
+    max-height: 92dvh !important;
+    padding: 18px 14px !important;
+    border-radius: 18px !important;
+  }
+  .modal-card .form-grid {
+    grid-template-columns: 1fr !important;
+  }
 }
 
 .profile-card-item {

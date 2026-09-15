@@ -13,20 +13,46 @@ const translations = {
   en:{home:"Home",scan:"Scan",dashboard:"Dashboard",expert:"Expert",eyebrow:"FOR THE FIELDS OF INDIA",
     heroTitle:"Worry less.<br><span>Grow wiser.</span>",heroLead:"One photo, one weather signal and one clear next step. KrishiRakshak brings crop health intelligence closer to the farmer.",
     startScan:" Scan my crop",openDashboard:"Open dashboard →",scanTitle:"Show us the leaf.",scanSub:"Upload a clear photo of one affected leaf. We analyse the image and show practical next steps.",
-    upload:"Upload crop image",diagnose:"Run diagnosis",goodMorning:"Good morning"},
+    upload:"Upload crop image",diagnose:"Run diagnosis",goodMorning:"Good morning",goodAfternoon:"Good afternoon",goodEvening:"Good evening",goodNight:"Good night"},
   hi:{home:"होम",scan:"स्कैन",dashboard:"डैशबोर्ड",expert:"विशेषज्ञ",eyebrow:"भारत के खेतों के लिए",
     heroTitle:"कम चिंता करें।<br><span>समझदारी से उगाएँ।</span>",heroLead:"एक फोटो, एक मौसम संकेत और एक स्पष्ट अगला कदम। KrishiRakshak फसल की जानकारी किसान के करीब लाता है.",
     startScan:" फसल स्कैन करें",openDashboard:"डैशबोर्ड खोलें →",scanTitle:"पत्ता दिखाएँ।",scanSub:"एक साफ प्रभावित पत्ते की फोटो अपलोड करें। पहले हम इसे आपके ब्राउज़र में analyse करेंगे.",
-    upload:"फसल की तस्वीर अपलोड करें",diagnose:"जांच शुरू करें",goodMorning:"सुप्रभात"},
+    upload:"फसल की तस्वीर अपलोड करें",diagnose:"जांच शुरू करें",goodMorning:"सुप्रभात",goodAfternoon:"शुभ दोपहर",goodEvening:"शुभ संध्या",goodNight:"शुभ रात्रि"},
   hinglish:{home:"Home",scan:"Scan",dashboard:"Dashboard",expert:"Expert",eyebrow:"INDIA KE FIELDS KE LIYE",
     heroTitle:"Kam tension.<br><span>Samajhdari se ugao.</span>",heroLead:"Ek photo, ek weather signal aur ek clear next step. KrishiRakshak farmer ke liye crop intelligence ko simple banata hai.",
     startScan:" Crop scan karo",openDashboard:"Dashboard kholo →",scanTitle:"Leaf dikhayein.",scanSub:"Affected leaf ki clear photo upload karo. Image ko analyse karke practical next steps dikhenge.",
-    upload:"Crop ki photo upload karo",diagnose:"Diagnosis start karo",goodMorning:"Good morning"},
+    upload:"Crop ki photo upload karo",diagnose:"Diagnosis start karo",goodMorning:"Good morning",goodAfternoon:"Good afternoon",goodEvening:"Good evening",goodNight:"Good night"},
   mr:{home:"होम",scan:"स्कॅन",dashboard:"डॅशबोर्ड",expert:"तज्ञ",eyebrow:"भारताच्या शेतांसाठी",
     heroTitle:"कमी चिंता.<br><span>शहाणपणाने पिकवा.</span>",heroLead:"एक फोटो, एक हवामान संकेत आणि एक स्पष्ट पुढचे पाऊल. KrishiRakshak शेतकऱ्यांसाठी पीक आरोग्य माहिती सोपी करते.",
     startScan:" पीक स्कॅन करा",openDashboard:"डॅशबोर्ड उघडा →",scanTitle:"पान दाखवा.",scanSub:"प्रभावित पानाचा स्वच्छ फोटो अपलोड करा. फोटोचे विश्लेषण करून पुढील उपयोगी सूचना दिल्या जातील.",
-    upload:"पिकाचा फोटो अपलोड करा",diagnose:"तपासणी सुरू करा",goodMorning:"सुप्रभात"}
+    upload:"पिकाचा फोटो अपलोड करा",diagnose:"तपासणी सुरू करा",goodMorning:"सुप्रभात",goodAfternoon:"शुभ दुपार",goodEvening:"शुभ संध्याकाळ",goodNight:"शुभ रात्री"}
 };
+
+function getTimeGreeting() {
+  const h = new Date().getHours();
+  if (h >= 4 && h < 12) {
+    return { key: "goodMorning", en: "Good morning", hi: "सुप्रभात", mr: "सुप्रभात", hinglish: "Good morning" };
+  } else if (h >= 12 && h < 17) {
+    return { key: "goodAfternoon", en: "Good afternoon", hi: "शुभ दोपहर", mr: "शुभ दुपार", hinglish: "Good afternoon" };
+  } else if (h >= 17 && h < 22) {
+    return { key: "goodEvening", en: "Good evening", hi: "शुभ संध्या", mr: "शुभ संध्याकाळ", hinglish: "Good evening" };
+  } else {
+    return { key: "goodNight", en: "Good night", hi: "शुभ रात्रि", mr: "शुभ रात्री", hinglish: "Good night" };
+  }
+}
+
+function updateGreeting() {
+  const greeting = getTimeGreeting();
+  const el = document.getElementById("dashGreeting") || document.querySelector('[data-i18n^="good"]');
+  if (!el) return;
+  const lang = state.language || localStorage.getItem("krishiLanguage") || "en";
+  el.setAttribute("data-i18n", greeting.key);
+  if (window.KrishiI18n && typeof window.KrishiI18n.t === "function") {
+    el.textContent = window.KrishiI18n.t(greeting.en);
+  } else {
+    el.textContent = greeting[lang] || greeting.en;
+  }
+}
 
 const state = {
   user:null, language:localStorage.getItem("krishiLanguage")||"en",
@@ -88,6 +114,7 @@ function updateLanguage(){
   document.body.classList.toggle("lang-hi",state.language==="hi"||state.language==="mr");
   $("#languageSelector").value=state.language;
   window.KrishiI18n?.setLanguage(state.language);
+  updateGreeting();
 }
 function showPage(page){
   $$(".page").forEach(p=>p.classList.toggle("active",p.id===`${page}Page`));
@@ -436,8 +463,26 @@ $("#profileBtn").onclick=()=>{
   $("#profileModal").classList.remove("hidden");
 };
 $$("[data-close]").forEach(b=>b.onclick=()=>$("#"+b.dataset.close).classList.add("hidden"));
+
+// Backdrop click closes modal
+document.querySelectorAll(".modal").forEach(m => {
+  m.addEventListener("click", e => {
+    if (e.target === m) {
+      m.classList.add("hidden");
+    }
+  });
+});
+
+// Escape key closes modal
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") {
+    document.querySelectorAll(".modal:not(.hidden)").forEach(m => m.classList.add("hidden"));
+  }
+});
+
 $("#saveProfileBtn").onclick=()=>{
   if(!state.user) return;
+  const prevLocation = (state.user.location || "").trim().toLowerCase();
   state.user.name=$("#profileEditName").value.trim()||"Farmer";
   state.user.location=$("#profileEditLocation").value.trim();
   state.user.crop=$("#profileEditCrop").value.trim();
@@ -459,6 +504,9 @@ $("#saveProfileBtn").onclick=()=>{
   renderFarmerProfilesList();
   $("#profileModal").classList.add("hidden");
   renderDashboard();
+  if (state.user.location && state.user.location.trim().toLowerCase() !== prevLocation) {
+    loadWeather(true);
+  }
   toast(window.KrishiI18n?.t("Profile updated.")||"Profile updated.");
 };
 $("#addNewFarmerBtn")?.addEventListener("click",()=>{
@@ -621,27 +669,198 @@ function saveScan(result,onnx){
   }
 }
 
-async function loadWeather(force=false){
-  if(!navigator.geolocation)return setWeatherFallback("Location permission unavailable.");
-  navigator.geolocation.getCurrentPosition(async pos=>{
-    try{
-      const {latitude,longitude}=pos.coords;
-      const url=`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,rain,weather_code,wind_speed_10m&hourly=temperature_2m,relative_humidity_2m,precipitation_probability,precipitation,dew_point_2m,wind_speed_10m,soil_moisture_0_to_1cm&forecast_days=3&timezone=auto`;
-      const r=await fetch(url,{cache:"no-store",headers:{"Accept":"application/json"}});if(!r.ok)throw new Error("Weather API error");
-      const d=await r.json();state.weather={lat:latitude,lon:longitude,...d.current,hourly:KrishiWorkflow.futureHours(d.hourly,d.current.time),timezone:d.timezone,updatedAt:Date.now()};
-      const text=`${Math.round(d.current.temperature_2m)}°C · feels ${Math.round(d.current.apparent_temperature)}°C · humidity ${d.current.relative_humidity_2m}% · rain ${d.current.precipitation} mm`;
-      $("#homeTemp").textContent=`${Math.round(d.current.temperature_2m)}°`;$("#homeWeatherText").textContent=text;$("#dashTemp").textContent=`${Math.round(d.current.temperature_2m)}°C`;$("#dashWeather").textContent=text;$("#homeLocation").textContent=`GPS ${latitude.toFixed(2)}, ${longitude.toFixed(2)}`;
-      updateRisk();renderWeatherForecast();renderDashboard();
-    }catch(e){console.warn(e);setWeatherFallback("Live weather unavailable.")}
-  },()=>setWeatherFallback("Allow location for live weather."),{enableHighAccuracy:true,maximumAge:force?0:120000,timeout:10000});
+const DISTRICT_COORDS = {
+  nashik: { lat: 19.9975, lon: 73.7898, name: "Nashik, Maharashtra" },
+  dindori: { lat: 20.2039, lon: 73.8373, name: "Dindori, Nashik" },
+  pune: { lat: 18.5204, lon: 73.8567, name: "Pune, Maharashtra" },
+  nagpur: { lat: 21.1458, lon: 79.0882, name: "Nagpur, Maharashtra" },
+  aurangabad: { lat: 19.8762, lon: 75.3433, name: "Chhatrapati Sambhajinagar" },
+  sambhajinagar: { lat: 19.8762, lon: 75.3433, name: "Chhatrapati Sambhajinagar" },
+  kolhapur: { lat: 16.7050, lon: 74.2433, name: "Kolhapur, Maharashtra" },
+  solapur: { lat: 17.6599, lon: 75.9064, name: "Solapur, Maharashtra" },
+  amravati: { lat: 20.9374, lon: 77.7796, name: "Amravati, Maharashtra" },
+  jalgaon: { lat: 21.0077, lon: 75.5626, name: "Jalgaon, Maharashtra" },
+  akola: { lat: 20.7002, lon: 77.0082, name: "Akola, Maharashtra" },
+  sangli: { lat: 16.8524, lon: 74.5815, name: "Sangli, Maharashtra" },
+  satara: { lat: 17.6805, lon: 73.9997, name: "Satara, Maharashtra" },
+  ahmednagar: { lat: 19.0948, lon: 74.7480, name: "Ahmednagar, Maharashtra" },
+  nanded: { lat: 19.1383, lon: 77.3210, name: "Nanded, Maharashtra" },
+  baramati: { lat: 18.1517, lon: 74.5771, name: "Baramati, Maharashtra" },
+  delhi: { lat: 28.6139, lon: 77.2090, name: "Delhi" },
+  mumbai: { lat: 19.0760, lon: 72.8777, name: "Mumbai, Maharashtra" }
+};
+
+async function geocodeLocationName(name) {
+  if (!name || typeof name !== "string") return null;
+  const parts = name.split(",").map(s => s.trim().toLowerCase()).filter(Boolean);
+  for (const part of parts) {
+    for (const [k, v] of Object.entries(DISTRICT_COORDS)) {
+      if (part.includes(k) || k.includes(part)) {
+        return { latitude: v.lat, longitude: v.lon, name: v.name };
+      }
+    }
+  }
+  try {
+    const searchName = parts[0];
+    const r = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(searchName)}&count=1&language=en&format=json`);
+    if (r.ok) {
+      const data = await r.json();
+      if (data.results && data.results.length > 0) {
+        const res = data.results[0];
+        return {
+          latitude: res.latitude,
+          longitude: res.longitude,
+          name: res.name + (res.admin1 ? `, ${res.admin1}` : "")
+        };
+      }
+    }
+  } catch (e) {
+    console.warn("Geocoding lookup failed:", e);
+  }
+  return null;
 }
-function setWeatherFallback(text){state.weather=null;state.riskForecast=null;$("#dashRiskText").textContent=text;renderRiskForecast();$("#homeTemp").textContent="--°";$("#dashTemp").textContent="--°";$("#homeWeatherText").textContent=text;$("#dashWeather").textContent=text;$("#weatherForecast").innerHTML="";updateRisk()}
+
+async function fetchWeatherByCoords(latitude, longitude, locationLabel = "") {
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,rain,weather_code,wind_speed_10m&hourly=temperature_2m,relative_humidity_2m,precipitation_probability,precipitation,dew_point_2m,wind_speed_10m,soil_moisture_0_to_1cm&forecast_days=3&timezone=auto`;
+  const r = await fetch(url, { cache: "no-store", headers: { "Accept": "application/json" } });
+  if (!r.ok) throw new Error("Weather API error");
+  const d = await r.json();
+  state.weather = {
+    lat: latitude,
+    lon: longitude,
+    locationLabel,
+    ...d.current,
+    hourly: window.KrishiWorkflow ? KrishiWorkflow.futureHours(d.hourly, d.current.time) : d.hourly,
+    timezone: d.timezone,
+    updatedAt: Date.now()
+  };
+  try {
+    localStorage.setItem("krishi_cached_weather", JSON.stringify(state.weather));
+  } catch(e) {}
+  
+  const tempC = Math.round(d.current.temperature_2m);
+  const feelsC = Math.round(d.current.apparent_temperature);
+  const hum = d.current.relative_humidity_2m;
+  const rain = d.current.precipitation;
+  const text = `${tempC}°C · feels ${feelsC}°C · humidity ${hum}% · rain ${rain} mm`;
+  
+  if ($("#homeTemp")) $("#homeTemp").textContent = `${tempC}°`;
+  if ($("#homeWeatherText")) $("#homeWeatherText").textContent = locationLabel ? `${locationLabel} · ${text}` : text;
+  if ($("#dashTemp")) $("#dashTemp").textContent = `${tempC}°C`;
+  if ($("#dashWeather")) $("#dashWeather").textContent = locationLabel ? `${locationLabel} · ${text}` : text;
+  if ($("#homeLocation")) $("#homeLocation").textContent = locationLabel || `GPS ${latitude.toFixed(2)}, ${longitude.toFixed(2)}`;
+  
+  updateRisk();
+  renderWeatherForecast();
+  return state.weather;
+}
+
+async function loadWeatherFallback(reason = "") {
+  try {
+    const farmerLoc = state.user?.location || "";
+    let coords = await geocodeLocationName(farmerLoc);
+    if (!coords) {
+      coords = { latitude: 19.9975, longitude: 73.7898, name: "Nashik, Maharashtra" };
+    }
+    const label = coords.name || farmerLoc || "Local District";
+    await fetchWeatherByCoords(coords.latitude, coords.longitude, label);
+  } catch (err) {
+    console.warn("Fallback weather fetch failed:", err);
+    try {
+      const cached = JSON.parse(localStorage.getItem("krishi_cached_weather") || "null");
+      if (cached && cached.temperature_2m !== undefined) {
+        state.weather = cached;
+        const tempC = Math.round(cached.temperature_2m);
+        const text = `${tempC}°C · humidity ${cached.relative_humidity_2m}% (cached)`;
+        if ($("#homeTemp")) $("#homeTemp").textContent = `${tempC}°`;
+        if ($("#dashTemp")) $("#dashTemp").textContent = `${tempC}°C`;
+        if ($("#homeWeatherText")) $("#homeWeatherText").textContent = text;
+        if ($("#dashWeather")) $("#dashWeather").textContent = text;
+        updateRisk();
+        renderWeatherForecast();
+        return;
+      }
+    } catch(e) {}
+    setWeatherFallback(reason || "Live weather unavailable.");
+  }
+}
+
+async function loadWeather(force = false) {
+  if (!force) {
+    try {
+      const cached = JSON.parse(localStorage.getItem("krishi_cached_weather") || "null");
+      if (cached && (Date.now() - (cached.updatedAt || 0) < 1800000)) {
+        state.weather = cached;
+        const tempC = Math.round(cached.temperature_2m);
+        const feelsC = Math.round(cached.apparent_temperature || cached.temperature_2m);
+        const text = `${tempC}°C · feels ${feelsC}°C · humidity ${cached.relative_humidity_2m}% · rain ${cached.precipitation || 0} mm`;
+        if ($("#homeTemp")) $("#homeTemp").textContent = `${tempC}°`;
+        if ($("#homeWeatherText")) $("#homeWeatherText").textContent = cached.locationLabel ? `${cached.locationLabel} · ${text}` : text;
+        if ($("#dashTemp")) $("#dashTemp").textContent = `${tempC}°C`;
+        if ($("#dashWeather")) $("#dashWeather").textContent = cached.locationLabel ? `${cached.locationLabel} · ${text}` : text;
+        updateRisk();
+        renderWeatherForecast();
+      }
+    } catch(e) {}
+  }
+
+  if (!navigator.geolocation) {
+    return loadWeatherFallback("GPS unavailable");
+  }
+
+  let gpsResolved = false;
+  const timeoutId = setTimeout(() => {
+    if (!gpsResolved && !state.weather) {
+      loadWeatherFallback("GPS timeout");
+    }
+  }, 3500);
+
+  navigator.geolocation.getCurrentPosition(
+    async pos => {
+      gpsResolved = true;
+      clearTimeout(timeoutId);
+      try {
+        const { latitude, longitude } = pos.coords;
+        let label = `GPS ${latitude.toFixed(2)}, ${longitude.toFixed(2)}`;
+        if (state.user?.location) {
+          label = `${state.user.location} (${label})`;
+        }
+        await fetchWeatherByCoords(latitude, longitude, label);
+      } catch(e) {
+        console.warn("GPS weather fetch failed, trying fallback:", e);
+        loadWeatherFallback("GPS weather fetch failed");
+      }
+    },
+    err => {
+      gpsResolved = true;
+      clearTimeout(timeoutId);
+      console.warn("Geolocation prompt skipped or denied, using district fallback:", err?.message);
+      loadWeatherFallback("District weather");
+    },
+    { enableHighAccuracy: false, maximumAge: force ? 0 : 120000, timeout: 3500 }
+  );
+}
+
+function setWeatherFallback(text) {
+  state.weather = null;
+  state.riskForecast = null;
+  $("#dashRiskText").textContent = text;
+  renderRiskForecast();
+  $("#homeTemp").textContent = "--°";
+  $("#dashTemp").textContent = "--°";
+  $("#homeWeatherText").textContent = text;
+  $("#dashWeather").textContent = text;
+  $("#weatherForecast").innerHTML = "";
+  updateRisk();
+}
+
 function renderWeatherForecast(){
   const box=$("#weatherForecast"),h=state.weather?.hourly;if(!box||!h?.time?.length)return;
   const rows=h.time.slice(0,6).map((t,i)=>({t,i,temp:h.temperature_2m?.[i],pop:h.precipitation_probability?.[i]}));
   box.innerHTML=rows.map(x=>`<div class="weather-hour"><small>${new Date(x.t).toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})}</small><b>${Math.round(x.temp)}°C</b><span>Rain ${x.pop??0}%</span></div>`).join("");
 }
 $("#refreshWeatherBtn")?.addEventListener("click",()=>loadWeather(true));
+$(".metric.weather")?.addEventListener("click",()=>loadWeather(true));
 function calculateRiskForecast(crop="Unknown", disease=""){
   const w=state.weather; if(!w)return {score:null,label:"No weather",reason:"Weather unavailable",factors:[]};
   const h=w.hourly||{}; const rh=w.relative_humidity_2m||0, temp=w.temperature_2m||0, rain=w.precipitation||0;
@@ -679,6 +898,7 @@ function renderDashboard(){
   if(!state.user)return;
   const scans=getScans();const crops=getCrops();
   $("#dashScans").textContent=scans.length;$("#homeScanCount").textContent=scans.length;$("#dashName").textContent=state.user.name||"Farmer";$("#profileName").textContent=(state.user.name||"Farmer").split(" ")[0];
+  updateGreeting();
   const avg=scans.length?Math.round(scans.reduce((a,s)=>a+s.confidence*100,0)/scans.length):null;$("#healthScore").innerHTML=avg===null?`--`:`${Math.max(0,Math.min(100,avg))}<small>/100</small>`;$("#healthText").textContent=scans.length?"Mean model confidence; not a measure of crop health.":"No scans yet — start by checking a leaf.";
   $("#recentScans").innerHTML=scans.length?scans.slice(0,8).map(s=>`<div class="scan-row"><div><strong>${safeText(s.crop)} · ${safeText(s.disease)}</strong><p><span class="scan-badge">${(s.confidence*100).toFixed(1)}% confidence</span> · ${safeText(s.source)}</p></div><small>${new Date(s.timestamp).toLocaleString()}</small></div>`).join(""):`<div class="empty">No scans yet. Start with a clear leaf photo.</div>`;
   const watch=[];if(state.weather?.relative_humidity_2m>=80)watch.push(["","High humidity","Scout leaves for fungal symptoms and keep foliage dry where practical."]);if(state.weather?.precipitation>0)watch.push(["","Rain signal","Avoid unnecessary overhead irrigation and re-check affected areas after rain."]);if(!watch.length)watch.push(["","Regular scouting","Take a weekly leaf photo from the same plot to catch changes early."]);$("#fieldWatch").innerHTML=watch.map(x=>`<div class="watch-item"><span>${x[0]}</span><div><b>${x[1]}</b><p>${x[2]}</p></div></div>`).join("");
@@ -1105,4 +1325,9 @@ $$(".clickable-stat, .legend-pill").forEach(el=>{
   });
 });
 
-window.addEventListener("krishi-language",e=>{state.language=e.detail;$("#languageSelector").value=e.detail;});
+window.addEventListener("krishi-language",e=>{
+  state.language=e.detail;
+  $("#languageSelector").value=e.detail;
+  updateGreeting();
+});
+setInterval(updateGreeting, 60000);
