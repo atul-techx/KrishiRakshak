@@ -296,6 +296,9 @@ If the image is unclear or the result is uncertain, re-try or re-upload a cleare
 Your photo is analysed in the browser first. External second-opinion services are optional and proxied server-side.|फोटो पहले ब्राउज़र में जाँची जाती है। बाहरी दूसरी राय वैकल्पिक है और सर्वर से जाती है।|फोटो प्रथम ब्राउझरमध्ये तपासला जातो. बाह्य दुसरे मत ऐच्छिक असून सर्व्हरमार्फत जाते.|Photo pehle browser mein analyse hoti hai. External second opinion optional hai.
 FARMER WORKSPACE|किसान कार्यक्षेत्र|शेतकरी कार्यक्षेत्र|FARMER WORKSPACE
 Good morning|सुप्रभात|सुप्रभात|Good morning
+Good afternoon|शुभ दोपहर|शुभ दुपार|Good afternoon
+Good evening|शुभ संध्या|शुभ संध्याकाळ|Good evening
+Good night|शुभ रात्रि|शुभ रात्री|Good night
 Your field pulse is ready.|खेत की स्थिति तैयार है।|शेताची स्थिती तयार आहे.|Field pulse ready hai.
 New scan|नया स्कैन|नवीन स्कॅन|New scan
 Fetching weather…|मौसम लोड हो रहा है…|हवामान मिळवत आहे…|Weather load ho raha hai…
